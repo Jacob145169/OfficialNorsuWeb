@@ -1,0 +1,221 @@
+{% extends 'dashboard/alumni/base.html' %}
+{% load static rich_text %}
+
+{% block title %}News & Updates - NORSU-BSC Alumni{% endblock %}
+
+{% block content %}
+<style>
+    /* Harvard Editorial - News Page */
+    
+    .news-hero {
+        background: var(--black);
+        padding: 72px 0 44px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 4px solid var(--crimson);
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .hero-title {
+        color: white;
+        font-family: var(--font-serif);
+        font-size: 3.35rem;
+        font-weight: 900;
+        margin-bottom: 0;
+        letter-spacing: -0.03em;
+        line-height: 1.08;
+    }
+    
+    .news-container {
+        padding: 100px 0 140px;
+        background: white;
+        min-height: 80vh;
+    }
+
+    .news-header-title {
+        font-family: var(--font-serif);
+        color: var(--black);
+        font-size: 3.5rem;
+        font-weight: 900;
+        margin-bottom: 4rem;
+        text-align: center;
+    }
+
+    .news-article {
+        background: white;
+        padding-bottom: 100px;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 100px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .news-article:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .news-article-header {
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .news-article-header h2 {
+        font-family: var(--font-serif);
+        font-size: 3rem;
+        font-weight: 900;
+        line-height: 1.1;
+        color: var(--black);
+        margin-bottom: 25px;
+        letter-spacing: -0.02em;
+    }
+
+    .news-date {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--crimson);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .news-body img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 30px 0;
+        display: block;
+    }
+
+    .news-featured-image {
+        margin: 0 auto 40px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .news-featured-image img {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 10px;
+    }
+
+    .news-body figure {
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+
+    .news-body figure figcaption {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-top: -15px;
+        margin-bottom: 30px;
+    }
+
+    .news-body {
+        color: var(--text-secondary);
+        line-height: 1.9;
+        font-size: 1.15rem;
+        letter-spacing: 0.01em;
+    }
+
+    .news-body p {
+        margin-bottom: 30px;
+    }
+
+    .news-body a {
+        color: var(--crimson);
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        padding: 14px 28px;
+        background: var(--black);
+        color: white;
+        text-decoration: none;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        margin-bottom: 60px;
+    }
+    
+    .btn-back:hover {
+        background: var(--crimson);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 992px) {
+        .news-article-header h2 { font-size: 2.2rem; }
+        .hero-title { font-size: 2.8rem; }
+    }
+
+    @media (max-width: 768px) {
+        .news-hero { padding: 56px 0 36px; }
+        .hero-title { font-size: 2.35rem; }
+    }
+</style>
+
+<section class="news-hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">NEWS & UPDATES</h1>
+        </div>
+    </div>
+</section>
+
+<section class="news-container">
+    <div class="container">
+        {% if single_view %}
+            <a href="{% url 'news_alumni' %}" class="btn-back">← All News & Updates</a>
+        {% endif %}
+
+        {% if news %}
+            {% for article in news %}
+            <article class="news-article">
+                <div class="news-article-header">
+                    <span class="news-date">{{ article.created_at|date:"F d, Y" }}</span>
+                    <h2>{{ article.title }}</h2>
+                </div>
+
+                {% if single_view and article.display_image_url %}
+                <div class="news-featured-image">
+                    <img src="{{ article.display_image_url }}" alt="{{ article.title }}">
+                </div>
+                {% endif %}
+
+                <div class="news-body">
+                    {{ article.detail_content|default:article.content|autolink_html }}
+                </div>
+            </article>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state" style="text-align: center; padding: 100px 0; border: 2px dashed var(--border-color);">
+                <div style="font-size: 4rem; margin-bottom: 24px; color: var(--light-gray);">📰</div>
+                <h3 style="font-family: var(--font-serif); font-size: 2rem; color: var(--black);">No News Available</h3>
+                <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto;">Stay tuned for the latest updates and stories from the NORSU-BSC Alumni community.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

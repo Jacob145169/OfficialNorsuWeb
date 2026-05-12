@@ -1,0 +1,178 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}News Preview - NORSU{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/css/navbar.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/css/detail-page.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@400;700&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<section class="detail-banner">
+    <div class="detail-banner-inner">
+        <div>
+            <div class="detail-eyebrow">NORSU Bayawan - Sta. Catalina Campus</div>
+            <h1 class="detail-section-title" id="preview-section-title">News &amp; Announcements</h1>
+        </div>
+        <div class="detail-section-date">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span id="preview-banner-date">Loading...</span>
+        </div>
+    </div>
+</section>
+
+<div class="detail-shell">
+    <nav class="detail-breadcrumb" aria-label="Breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <span>/</span>
+        <a href="{% url 'news' %}" id="preview-breadcrumb-section">News &amp; Announcements</a>
+        <span>/</span>
+        <span id="preview-breadcrumb-title">Preview</span>
+    </nav>
+
+    <article class="detail-card">
+        <div class="detail-card-top">
+            <span class="detail-chip" id="preview-chip">News</span>
+            <span class="detail-meta-inline" id="preview-meta">Loading...</span>
+        </div>
+
+        <h2 class="detail-title" id="preview-title">Loading story...</h2>
+
+        <figure class="detail-feature" id="preview-figure" style="display:none;">
+            <img id="preview-image" src="" alt="">
+            <figcaption id="preview-caption"></figcaption>
+        </figure>
+
+        <div class="detail-content" id="preview-content">
+            <p>Preparing the page...</p>
+        </div>
+    </article>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function formatPreviewDate(value) {
+        if (!value) {
+            return 'Date unavailable';
+        }
+
+        const parsed = new Date(value);
+        if (!Number.isNaN(parsed.getTime())) {
+            return parsed.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
+
+        return String(value);
+    }
+
+    function stripHtml(value) {
+        const container = document.createElement('div');
+        container.innerHTML = String(value || '');
+        return container.textContent || container.innerText || '';
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function getPreviewConfig(item) {
+        const type = String(item.post_type || item.category || '').toLowerCase();
+
+        if (type === 'announcement') {
+            return {
+                section: 'Announcements',
+                chip: 'Announcement',
+                chipClass: 'detail-chip detail-chip--announcement'
+            };
+        }
+
+        if (type === 'event') {
+            return {
+                section: 'Events & Updates',
+                chip: 'Event',
+                chipClass: 'detail-chip detail-chip--event'
+            };
+        }
+
+        if (type === 'academic') {
+            return {
+                section: 'Academic News',
+                chip: 'Academic',
+                chipClass: 'detail-chip detail-chip--academic'
+            };
+        }
+
+        if (type === 'sports') {
+            return {
+                section: 'Sports News',
+                chip: 'Sports',
+                chipClass: 'detail-chip detail-chip--sports'
+            };
+        }
+
+        return {
+            section: 'News & Announcements',
+            chip: 'News',
+            chipClass: 'detail-chip'
+        };
+    }
+
+    function renderPreviewContent(content) {
+        const cleaned = stripHtml(content).trim();
+        if (!cleaned) {
+            return '<p>No content available for this story yet.</p>';
+        }
+
+        return cleaned
+            .split(/\n\s*\n/)
+            .map(paragraph => paragraph.trim())
+            .filter(Boolean)
+            .map(paragraph => `<p>${escapeHtml(paragraph)}</p>`)
+            .join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const raw = sessionStorage.getItem('norsuNewsPreviewItem');
+        if (!raw) {
+            window.location.replace("{% url 'news' %}");
+            return;
+        }
+
+        const item = JSON.parse(raw);
+        const config = getPreviewConfig(item);
+        const formattedDate = formatPreviewDate(item.created_at || item.date);
+
+        document.title = `${item.title || 'News Preview'} - NORSU`;
+        document.getElementById('preview-section-title').textContent = config.section;
+        document.getElementById('preview-banner-date').textContent = formattedDate;
+        document.getElementById('preview-breadcrumb-section').textContent = config.section;
+        document.getElementById('preview-breadcrumb-title').textContent = item.title || 'Preview';
+        document.getElementById('preview-chip').textContent = config.chip;
+        document.getElementById('preview-chip').className = config.chipClass;
+        document.getElementById('preview-meta').textContent = `Posted on ${formattedDate}`;
+        document.getElementById('preview-title').textContent = item.title || 'Untitled Story';
+        document.getElementById('preview-content').innerHTML = renderPreviewContent(item.content);
+
+        if (item.image) {
+            const figure = document.getElementById('preview-figure');
+            const image = document.getElementById('preview-image');
+            const caption = document.getElementById('preview-caption');
+
+            image.src = item.image;
+            image.alt = item.title || 'Story image';
+            caption.textContent = item.title || '';
+            figure.style.display = '';
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,549 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block title %}Programs - NORSU{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dashboard/css/navbar.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/css/program.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<div class="main-wrapper">
+    <!-- LEFT SIDE (FIXED / NOT SCROLLABLE) -->
+    <div class="left-panel">
+        <div class="program-box">
+            <h3>PROGRAMS OFFERED</h3>
+            <div class="program-buttons">
+                <button class="program-btn" onclick="switchTab('bsit')"><i class="fa-solid fa-circle"></i> BS
+                    INFORMATION TECHNOLOGY</button>
+                <button class="program-btn" onclick="switchTab('bscs')"><i class="fa-regular fa-circle"></i> BS COMPUTER
+                    SCIENCE</button>
+                <button class="program-btn" onclick="switchTab('bsed')"><i class="fa-regular fa-circle"></i> BS
+                    ELEMENTARY EDUCATION</button>
+                <button class="program-btn" onclick="switchTab('bpeed')"><i class="fa-regular fa-circle"></i> BS
+                    SECONDARY EDUCATION</button>
+                <button class="program-btn" onclick="switchTab('bshm')"><i class="fa-regular fa-circle"></i> BS
+                    HOSPITALITY MANAGEMENT</button>
+                <button class="program-btn" onclick="switchTab('bsba')"><i class="fa-regular fa-circle"></i> BS BUSINESS
+                    ADMINISTRATION</button>
+                <button class="program-btn" onclick="switchTab('bsoa')"><i class="fa-regular fa-circle"></i> BS OFFICE
+                    ADMINISTRATION</button>
+                <button class="program-btn" onclick="switchTab('fores')"><i class="fa-regular fa-circle"></i> BS
+                    FORESTRY</button>
+                <button class="program-btn" onclick="switchTab('bit')"><i class="fa-regular fa-circle"></i> BS
+                    INDUSTRIAL TECHNOLOGY</button>
+                <button class="program-btn" onclick="switchTab('bscrim')"><i class="fa-regular fa-circle"></i> BS
+                    CRIMINOLOGY</button>
+                <button class="program-btn" onclick="switchTab('agri')"><i class="fa-regular fa-circle"></i> BS
+                    AGRICULTURE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE (CONTENT) -->
+        <!-- BSIT -->
+        <div id="bsit" class="right-panel">
+            <h1>BACHELOR OF SCIENCES INFORMATION TECHNOLOGY</h1>
+            <div class="title-line"></div>
+
+            <p id="bsit-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bsit-images">
+                    <img src="{% static 'dashboard/images/info.jpg' %}" alt="BSIT Image">
+                    <img src="{% static 'dashboard/images/sec a.jpg' %}" alt="BSIT Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bsit-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bsit-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bsit-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bsit-objectives">Loading objectives...</p>
+        </div>
+
+        <!-- BSCS -->
+        <div id="bscs" class="right-panel">
+            <h1>BACHELOR OF SCIENCE IN COMPUTER SCIENCE</h1>
+            <div class="title-line"></div>
+
+            <p id="bscs-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bscs-images">
+                    <img src="{% static 'dashboard/images/coms.jpg' %}" alt="BSCS Image">
+                    <img src="{% static 'dashboard/images/coms.jpg' %}" alt="BSCS Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bscs-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bscs-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bscs-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bscs-objectives">Loading objectives...</p>
+        </div>
+
+        <!-- BSED -->
+        <div id="bsed" class="right-panel">
+            <h1>BACHELOR OF ELEMENTARY EDUCATION</h1>
+            <div class="title-line"></div>
+
+            <p id="bsed-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bsed-images">
+                    <img src="{% static 'dashboard/images/cted1.jpg' %}" alt="BSED Image">
+                    <img src="{% static 'dashboard/images/cted2.jpg' %}" alt="BSED Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bsed-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bsed-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bsed-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bsed-objectives">Loading objectives...</p>
+        </div>
+
+        <!-- BPEED -->
+        <div id="bpeed" class="right-panel">
+            <h1>BACHELOR OF SECONDARY EDUCATION</h1>
+            <div class="title-line"></div>
+
+            <p id="bpeed-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bpeed-images">
+                    <img src="{% static 'dashboard/images/cted3.jpg' %}" alt="BPEED Image">
+                    <img src="{% static 'dashboard/images/cted4.jpg' %}" alt="BPEED Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bpeed-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bpeed-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bpeed-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bpeed-objectives">Loading objectives...</p>
+        </div>
+
+        <!-- BSHM -->
+        <div id="bshm" class="right-panel">
+            <h1>BACHELOR OF HOSPITALITY MANAGEMENT</h1>
+            <div class="title-line"></div>
+
+            <p id="bshm-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bshm-images">
+                    <img src="{% static 'dashboard/images/hm.jpg' %}" alt="BSHM Image">
+                    <img src="{% static 'dashboard/images/hm1.jpg' %}" alt="BSHM Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bshm-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bshm-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bshm-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bshm-objectives">Loading objectives...</p>
+        </div>
+
+        <!-- BSBA -->
+        <div id="bsba" class="right-panel">
+            <h1>BACHELOR OF SCIENCES BUSINESS ADMINISTRATION</h1>
+            <div class="title-line"></div>
+
+            <p id="bsba-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bsba-images">
+                    <img src="{% static 'dashboard/images/business.jpg' %}" alt="BSBA Image">
+                    <img src="{% static 'dashboard/images/bus.jpg' %}" alt="BSBA Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bsba-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bsba-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bsba-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bsba-objectives">Loading objectives...</p>
+        </div>
+
+        <!-- BSOA -->
+        <div id="bsoa" class="right-panel">
+            <h1>BACHELOR OF SCIENCE IN OFFICE ADMINISTRATION</h1>
+            <div class="title-line"></div>
+
+            <p id="bsoa-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bsoa-images">
+                    <img src="{% static 'dashboard/images/office.jpg' %}" alt="BSOA Image">
+                    <img src="{% static 'dashboard/images/bus.jpg' %}" alt="BSOA Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bsoa-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bsoa-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bsoa-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bsoa-objectives">Loading objectives...</p>
+        </div>
+
+        <!-- AGRI -->
+        <div id="agri" class="right-panel">
+            <h1>BACHELOR OF SCIENCES IN AGRICULTURE</h1>
+            <div class="title-line"></div>
+
+            <p id="agri-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="agri-images">
+                    <img src="{% static 'dashboard/images/agri.jpg' %}" alt="AGRI Image">
+                    <img src="{% static 'dashboard/images/farm.jpg' %}" alt="AGRI Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="agri-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="agri-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="agri-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="agri-objectives">Loading objectives...</p>
+        </div>
+
+        <!-- FORES -->
+        <div id="fores" class="right-panel">
+            <h1>BACHELOR OF SCIENCE IN FORESTRY</h1>
+            <div class="title-line"></div>
+
+            <p id="fores-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="fores-images">
+                    <img src="{% static 'dashboard/images/forestry.jpg' %}" alt="FORES Image">
+                    <img src="{% static 'dashboard/images/back.jpg' %}" alt="FORES Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="fores-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="fores-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="fores-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="fores-objectives">Loading objectives...</p>
+        </div>
+
+        <!-- BIT -->
+        <div id="bit" class="right-panel">
+            <h1>BACHELOR OF SCIENCES INDUSTRIAL TECHNOLOGY</h1>
+            <div class="title-line"></div>
+
+            <p id="bit-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bit-images">
+                    <img src="{% static 'dashboard/images/tech.jpg' %}" alt="BIT Image">
+                    <img src="{% static 'dashboard/images/industrial.jpg' %}" alt="BIT Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bit-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bit-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bit-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bit-objectives">Loading objectives...</p>
+        </div>
+
+        <!-- BSCRIM -->
+        <div id="bscrim" class="right-panel">
+            <h1>BACHELOR OF SCIENCES IN CRIMINOLOGY</h1>
+            <div class="title-line"></div>
+
+            <p id="bscrim-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bscrim-images">
+                    <img src="{% static 'dashboard/images/pulis.jpg' %}" alt="BSCRIM Image">
+                    <img src="{% static 'dashboard/images/ccjeuni.jpg' %}" alt="BSCRIM Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bscrim-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bscrim-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bscrim-mission">Loading mission...</p>
+
+            <div class="section-title">DRESSCODE SCHEDULE</div>
+            <div class="section-divider"></div>
+            <p id="bscrim-dresscode-schedule">Loading dresscode schedule...</p>
+
+            <div class="content-image" style="margin-top:20px;">
+                <div id="bscrim-dresscode-images"
+                    style="display: flex; flex-direction: row; gap: 20px; align-items: center; flex-wrap: wrap; justify-content: center;">
+                    <!-- Dresscode images will be loaded here in a horizontal list -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dynamic Program Data Loader for All Programs
+    const programConfigs = {
+        'bsit': { college: 'cas', titleKeywords: ['information technology', 'bsit'] },
+        'bscs': { college: 'cas', titleKeywords: ['computer science', 'bscs'] },
+        'bsed': { college: 'cted', titleKeywords: ['elementary education', 'bsed'] },
+        'bpeed': { college: 'cted', titleKeywords: ['secondary education', 'bpeed'] },
+        'bshm': { college: 'cba', titleKeywords: ['hospitality management', 'bshm'] },
+        'bsba': { college: 'cba', titleKeywords: ['business administration', 'bsba'] },
+        'bsoa': { college: 'cba', titleKeywords: ['office administration', 'bsoa'] },
+        'agri': { college: 'caf', titleKeywords: ['agriculture', 'bsa'] },
+        'fores': { college: 'caf', titleKeywords: ['forestry', 'bsf'] },
+        'bit': { college: 'cit', titleKeywords: ['industrial technology', 'bit'] },
+        'bscrim': { college: 'ccje', titleKeywords: ['criminology', 'bscrim'] }
+    };
+
+    async function loadProgramData(programId) {
+        try {
+            const config = programConfigs[programId];
+            if (!config) return;
+
+            const response = await fetch(`/api/programs/?college=${config.college}`);
+            const data = await response.json();
+
+            if (data.success && data.programs) {
+                // Find the matching program
+                const program = data.programs.find(p => {
+                    const title = p.title.toLowerCase();
+                    return config.titleKeywords.some(keyword => title.includes(keyword.toLowerCase()));
+                });
+
+                if (program) {
+                    updateProgramContent(programId, program);
+                }
+            }
+        } catch (error) {
+            console.error(`Error loading ${programId} data:`, error);
+        }
+    }
+
+    function updateProgramContent(programId, program) {
+        // Update Title
+        const titleElem = document.querySelector(`#${programId} h1`);
+        if (titleElem) titleElem.textContent = program.title;
+
+        // Update main images
+        const imageRow = document.getElementById(`${programId}-images`);
+        if (imageRow && (program.image || program.image2)) {
+            imageRow.innerHTML = ''; // Clear
+            const images = [];
+            if (program.image) images.push(program.image);
+            if (program.image2) images.push(program.image2);
+
+            images.forEach(src => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = `${programId} Main Image`;
+                imageRow.appendChild(img);
+            });
+        }
+
+        // Update descriptions
+        if (program.description) {
+            const desc = document.getElementById(`${programId}-desc`);
+            if (desc) desc.textContent = program.description;
+
+            const fullDesc = document.getElementById(`${programId}-full-desc`);
+            if (fullDesc) fullDesc.textContent = program.description;
+        }
+
+        // Update Vision/Mission
+        if (program.vision) {
+            const vision = document.getElementById(`${programId}-vision`);
+            if (vision) vision.textContent = program.vision;
+        }
+        if (program.mission) {
+            const mission = document.getElementById(`${programId}-mission`);
+            if (mission) mission.textContent = program.mission;
+        }
+
+        // Update Objectives (using description field if objectives not available)
+        if (program.objectives || program.description) {
+            const objectives = document.getElementById(`${programId}-objectives`);
+            if (objectives) objectives.textContent = program.objectives || program.description;
+        }
+
+        // Update Dresscode Schedule (CCJE specific)
+        if (program.dresscode_schedule) {
+            const dresscodeSchedule = document.getElementById(`${programId}-dresscode-schedule`);
+            if (dresscodeSchedule) dresscodeSchedule.textContent = program.dresscode_schedule;
+        }
+
+        // Update Dresscode Images (CCJE specific)
+        if (program.dresscode_images && program.dresscode_images.length > 0) {
+            const diContainer = document.getElementById(`${programId}-dresscode-images`);
+            if (diContainer) {
+                diContainer.innerHTML = '';
+                program.dresscode_images.forEach(imgData => {
+                    const img = document.createElement('img');
+                    img.src = typeof imgData === 'string' ? imgData : imgData.url;
+                    img.alt = "Dresscode Image";
+                    img.style.cssText = 'width: 20%; height: 20%; object-fit: cover; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid #eee; transition: transform 0.3s ease;';
+                    img.addEventListener('mouseenter', function () {
+                        this.style.transform = 'scale(1.05)';
+                    });
+                    img.addEventListener('mouseleave', function () {
+                        this.style.transform = 'scale(1)';
+                    });
+                    diContainer.appendChild(img);
+                });
+            }
+        }
+    }
+
+    // Load data for all programs when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        Object.keys(programConfigs).forEach(programId => {
+            loadProgramData(programId);
+        });
+    });
+
+    // Tab switching function
+    function switchTab(programId) {
+        // Hide all programs
+        const allPrograms = document.querySelectorAll('.right-panel');
+        allPrograms.forEach(panel => panel.style.display = 'none');
+
+        // Show selected program
+        const selectedProgram = document.getElementById(programId);
+        if (selectedProgram) {
+            selectedProgram.style.display = 'block';
+        }
+
+        // Update button states
+        const allButtons = document.querySelectorAll('.program-btn');
+        allButtons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.querySelector('i').className = 'fa-regular fa-circle';
+        });
+
+        const activeButton = Array.from(allButtons).find(btn =>
+            btn.getAttribute('onclick').includes(`'${programId}'`)
+        );
+        if (activeButton) {
+            activeButton.classList.add('active');
+            activeButton.querySelector('i').className = 'fa-solid fa-circle';
+        }
+    }
+
+    // Initialize with BSIT visible
+    document.addEventListener('DOMContentLoaded', function () {
+        switchTab('bsit');
+    });
+</script>
+
+
+{% endblock %}

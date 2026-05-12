@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NORSU Bayawan-Sta. Catalina Campus</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'dashboard/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/footer-v2.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/location.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/global-responsive.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e2d6d;
+            --accent: #d42222;
+            --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif !important;
+            overflow-x: hidden;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-modern-divider {
+            height: 100px;
+            width: 100%;
+            background: linear-gradient(to bottom right, transparent 49%, #fff 50%);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% include 'dashboard/navbar.html' %}
+    
+    <main class="main-content">
+         
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    {% include 'dashboard/footer.html' %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navbar scroll effect
+            const navbar = document.querySelector('.main-navbar');
+            if (navbar) {
+                window.addEventListener('scroll', function() {
+                    if (window.pageYOffset > 10) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                });
+            }
+
+            // Mobile menu toggle logic is handled fully by navbar.html
+
+            // Colleges auto-scroll is now handled by CSS animation
+            // No JavaScript needed for arrow navigation
+
+        // Mobile menu toggle logic is handled fully by navbar.html
+        // Navigation links and section scrolling also centralized in navbar.html
+        
+        // Smooth scroll implementation for local anchors
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId) || document.querySelector(`.${sectionId}`);
+            if (section) {
+                section.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            } else {
+                window.location.href = "{% url 'home' %}#" + sectionId;
+            }
+        }
+
+        // Program Cards Navigation
+            const programCards = document.querySelectorAll('.program-card');
+            const navArrows = document.querySelectorAll('.nav-arrow');
+            
+            if (programCards.length > 0 && navArrows.length > 0) {
+                let currentActiveIndex = 1; // Start with center card (index 1)
+                
+                function updateActiveCard(newIndex) {
+                    // Hide all cards first
+                    programCards.forEach(card => {
+                        card.style.display = 'none';
+                    });
+                    
+                    // Calculate which cards to show (3 cards: left, center, right)
+                    const leftIndex = (newIndex - 1 + programCards.length) % programCards.length;
+                    const centerIndex = newIndex;
+                    const rightIndex = (newIndex + 1) % programCards.length;
+                    
+                    // Show the three cards
+                    const leftCard = programCards[leftIndex];
+                    const centerCard = programCards[centerIndex];
+                    const rightCard = programCards[rightIndex];
+                    
+                    // Reset all card classes and styles
+                    programCards.forEach((card, index) => {
+                        const title = card.querySelector('h3');
+                        const button = card.querySelector('.btn');
+                        const arrow = card.querySelector('.nav-arrow');
+                        
+                        // Remove all classes
+                        card.classList.remove('side', 'center');
+                        title.classList.remove('active-title');
+                        button.classList.remove('blue');
+                        button.classList.add('gray');
+                        
+                        // Remove arrows from all cards
+                        if (arrow) {
+                            arrow.remove();
+                        }
+                    });
+                    
+                    // Setup left card
+                    leftCard.style.display = 'block';
+                    leftCard.classList.add('side');
+                    const leftArrow = document.createElement('div');
+                    leftArrow.className = 'nav-arrow left';
+                    leftArrow.innerHTML = '&#8249;';
+                    leftCard.querySelector('.image-container').appendChild(leftArrow);
+                    
+                    // Setup center card
+                    centerCard.style.display = 'block';
+                    centerCard.classList.add('center');
+                    const centerTitle = centerCard.querySelector('h3');
+                    const centerButton = centerCard.querySelector('.btn');
+                    centerTitle.classList.add('active-title');
+                    centerButton.classList.remove('gray');
+                    centerButton.classList.add('blue');
+                    
+                    // Setup right card
+                    rightCard.style.display = 'block';
+                    rightCard.classList.add('side');
+                    const rightArrow = document.createElement('div');
+                    rightArrow.className = 'nav-arrow right';
+                    rightArrow.innerHTML = '&#8250;';
+                    rightCard.querySelector('.image-container').appendChild(rightArrow);
+                    
+                    // Re-attach event listeners to new arrows
+                    const newArrows = document.querySelectorAll('.nav-arrow');
+                    newArrows.forEach(arrow => {
+                        arrow.addEventListener('click', function() {
+                            if (arrow.classList.contains('left')) {
+                                currentActiveIndex = (currentActiveIndex - 1 + programCards.length) % programCards.length;
+                            } else if (arrow.classList.contains('right')) {
+                                currentActiveIndex = (currentActiveIndex + 1) % programCards.length;
+                            }
+                            updateActiveCard(currentActiveIndex);
+                        });
+                    });
+                }
+                
+                // Initialize with first three cards
+                updateActiveCard(currentActiveIndex);
+            }
+            // Scroll reveal animation — supports directional variants
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { 
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => revealObserver.observe(el));
+
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

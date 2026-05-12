@@ -1,0 +1,4671 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700;900&display=swap"
+    rel="stylesheet">
+<style>
+    /* ============================================
+       NORSU — PREMIUM USA UNIVERSITY DESIGN SYSTEM
+       Inspired by Michigan, Duke, Georgetown
+    ============================================ */
+    :root {
+        --norsu-navy: #0a1628;
+        --norsu-blue: #1e2d6d;
+        --norsu-light-blue: #2e4a9e;
+        --norsu-red: #c8102e;
+        --norsu-gold: #f4c430;
+        --norsu-white: #ffffff;
+        --norsu-gray: #f2f4f8;
+        --norsu-dark-gray: #64748b;
+        --norsu-text: #111827;
+        --transition: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: 'Outfit', sans-serif;
+        overflow-x: hidden;
+        background: #f8f9fa;
+    }
+
+    /* ── ANNOUNCEMENT BAR ── */
+    .announcement-bar {
+        background: linear-gradient(135deg, var(--norsu-red), #a60820);
+        color: white;
+        padding: 12px 0;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        position: relative;
+        z-index: 1001;
+        box-shadow: 0 4px 20px rgba(200, 16, 46, 0.3);
+        backdrop-filter: blur(10px);
+        animation: slideDown 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes slideDown {
+        from {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .announcement-bar strong {
+        margin: 0 6px;
+        font-weight: 800;
+    }
+
+    .announcement-bar a {
+        color: var(--norsu-gold);
+        text-decoration: none;
+        font-weight: 700;
+        margin-left: 10px;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+    }
+
+    .announcement-bar a::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--norsu-gold);
+        transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .announcement-bar a:hover::after {
+        width: 100%;
+    }
+
+    /* ── HERO SECTION ── */
+    .hero-section {
+        height: 100vh !important;
+        min-height: 700px;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    .hero-video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(170deg,
+                rgba(10, 22, 40, 0.65) 0%,
+                rgba(14, 28, 72, 0.75) 50%,
+                rgba(10, 22, 40, 0.92) 100%) !important;
+        z-index: 1;
+        animation: overlayShift 15s ease-in-out infinite;
+    }
+
+    @keyframes overlayShift {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.95;
+        }
+    }
+
+    /* Animated gradient lines */
+    .hero-overlay::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(90deg,
+                transparent,
+                transparent 120px,
+                rgba(255, 255, 255, 0.02) 120px,
+                rgba(255, 255, 255, 0.02) 121px);
+        animation: slideLines 20s linear infinite;
+    }
+
+    @keyframes slideLines {
+        0% {
+            transform: translateX(0);
+        }
+
+        100% {
+            transform: translateX(120px);
+        }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 5;
+        text-align: center;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 40px;
+        animation: heroRise 1.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes heroRise {
+        from {
+            opacity: 0;
+            transform: translateY(60px) scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .hero-title {
+        font-family: 'Outfit', sans-serif !important;
+        font-weight: 900 !important;
+        font-size: clamp(3.2rem, 9vw, 7rem) !important;
+        line-height: 1.2 !important;
+        color: #fff !important;
+        letter-spacing: -1px !important;
+        margin-bottom: 24px !important;
+        text-transform: uppercase;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 2px 15px rgba(0, 0, 0, 0.6);
+        perspective: 1000px;
+    }
+
+    @keyframes titleGlow {
+
+        0%,
+        100% {
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        50% {
+            text-shadow: 0 8px 30px rgba(200, 16, 46, 0.2);
+        }
+    }
+
+    .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 50px;
+        padding: 10px 20px;
+        color: var(--norsu-gold);
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 2.8px;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .hero-eyebrow:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .hero-eyebrow::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        background: var(--norsu-gold);
+        border-radius: 50%;
+        animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        box-shadow: 0 0 10px var(--norsu-gold), 0 0 20px rgba(244, 196, 48, 0.5);
+    }
+
+    @keyframes pulse-glow {
+
+        0%,
+        100% {
+            opacity: 1;
+            transform: scale(1);
+            box-shadow: 0 0 10px var(--norsu-gold), 0 0 20px rgba(244, 196, 48, 0.5);
+        }
+
+        50% {
+            opacity: 0.6;
+            transform: scale(1.2);
+            box-shadow: 0 0 20px var(--norsu-gold), 0 0 40px rgba(244, 196, 48, 0.7);
+        }
+    }
+
+    .animated-phrase {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        text-align: center;
+        opacity: 0;
+        text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 2px 10px rgba(0, 0, 0, 0.5);
+        will-change: transform, opacity, filter, text-shadow;
+        /* optimize performance */
+    }
+
+    .phrase-1 {
+        animation: phrase-1-anim 10.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    }
+
+    .phrase-2 {
+        animation: phrase-2-anim 10.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    }
+
+    .phrase-3 {
+        animation: phrase-3-anim 10.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    }
+
+    @keyframes phrase-1-anim {
+
+        /* OUR PRIDE: Powerful rise from below */
+        0% {
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            filter: blur(15px);
+        }
+
+        4% {
+            opacity: 1;
+            transform: translateY(-5px) scale(1.02);
+            filter: blur(0);
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        15% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            text-shadow: 0 0 50px rgba(244, 196, 48, 1), 0 0 25px rgba(255, 255, 255, 0.8);
+        }
+
+        27% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        32% {
+            opacity: 0;
+            transform: translateY(-30px) scale(0.95);
+            filter: blur(10px);
+        }
+
+        33%,
+        100% {
+            opacity: 0;
+        }
+    }
+
+    @keyframes phrase-2-anim {
+
+        /* OUR HOPE: Ethereal glow and expansion */
+        0%,
+        33.3% {
+            opacity: 0;
+            transform: scale(0.85);
+            filter: blur(20px);
+            letter-spacing: -4px;
+        }
+
+        37.3% {
+            opacity: 1;
+            transform: scale(1.03);
+            filter: blur(0);
+            letter-spacing: 2px;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        48% {
+            opacity: 1;
+            transform: scale(1.05);
+            letter-spacing: -1px;
+            text-shadow: 0 0 60px rgba(255, 255, 255, 0.9), 0 0 30px rgba(200, 16, 46, 0.8);
+        }
+
+        60% {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+            letter-spacing: -1px;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        65% {
+            opacity: 0;
+            transform: scale(1.15);
+            filter: blur(15px);
+            letter-spacing: 8px;
+        }
+
+        66.6%,
+        100% {
+            opacity: 0;
+        }
+    }
+
+    @keyframes phrase-3-anim {
+
+        /* OUR FUTURE: Dramatic 3D drop-in */
+        0%,
+        66.6% {
+            opacity: 0;
+            transform: translateY(-100px) rotateX(40deg);
+            filter: blur(15px);
+        }
+
+        70.6% {
+            opacity: 1;
+            transform: translateY(8px) rotateX(-5deg);
+            filter: blur(0);
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        81% {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+            text-shadow: 0 0 70px rgba(244, 196, 48, 1), 0 0 35px rgba(200, 16, 46, 1);
+        }
+
+        94% {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+            filter: blur(0);
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        99% {
+            opacity: 0;
+            transform: translateY(60px) scale(0.9);
+            filter: blur(15px);
+        }
+
+        100% {
+            opacity: 0;
+        }
+    }
+
+    @keyframes titleGlow {
+
+        0%,
+        100% {
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        50% {
+            text-shadow: 0 8px 30px rgba(200, 16, 46, 0.2);
+        }
+    }
+
+    .hero-title-our {
+        color: var(--norsu-gold) !important;
+        display: inline-block;
+        position: relative;
+    }
+
+    .hero-title-our::after {
+        content: '';
+        position: absolute;
+        bottom: 2px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--norsu-red), var(--norsu-gold));
+        transform: scaleX(0);
+        transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transform-origin: left;
+        border-radius: 2px;
+        box-shadow: 0 2px 8px rgba(200, 16, 46, 0.4);
+    }
+
+    .hero-section:hover .hero-title-our::after {
+        transform: scaleX(1);
+        box-shadow: 0 4px 16px rgba(200, 16, 46, 0.6);
+    }
+
+    .university-name {
+        font-family: 'Playfair Display', serif !important;
+        font-size: clamp(1.4rem, 3vw, 2rem) !important;
+        font-weight: 400 !important;
+        color: rgba(255, 255, 255, 0.85) !important;
+        letter-spacing: 6px !important;
+        text-transform: uppercase !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        padding-top: 20px !important;
+        margin-top: 24px !important;
+        line-height: 2 !important;
+    }
+
+    .university-name h4 {
+        font-size: clamp(1rem, 2vw, 1.4rem) !important;
+        color: var(--norsu-gold) !important;
+        font-weight: 700 !important;
+        letter-spacing: 4px !important;
+        margin-top: 6px !important;
+    }
+
+    /* Hero Scroll Hint */
+    .hero-scroll-hint {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        animation: fadeInUp 2s 1.5s both;
+    }
+
+    .hero-scroll-hint::after {
+        content: '';
+        width: 1px;
+        height: 50px;
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), transparent);
+        animation: scrollPulse 2s infinite;
+    }
+
+    @keyframes scrollPulse {
+
+        0%,
+        100% {
+            opacity: 0.4;
+            transform: scaleY(1)
+        }
+
+        50% {
+            opacity: 1;
+            transform: scaleY(0.6)
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translate(-50%, 20px)
+        }
+
+        to {
+            opacity: 1;
+            transform: translate(-50%, 0)
+        }
+    }
+
+    /* ── STATS STRIP ── */
+    .stats-strip {
+        background: var(--norsu-navy);
+        padding: 0;
+        position: relative;
+        z-index: 10;
+    }
+
+    .stats-strip-inner {
+        display: flex;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .stat-pill {
+        flex: 1;
+        text-align: center;
+        padding: 30px 20px;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-pill::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, transparent, rgba(244, 196, 48, 0.1), transparent);
+        opacity: 0;
+        transition: opacity 0.4s;
+    }
+
+    .stat-pill:last-child {
+        border-right: none;
+    }
+
+    .stat-pill:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-4px);
+    }
+
+    .stat-pill:hover::before {
+        opacity: 1;
+    }
+
+    .stat-number {
+        display: block;
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 900;
+        color: var(--norsu-gold);
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.55);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 500;
+    }
+
+    /* ── ABOUT SECTION ── */
+    .main-section {
+        background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%) !important;
+        padding: 120px 60px !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: minmax(320px, 1.05fr) minmax(300px, 0.95fr);
+        align-items: center;
+        gap: 50px;
+    }
+
+    .main-section::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(30, 45, 109, 0.05) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .right-image {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .right-image a {
+        width: 100%;
+        max-width: 720px;
+        display: block;
+    }
+
+    .right-image video {
+        width: 100%;
+        height: auto;
+        border-radius: 22px;
+        box-shadow: 0 7px 22px rgba(0, 0, 0, 0.22);
+    }
+
+    .main-section::before {
+        content: 'NORSU';
+        position: absolute;
+        right: -30px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 200px;
+        font-weight: 900;
+        color: rgba(30, 45, 109, 0.04);
+        pointer-events: none;
+        line-height: 1;
+    }
+
+    .left-content {
+        max-width: 560px;
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    .left-content h1 {
+        font-family: 'Playfair Display', serif !important;
+        font-size: clamp(2.2rem, 4vw, 3.5rem) !important;
+        font-weight: 700 !important;
+        color: var(--norsu-navy) !important;
+        line-height: 1.1 !important;
+        margin-bottom: 12px !important;
+        letter-spacing: -1px;
+        background: linear-gradient(135deg, var(--norsu-navy), var(--norsu-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.95;
+        }
+    }
+
+    .left-content h4 {
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        color: var(--norsu-red) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 3px !important;
+        margin-bottom: 28px !important;
+    }
+
+    .love {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 240, 243, 0.8);
+        border: 1.5px solid #ffd0d8;
+        border-radius: 50px;
+        padding: 8px 20px;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        color: var(--norsu-red) !important;
+        margin-bottom: 24px !important;
+        backdrop-filter: blur(10px);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 4px 16px rgba(200, 16, 46, 0.1);
+    }
+
+    .love:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(200, 16, 46, 0.2);
+        border-color: var(--norsu-red);
+    }
+
+    .left-content p {
+        color: #4b5563 !important;
+        font-size: 16px !important;
+        line-height: 1.9 !important;
+        font-weight: 400;
+        letter-spacing: 0.3px;
+    }
+
+    .main-btn {
+        background: linear-gradient(135deg, var(--norsu-navy), var(--norsu-blue)) !important;
+        color: white !important;
+        border: 2px solid var(--norsu-navy) !important;
+        padding: 16px 40px !important;
+        border-radius: 8px !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        letter-spacing: 2px !important;
+        text-transform: uppercase !important;
+        cursor: pointer !important;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        box-shadow: 0 4px 15px rgba(10, 22, 40, 0.3) !important;
+    }
+
+    .main-btn::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        opacity: 0;
+        transition: opacity 0.4s;
+    }
+
+    .main-btn:hover {
+        background: linear-gradient(135deg, var(--norsu-blue), var(--norsu-light-blue)) !important;
+        transform: translateY(-4px) !important;
+        box-shadow: 0 8px 25px rgba(10, 22, 40, 0.4) !important;
+    }
+
+    .main-btn:hover::after {
+        opacity: 1;
+    }
+
+    /* ── VISION / MISSION — BENTO GRID ── */
+    .vm-section {
+        padding: 80px 60px;
+        background: linear-gradient(160deg, #07111f 0%, #0f1e40 60%, #1e2d6d 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .vm-section::before {
+        content: '';
+        position: absolute;
+        top: -180px;
+        left: -180px;
+        width: 560px;
+        height: 560px;
+        background: radial-gradient(circle, rgba(244, 196, 48, 0.08) 0%, transparent 65%);
+        pointer-events: none;
+    }
+
+    .vm-section::after {
+        content: '';
+        position: absolute;
+        bottom: -100px;
+        right: -100px;
+        width: 480px;
+        height: 480px;
+        background: radial-gradient(circle, rgba(200, 16, 46, 0.08) 0%, transparent 65%);
+        pointer-events: none;
+    }
+
+    /* Section intro */
+    .vm-intro {
+        max-width: 760px;
+        margin: 0 auto 56px;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .vm-intro .eyebrow {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--norsu-gold);
+        margin-bottom: 18px;
+        padding: 6px 20px;
+        background: rgba(244, 196, 48, 0.12);
+        border-radius: 50px;
+        border: 1px solid rgba(244, 196, 48, 0.2);
+    }
+
+    .vm-intro h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.15;
+        letter-spacing: -0.04em;
+        margin-bottom: 16px;
+    }
+
+    .vm-intro p {
+        font-size: 17px;
+        color: rgba(255, 255, 255, 0.6);
+        line-height: 1.75;
+    }
+
+    /* Bento Grid */
+    .vm-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr;
+        grid-template-rows: auto auto;
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Base card */
+    .vm-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        padding: 36px 32px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 20px;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.4s ease;
+    }
+
+    .vm-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--norsu-gold), var(--norsu-red));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .vm-card:hover {
+        transform: translateY(-8px);
+        background: rgba(255, 255, 255, 0.09);
+        border-color: rgba(244, 196, 48, 0.2);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .vm-card:hover::before {
+        opacity: 1;
+    }
+
+    /* Featured (vision) spans two rows */
+    .vm-card.featured {
+        grid-row: span 2;
+        background: rgba(244, 196, 48, 0.07);
+        border-color: rgba(244, 196, 48, 0.18);
+    }
+
+    .vm-card.featured:hover {
+        background: rgba(244, 196, 48, 0.13);
+    }
+
+    /* Card icon */
+    .vm-card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        background: rgba(244, 196, 48, 0.15);
+        color: var(--norsu-gold);
+        flex-shrink: 0;
+    }
+
+    /* Card label */
+    .vm-card-label {
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--norsu-gold);
+        opacity: 0.85;
+    }
+
+    /* Card heading */
+    .vm-card h3 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 22px;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1.3;
+        letter-spacing: -0.3px;
+        margin: 0;
+    }
+
+    .vm-card.featured h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+    }
+
+    .vm-card h3.accent {
+        color: var(--norsu-gold);
+        font-size: 30px;
+        text-shadow: 0 4px 14px rgba(244, 196, 48, 0.3);
+    }
+
+    /* Card body text */
+    .vm-card p {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.62);
+        line-height: 1.75;
+        margin: 0;
+        flex: 1;
+    }
+
+    /* Learn More link */
+    .vm-learn-more {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--norsu-gold);
+        text-decoration: none;
+        padding: 11px 22px;
+        border: 1.5px solid rgba(244, 196, 48, 0.35);
+        border-radius: 8px;
+        align-self: flex-start;
+        transition: all 0.3s ease;
+        background: rgba(244, 196, 48, 0.06);
+    }
+
+    .vm-learn-more:hover {
+        background: var(--norsu-gold);
+        color: var(--norsu-navy);
+        border-color: var(--norsu-gold);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(244, 196, 48, 0.25);
+    }
+
+    .vm-learn-more .arrow {
+        transition: transform 0.3s ease;
+    }
+
+    .vm-learn-more:hover .arrow {
+        transform: translateX(4px);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .vm-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .vm-card.featured {
+            grid-row: auto;
+        }
+
+        .vm-section {
+            padding: 80px 36px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .vm-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .vm-section {
+            padding: 64px 24px;
+        }
+
+        .vm-intro {
+            margin-bottom: 40px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .vm-section {
+            padding: 56px 16px;
+        }
+
+        .vm-intro h2 {
+            font-size: 1.8rem;
+        }
+    }
+
+    /* ── NEWS SECTION ── */
+    .uv-news-section {
+        background: linear-gradient(135deg, var(--norsu-gray) 0%, rgba(242, 244, 248, 0.7) 100%) !important;
+        padding: 120px 60px !important;
+        position: relative;
+    }
+
+    .uv-news-section::before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        left: -100px;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(30, 45, 109, 0.08) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .uv-news-header {
+        margin-bottom: 60px;
+    }
+
+    .uv-title {
+        font-family: 'Playfair Display', serif !important;
+        font-size: clamp(2.5rem, 5vw, 4rem) !important;
+        font-weight: 700 !important;
+        color: var(--norsu-navy) !important;
+        margin-bottom: 12px !important;
+        letter-spacing: -1px;
+        line-height: 1.2;
+    }
+
+    .uv-title strong {
+        color: var(--norsu-red);
+        position: relative;
+        display: inline-block;
+    }
+
+    .uv-title strong::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--norsu-red), transparent);
+        border-radius: 2px;
+    }
+
+    .uv-subtitle {
+        color: var(--norsu-dark-gray) !important;
+        font-size: 17px !important;
+        line-height: 1.6;
+    }
+
+    .uv-news-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)) !important;
+        gap: 28px !important;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .uv-news-card {
+        background: #fff !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        border: 1px solid rgba(229, 231, 235, 0.8) !important;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .uv-news-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(30, 45, 109, 0.05), transparent);
+        opacity: 0;
+        transition: opacity 0.4s;
+        pointer-events: none;
+    }
+
+    .uv-news-card:hover {
+        transform: translateY(-12px) !important;
+        box-shadow: 0 24px 48px rgba(10, 22, 40, 0.18) !important;
+        border-color: var(--norsu-blue) !important;
+    }
+
+    .uv-news-card:hover::after {
+        opacity: 1;
+    }
+
+    .uv-news-card img {
+        height: 220px;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+
+    .uv-news-card:hover img {
+        transform: scale(1.1) !important;
+    }
+
+    .uv-card-content {
+        padding: 24px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .uv-date {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--norsu-red);
+        margin-bottom: 10px;
+    }
+
+    .uv-card-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--norsu-navy);
+        line-height: 1.5;
+        margin-bottom: auto;
+        padding-bottom: 20px;
+        letter-spacing: -0.3px;
+    }
+
+    .uv-read-more {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--norsu-blue);
+        text-decoration: none;
+        transition: gap 0.3s, color 0.3s !important;
+    }
+
+    .uv-read-more::after {
+        content: '→';
+        transition: transform 0.3s;
+    }
+
+    .uv-read-more:hover {
+        color: var(--norsu-red);
+        gap: 14px !important;
+    }
+
+    .uv-see-more-wrapper {
+        text-align: center;
+        margin-top: 60px;
+    }
+
+    .uv-see-more-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--norsu-navy);
+        color: white;
+        text-decoration: none;
+        padding: 16px 40px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        transition: all 0.3s !important;
+    }
+
+    .uv-see-more-btn:hover {
+        background: var(--norsu-red);
+        transform: translateY(-3px);
+    }
+
+    /* ── COLLEGES SECTION ── */
+    .colleges-section {
+        background: radial-gradient(circle at top left, rgba(244, 196, 48, 0.08), transparent 28%), radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.04), transparent 26%), linear-gradient(135deg, #081228 0%, #0d1a2f 100%) !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 120px 60px !important;
+        position: relative;
+        overflow: hidden;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0 48px 96px rgba(0, 0, 0, 0.25);
+    }
+
+    .colleges-section::before {
+        content: '';
+        position: absolute;
+        bottom: -100px;
+        right: -120px;
+        width: 560px;
+        height: 560px;
+        background: radial-gradient(circle, rgba(244, 196, 48, 0.12) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .colleges-section::after {
+        content: '';
+        position: absolute;
+        top: 20%;
+        left: -110px;
+        width: 260px;
+        height: 260px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 72%);
+        pointer-events: none;
+    }
+
+    .colleges-section .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 42px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .colleges-section .header::after {
+        content: '';
+        width: 92px;
+        height: 3px;
+        background: linear-gradient(90deg, rgba(244, 196, 48, 0.9), rgba(255, 255, 255, 0.25));
+        border-radius: 999px;
+        margin-top: 10px;
+    }
+
+    .colleges-section .header-title-row {
+        display: inline-flex;
+        align-items: center;
+        gap: 22px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .colleges-section .logo {
+        width: 84px;
+        height: auto;
+        padding: 14px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 24px 56px rgba(0, 0, 0, 0.25);
+        animation: logoFloat 6s ease-in-out infinite alternate;
+        transition: transform 0.35s ease, filter 0.35s ease;
+    }
+
+    .colleges-section .logo:hover {
+        transform: translateY(-4px) scale(1.04);
+        filter: saturate(1.2);
+    }
+
+    .colleges-section .header h1 {
+        color: #fff !important;
+        font-family: 'Playfair Display', serif !important;
+        font-size: clamp(2.4rem, 4vw, 4rem) !important;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin: 0;
+        text-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .colleges-section .header p {
+        color: rgba(255, 255, 255, 0.86) !important;
+        font-size: clamp(1rem, 1.35vw, 1.1rem) !important;
+        max-width: 820px;
+        text-align: center;
+        line-height: 1.8;
+    }
+
+    .colleges-grid-wrapper {
+        position: relative;
+        overflow: hidden;
+        padding-top: 20px;
+    }
+
+    .colleges-grid-wrapper::before,
+    .colleges-grid-wrapper::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        width: 120px;
+        height: 100%;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .colleges-grid-wrapper::before {
+        left: 0;
+        background: linear-gradient(90deg, rgba(8, 18, 40, 1), rgba(8, 18, 40, 0));
+    }
+
+    .colleges-grid-wrapper::after {
+        right: 0;
+        background: linear-gradient(270deg, rgba(8, 18, 40, 1), rgba(8, 18, 40, 0));
+    }
+
+    .colleges-scroll {
+        display: flex;
+        gap: 22px;
+        padding-bottom: 18px;
+        animation: collegesScroll 32s linear infinite;
+        will-change: transform;
+    }
+
+    .colleges-scroll:hover {
+        animation-play-state: paused;
+    }
+
+    .college-card-link {
+        flex: 0 0 320px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .college-card {
+        background: rgba(255, 255, 255, 0.09) !important;
+        backdrop-filter: blur(26px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease, border-color 0.4s ease, background 0.4s ease !important;
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px !important;
+        min-height: 360px;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        transform: translateY(0) scale(1) rotateX(0deg) rotateY(0deg);
+        transform-style: preserve-3d;
+        perspective: 1200px;
+    }
+
+    .college-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at top left, rgba(244, 196, 48, 0.18), transparent 22%), radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.10), transparent 20%);
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        z-index: 0;
+    }
+
+    .college-card::after {
+        content: '';
+        position: absolute;
+        top: -20%;
+        left: -20%;
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.22), transparent 65%);
+        opacity: 0.35;
+        transform: translateZ(0);
+        pointer-events: none;
+    }
+
+    .college-card:hover {
+        background: rgba(255, 255, 255, 0.24) !important;
+        border-color: rgba(244, 196, 48, 0.9) !important;
+        transform: translateY(-14px) scale(1.06) rotateX(var(--card-tilt-x, 0deg)) rotateY(var(--card-tilt-y, 0deg));
+        box-shadow: 0 36px 88px rgba(244, 196, 48, 0.22) !important;
+    }
+
+    .college-card:hover::before {
+        opacity: 1;
+    }
+
+    .college-card img {
+        width: 100%;
+        height: 220px;
+        object-fit: contain;
+        margin-bottom: 22px;
+        filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.22));
+        transition: transform 0.45s ease;
+    }
+
+    .college-card:hover img {
+        transform: translateY(-10px);
+    }
+
+    /* Force-neutralize legacy styles.css conflicts on college cards */
+    .colleges-section .label {
+        background: none !important;
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        display: none !important;
+    }
+
+    .colleges-section .card {
+        background: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        min-height: auto !important;
+    }
+
+    /* ── PREMIUM COLLEGE CARD ── */
+    .college-card-link {
+        flex: 0 0 300px !important;
+    }
+
+    .college-card {
+        position: relative !important;
+        width: 300px !important;
+        flex: 0 0 300px !important;
+        height: 400px !important;
+        border-radius: 24px !important;
+        overflow: hidden !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+        cursor: pointer;
+        /* Reset all conflicting properties */
+        background: #0d1433 !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-end !important;
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.5s ease,
+            border-color 0.4s ease !important;
+        min-height: unset !important;
+    }
+
+    /* Full-bleed logo area */
+    .college-card>img {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        object-position: center 30% !important;
+        padding: 32px 32px 140px !important;
+        margin: 0 !important;
+        filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5)) brightness(1.05) !important;
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease !important;
+        z-index: 1 !important;
+    }
+
+    .college-card:hover>img {
+        transform: scale(1.08) translateY(-8px) !important;
+        filter: drop-shadow(0 16px 32px rgba(0, 0, 0, 0.6)) brightness(1.1) !important;
+    }
+
+    /* Cinematic gradient overlay — always on */
+    .college-card::after {
+        content: '' !important;
+        position: absolute !important;
+        inset: 0 !important;
+        background:
+            linear-gradient(0deg,
+                rgba(5, 10, 30, 1) 0%,
+                rgba(8, 15, 40, 0.92) 30%,
+                rgba(10, 20, 50, 0.55) 60%,
+                rgba(10, 20, 50, 0.08) 100%) !important;
+        z-index: 2 !important;
+        border-radius: 24px !important;
+        transition: opacity 0.4s ease !important;
+        transform: none !important;
+        width: auto !important;
+        height: auto !important;
+        top: 0 !important;
+        left: 0 !important;
+    }
+
+    /* Shimmer effect on hover */
+    .college-card::before {
+        content: '' !important;
+        position: absolute !important;
+        inset: 0 !important;
+        background: linear-gradient(135deg,
+                rgba(244, 196, 48, 0.1) 0%,
+                transparent 40%,
+                rgba(200, 16, 46, 0.06) 100%) !important;
+        opacity: 0 !important;
+        transition: opacity 0.4s ease !important;
+        z-index: 3 !important;
+        border-radius: 24px !important;
+        transform: none !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .college-card:hover::before {
+        opacity: 1 !important;
+    }
+
+    /* Info panel — sits above both pseudo-elements */
+    .college-card-info {
+        position: relative !important;
+        z-index: 4 !important;
+        padding: 0 24px 24px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        background: none !important;
+    }
+
+    /* Gold top accent line on hover */
+    .college-card-info::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--norsu-gold), rgba(244, 196, 48, 0.3));
+        border-radius: 999px;
+        margin-bottom: 2px;
+        transition: width 0.4s ease;
+    }
+
+    .college-card:hover .college-card-info::before {
+        width: 60px;
+    }
+
+    /* Abbrev chip */
+    .college-abbrev {
+        display: inline-flex !important;
+        align-items: center !important;
+        font-size: 10px !important;
+        font-weight: 900 !important;
+        letter-spacing: 3px !important;
+        text-transform: uppercase !important;
+        color: #0a1020 !important;
+        background: var(--norsu-gold) !important;
+        padding: 4px 14px !important;
+        border-radius: 50px !important;
+        width: fit-content !important;
+        box-shadow: 0 4px 16px rgba(244, 196, 48, 0.35) !important;
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+        z-index: 5 !important;
+    }
+
+    /* College name */
+    .college-title {
+        font-size: 1.15rem !important;
+        font-weight: 900 !important;
+        color: #ffffff !important;
+        line-height: 1.3 !important;
+        letter-spacing: 0.04em !important;
+        text-transform: uppercase !important;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: static !important;
+    }
+
+    .college-title::before {
+        display: none !important;
+    }
+
+    /* Explore CTA */
+    .college-explore {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        color: rgba(255, 255, 255, 0.45) !important;
+        letter-spacing: 2.5px !important;
+        text-transform: uppercase !important;
+        position: static !important;
+        margin-top: 2px !important;
+        z-index: 5 !important;
+        transition: color 0.3s ease, gap 0.3s ease !important;
+    }
+
+    .college-card:hover .college-explore {
+        color: var(--norsu-gold) !important;
+        gap: 12px !important;
+    }
+
+    /* Card hover lift */
+    .college-card:hover {
+        transform: translateY(-14px) scale(1.03) !important;
+        box-shadow:
+            0 40px 80px rgba(0, 0, 0, 0.5),
+            0 0 0 1px rgba(244, 196, 48, 0.5),
+            0 0 40px rgba(244, 196, 48, 0.12) !important;
+        border-color: rgba(244, 196, 48, 0.6) !important;
+    }
+
+    @keyframes logoFloat {
+        from {
+            transform: translateY(0);
+        }
+
+        to {
+            transform: translateY(-10px);
+        }
+    }
+
+    @keyframes collegesScroll {
+        0% {
+            transform: translateX(0);
+        }
+
+        100% {
+            transform: translateX(-50%);
+        }
+    }
+
+    /* ── ALUMNI STORIES SECTION (MODERNIZED) ── */
+    .alumni {
+        padding: 120px 60px;
+        background: #f8fafc;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .alumni::before {
+        content: '';
+        position: absolute;
+        top: -120px;
+        left: -120px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(30, 45, 109, 0.05) 0%, transparent 65%);
+        pointer-events: none;
+    }
+
+    .alumni::after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        right: -80px;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(200, 16, 46, 0.04) 0%, transparent 65%);
+        pointer-events: none;
+    }
+
+    /* Alumni Section Header */
+    .alumni-section-header {
+        text-align: center;
+        max-width: 680px;
+        margin: 0 auto 72px;
+    }
+
+    .alumni-section-header .eyebrow {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--norsu-red);
+        margin-bottom: 18px;
+        padding: 6px 18px;
+        background: rgba(200, 16, 46, 0.07);
+        border-radius: 50px;
+    }
+
+    .alumni-section-header h1 {
+        font-family: 'Playfair Display', serif !important;
+        font-size: clamp(2.2rem, 4vw, 3.2rem);
+        font-weight: 700;
+        color: var(--norsu-navy);
+        line-height: 1.15;
+        letter-spacing: -1px;
+        margin-bottom: 18px;
+    }
+
+    .alumni-section-header p {
+        font-size: 17px;
+        color: var(--norsu-dark-gray);
+        line-height: 1.75;
+        font-weight: 400;
+    }
+
+    /* Alumni Cards Grid */
+    .alumni-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 32px;
+        max-width: 1200px;
+        margin: 0 auto 64px;
+    }
+
+    /* Individual Alumni Card */
+    .alumni-story-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+        position: relative;
+    }
+
+    .alumni-story-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--norsu-blue), var(--norsu-red));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .alumni-story-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 24px 48px rgba(10, 22, 40, 0.12);
+        border-color: rgba(30, 45, 109, 0.15);
+    }
+
+    .alumni-story-card:hover::before {
+        opacity: 1;
+    }
+
+    /* Card Image */
+    .alumni-card-image {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .alumni-story-card:hover .alumni-card-image {
+        transform: scale(1.05);
+    }
+
+    .alumni-card-image-wrapper {
+        overflow: hidden;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .alumni-card-avatar-placeholder {
+        width: 100%;
+        height: 220px;
+        background: linear-gradient(135deg, #e8edf5, #d1d9e6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 60px;
+        color: rgba(30, 45, 109, 0.2);
+    }
+
+    /* Card Body */
+    .alumni-card-body {
+        padding: 28px 28px 24px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .alumni-card-quote {
+        font-size: 36px;
+        line-height: 1;
+        color: var(--norsu-gold);
+        margin-bottom: 16px;
+        display: block;
+    }
+
+    .alumni-card-name {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--norsu-navy);
+        letter-spacing: -0.4px;
+        margin-bottom: 6px;
+    }
+
+    .alumni-card-achievement {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--norsu-blue);
+        letter-spacing: 0.3px;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .alumni-card-excerpt {
+        font-size: 15px;
+        color: #64748b;
+        line-height: 1.75;
+        flex: 1;
+        margin-bottom: 28px;
+    }
+
+    /* Read More Button */
+    .alumni-read-more-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        border: 2px solid var(--norsu-navy);
+        color: var(--norsu-navy);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        padding: 11px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        align-self: flex-start;
+    }
+
+    .alumni-read-more-btn:hover {
+        background: var(--norsu-navy);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(10, 22, 40, 0.2);
+    }
+
+    .alumni-read-more-btn .btn-arrow {
+        transition: transform 0.3s ease;
+    }
+
+    .alumni-read-more-btn:hover .btn-arrow {
+        transform: translateX(4px);
+    }
+
+    /* View All CTA */
+    .alumni-cta-wrapper {
+        text-align: center;
+        padding-top: 24px;
+    }
+
+    .alumni-view-all-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--norsu-navy);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 18px 48px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 8px 24px rgba(10, 22, 40, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .alumni-view-all-btn::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+        opacity: 0;
+        transition: opacity 0.4s;
+    }
+
+    .alumni-view-all-btn:hover {
+        background: var(--norsu-red);
+        transform: translateY(-4px);
+        box-shadow: 0 16px 40px rgba(200, 16, 46, 0.3);
+        letter-spacing: 2.5px;
+    }
+
+    .alumni-view-all-btn:hover::after {
+        opacity: 1;
+    }
+
+    /* Empty state */
+    .alumni-empty-state {
+        text-align: center;
+        padding: 80px 40px;
+        grid-column: 1 / -1;
+        color: #94a3b8;
+    }
+
+    .alumni-empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.4;
+        display: block;
+    }
+
+    .alumni-empty-state p {
+        font-size: 16px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .alumni {
+            padding: 80px 24px;
+        }
+
+        .alumni-cards-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        .alumni-section-header {
+            margin-bottom: 48px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .alumni {
+            padding: 60px 16px;
+        }
+
+        .alumni-section-header h1 {
+            font-size: 2rem !important;
+        }
+    }
+
+    /* ── ACHIEVEMENTS SECTION (MODERNIZED) ── */
+    .achievements-section {
+        background: linear-gradient(160deg, #0f172a 0%, #1e2d6d 100%);
+        padding: 120px 60px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .achievements-section::before {
+        content: '';
+        position: absolute;
+        top: -200px;
+        right: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(244, 196, 48, 0.08) 0%, transparent 65%);
+        pointer-events: none;
+    }
+
+    .achievements-section::after {
+        content: '';
+        position: absolute;
+        bottom: -100px;
+        left: -100px;
+        width: 450px;
+        height: 450px;
+        background: radial-gradient(circle, rgba(200, 16, 46, 0.1) 0%, transparent 65%);
+        pointer-events: none;
+    }
+
+    /* Achievements Header */
+    .achievements-header {
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto 72px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .achievements-header .eyebrow {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--norsu-gold);
+        margin-bottom: 18px;
+        padding: 6px 20px;
+        background: rgba(244, 196, 48, 0.12);
+        border-radius: 50px;
+        border: 1px solid rgba(244, 196, 48, 0.2);
+    }
+
+    .achievements-header h1 {
+        font-family: 'Playfair Display', serif !important;
+        font-size: clamp(2.2rem, 4vw, 3.2rem);
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.15;
+        letter-spacing: -1px;
+        margin-bottom: 18px;
+    }
+
+    .achievements-header h1 span {
+        color: var(--norsu-gold);
+    }
+
+    .achievements-header p {
+        font-size: 17px;
+        color: rgba(255, 255, 255, 0.65);
+        line-height: 1.75;
+    }
+
+    /* Achievements Grid */
+    .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 28px;
+        max-width: 1200px;
+        margin: 0 auto 64px;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Achievement Card */
+    .achievement-card-modern {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.3s ease, background 0.3s ease;
+        position: relative;
+    }
+
+    .achievement-card-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--norsu-gold), var(--norsu-red));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 1;
+    }
+
+    .achievement-card-modern:hover {
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(244, 196, 48, 0.25);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .achievement-card-modern:hover::before {
+        opacity: 1;
+    }
+
+    /* Card Image */
+    .achievement-img-wrapper {
+        overflow: hidden;
+        height: 220px;
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    .achievement-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .achievement-card-modern:hover .achievement-img-wrapper img {
+        transform: scale(1.06);
+    }
+
+    .achievement-img-placeholder {
+        width: 100%;
+        height: 220px;
+        background: rgba(255, 255, 255, 0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 56px;
+        color: rgba(244, 196, 48, 0.3);
+    }
+
+    /* Card Badge */
+    .achievement-category-badge {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        padding: 5px 14px;
+        border-radius: 50px;
+        background: rgba(244, 196, 48, 0.9);
+        color: var(--norsu-navy);
+        backdrop-filter: blur(10px);
+        z-index: 2;
+    }
+
+    /* Card Body */
+    .achievement-card-body {
+        padding: 24px 26px 28px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .achievement-card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.4;
+        letter-spacing: -0.3px;
+    }
+
+    .achievement-card-recipient {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--norsu-gold);
+        letter-spacing: 0.3px;
+    }
+
+    .achievement-card-desc {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
+        line-height: 1.7;
+        flex: 1;
+        margin-bottom: 20px;
+    }
+
+    .achievement-read-more {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--norsu-gold);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        padding: 8px 0;
+        width: fit-content;
+        border-bottom: 2px solid transparent;
+    }
+
+    .achievement-read-more:hover {
+        color: #fff;
+        gap: 12px;
+        border-bottom-color: var(--norsu-gold);
+    }
+
+    .achievement-read-more::after {
+        content: '→';
+        transition: transform 0.3s;
+    }
+
+    /* Achievements CTA */
+    .achievements-cta-wrapper {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .achievements-view-all-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--norsu-gold);
+        color: var(--norsu-navy);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 18px 48px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 8px 24px rgba(244, 196, 48, 0.3);
+    }
+
+    .achievements-view-all-btn:hover {
+        background: #fff;
+        transform: translateY(-4px);
+        box-shadow: 0 16px 40px rgba(244, 196, 48, 0.4);
+        letter-spacing: 2.5px;
+    }
+
+    /* Achievement Empty State */
+    .achievement-empty-state {
+        text-align: center;
+        grid-column: 1 / -1;
+        padding: 80px 40px;
+        color: rgba(255, 255, 255, 0.35);
+    }
+
+    .achievement-empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        display: block;
+    }
+
+    @media (max-width: 768px) {
+        .achievements-section {
+            padding: 80px 24px;
+        }
+
+        .achievements-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .achievements-header {
+            margin-bottom: 48px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .achievements-section {
+            padding: 60px 16px;
+        }
+
+        .achievements-header h1 {
+            font-size: 2rem !important;
+        }
+    }
+
+    /* ── PROGRAMS SECTION ── */
+    .programs-offered-section {
+        padding: 120px 60px !important;
+        background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%) !important;
+        position: relative;
+    }
+
+    .programs-offered-section::after {
+        content: '';
+        position: absolute;
+        bottom: -100px;
+        right: -100px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(30, 45, 109, 0.06) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .programs-offered-title {
+        font-family: 'Playfair Display', serif !important;
+        font-size: clamp(2.5rem, 4vw, 3.5rem) !important;
+        color: var(--norsu-navy) !important;
+        font-weight: 700 !important;
+    }
+
+    .programs-offered-title strong {
+        color: var(--norsu-red) !important;
+    }
+
+    .program-offered-card {
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        border: 1px solid #e5e7eb !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        background: #fff !important;
+        position: relative;
+    }
+
+    .program-offered-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(30, 45, 109, 0.04), transparent);
+        opacity: 0;
+        transition: opacity 0.4s;
+        border-radius: 12px;
+        pointer-events: none;
+    }
+
+    .program-offered-card:hover {
+        transform: translateY(-12px) !important;
+        box-shadow: 0 24px 48px rgba(10, 22, 40, 0.14) !important;
+        border-color: var(--norsu-blue) !important;
+    }
+
+    .program-offered-card:hover::after {
+        opacity: 1;
+    }
+
+    .program-offered-card img {
+        height: 200px;
+        object-fit: cover;
+        width: 100%;
+        transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+
+    .program-offered-card:hover img {
+        transform: scale(1.1) !important;
+    }
+
+    .program-card-content {
+        padding: 22px !important;
+    }
+
+    .program-date {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: var(--norsu-red) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 2px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .program-card-title {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        color: var(--norsu-navy) !important;
+        line-height: 1.4 !important;
+        margin-bottom: 6px !important;
+    }
+
+    .program-college {
+        font-size: 12px !important;
+        color: var(--norsu-dark-gray) !important;
+        margin-bottom: 16px !important;
+    }
+
+    .program-learn-more {
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        color: var(--norsu-blue) !important;
+        text-decoration: none !important;
+        letter-spacing: 2px !important;
+        text-transform: uppercase !important;
+        transition: color 0.3s !important;
+    }
+
+    .program-learn-more:hover {
+        color: var(--norsu-red) !important;
+    }
+
+    /* ── CAROUSEL COLLEGES SECTION ── */
+    .colleges-section {
+        padding: 100px 0 !important;
+        background: #03070d;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .colleges-header-premium {
+        padding: 0 5vw 60px;
+        text-align: center;
+    }
+
+    .colleges-header-premium .eyebrow {
+        display: block;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--norsu-gold);
+        margin-bottom: 16px;
+    }
+
+    .colleges-header-premium h2 {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 900;
+        color: #fff;
+        margin-bottom: 24px;
+        letter-spacing: -1px;
+    }
+
+    .colleges-carousel-outer {
+        position: relative;
+        max-width: 90vw;
+        margin: 0 auto;
+        overflow: hidden;
+        padding: 20px 0 60px;
+    }
+
+    .colleges-carousel-track {
+        display: flex;
+        gap: 20px;
+        transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        will-change: transform;
+    }
+
+    .college-card-modern {
+        flex: 0 0 calc(25% - 15px);
+        /* Show 4 at a time */
+        height: 550px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 24px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .college-card-modern:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-bg {
+        position: absolute;
+        inset: 0;
+        background-image: var(--college-bg, url('{% static "dashboard/images/logo1.png" %}'));
+        background-size: 85% auto;
+        background-repeat: no-repeat;
+        background-position: center;
+        transition: transform 1s ease;
+        z-index: 1;
+        opacity: 0.8;
+    }
+
+    /* Assign Logo Backgrounds */
+    .card-ccje .card-bg {
+        background-image: url('{% static "dashboard/images/CCJE.png" %}');
+    }
+
+    .card-cit .card-bg {
+        background-image: url('{% static "dashboard/images/CIT.png" %}');
+    }
+
+    .card-cas .card-bg {
+        background-image: url('{% static "dashboard/images/CAS.png" %}');
+    }
+
+    .card-cba .card-bg {
+        background-image: url('{% static "dashboard/images/CBA.png" %}');
+    }
+
+    .card-cted .card-bg {
+        background-image: url('{% static "dashboard/images/CTED.png" %}');
+    }
+
+    .card-caf .card-bg {
+        background-image: url('{% static "dashboard/images/CAF.png" %}');
+    }
+
+    .college-card-modern:hover .card-bg {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    .card-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        background: linear-gradient(to bottom, rgba(22, 34, 54, 0.4), rgba(22, 34, 54, 0.9));
+        transition: all 0.5s ease;
+    }
+
+    /* Distinct tints for each card */
+    .card-ccje .card-overlay {
+        background: linear-gradient(to bottom, rgba(30, 45, 109, 0.4), rgba(30, 45, 109, 0.9));
+    }
+
+    .card-cit .card-overlay {
+        background: linear-gradient(to bottom, rgba(13, 26, 47, 0.5), rgba(13, 26, 47, 0.95));
+    }
+
+    .card-cas .card-overlay {
+        background: linear-gradient(to bottom, rgba(0, 123, 167, 0.4), rgba(0, 123, 167, 0.9));
+    }
+
+    .card-cba .card-overlay {
+        background: linear-gradient(to bottom, rgba(43, 87, 151, 0.4), rgba(43, 87, 151, 0.9));
+    }
+
+    .card-cted .card-overlay {
+        background: linear-gradient(to bottom, rgba(106, 27, 154, 0.35), rgba(106, 27, 154, 0.85));
+    }
+
+    .card-caf .card-overlay {
+        background: linear-gradient(to bottom, rgba(46, 125, 50, 0.4), rgba(46, 125, 50, 0.9));
+    }
+
+    .college-card-modern:hover .card-overlay {
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.8));
+    }
+
+    .card-content {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        text-align: center;
+    }
+
+    .card-logo {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        transition: all 0.5s ease;
+    }
+
+    .college-card-modern:hover .card-logo {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+    }
+
+    .card-title {
+        color: #fff;
+        font-size: 22px;
+        font-weight: 800;
+        margin-bottom: 24px;
+        line-height: 1.2;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .card-btn {
+        background: transparent;
+        color: #fff;
+        border: 1.5px solid rgba(255, 255, 255, 0.4);
+        padding: 12px 24px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        border-radius: 4px;
+        transition: all 0.4s ease;
+    }
+
+    .college-card-modern:hover .card-btn {
+        background: #fff;
+        color: #000;
+        border-color: #fff;
+    }
+
+    /* Arrow Navigation */
+    .carousel-nav {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+        display: flex;
+        justify-content: space-between;
+        padding: 0 2vw;
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    .carousel-arrow {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: all 0.4s ease;
+    }
+
+    .carousel-arrow:hover {
+        background: var(--norsu-gold);
+        color: #000;
+        transform: scale(1.1);
+    }
+
+    @media (max-width: 1200px) {
+        .college-card-modern {
+            flex: 0 0 calc(33.333% - 14px);
+            /* 3 cards */
+        }
+    }
+
+    @media (max-width: 768px) {
+        .college-card-modern {
+            flex: 0 0 calc(50% - 10px);
+            /* 2 cards */
+        }
+
+        .colleges-carousel-outer {
+            max-width: 95vw;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .college-card-modern {
+            flex: 0 0 100%;
+            /* 1 card */
+        }
+    }
+
+    /* ── MODERN CAMPUS LOCATION SECTION ── */
+    .location-section {
+        background: #03070d !important;
+        background-image:
+            radial-gradient(circle at 0% 0%, rgba(200, 16, 46, 0.08) 0%, transparent 40%),
+            radial-gradient(circle at 100% 100%, rgba(244, 196, 48, 0.08) 0%, transparent 40%) !important;
+        padding: 120px 4vw !important;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .location-container {
+        max-width: 1300px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 80px;
+        align-items: center;
+    }
+
+    .location-content {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .location-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(200, 16, 46, 0.1);
+        border: 1px solid rgba(200, 16, 46, 0.2);
+        color: #ff4d6d;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        width: fit-content;
+    }
+
+    .location-title-header h2 {
+        font-size: clamp(2.5rem, 5vw, 3.5rem) !important;
+        font-weight: 900 !important;
+        color: #ffffff !important;
+        line-height: 1.1 !important;
+        margin-bottom: 24px !important;
+        letter-spacing: -0.02em !important;
+    }
+
+    .location-title-header p {
+        font-size: 1.1rem !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+        line-height: 1.8 !important;
+        max-width: 500px;
+    }
+
+    .location-card-modern {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 32px;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+    }
+
+    .loc-info-row {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+    }
+
+    .loc-icon-box {
+        width: 54px;
+        height: 54px;
+        background: rgba(244, 196, 48, 0.1);
+        border: 1px solid rgba(244, 196, 48, 0.2);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--norsu-gold);
+        font-size: 20px;
+        flex-shrink: 0;
+        transition: all 0.4s ease;
+    }
+
+    .loc-info-row:hover .loc-icon-box {
+        background: var(--norsu-gold);
+        color: black;
+        transform: scale(1.1) rotate(-10deg);
+    }
+
+    .loc-text-box h4 {
+        font-size: 13px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 6px;
+    }
+
+    .loc-text-box p {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #ffffff;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .map-wrapper-modern {
+        position: relative;
+        height: 600px;
+        border-radius: 40px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 50px 120px rgba(0, 0, 0, 0.6);
+    }
+
+    .map-overlay-glow {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        box-shadow: inset 0 0 100px rgba(3, 7, 13, 0.6);
+        z-index: 2;
+    }
+
+    .map-frame-modern {
+        width: 100%;
+        height: 100%;
+        filter: grayscale(0.2) contrast(1.1) brightness(0.9);
+        transition: filter 0.5s ease;
+    }
+
+    .map-wrapper-modern:hover .map-frame-modern {
+        filter: grayscale(0) contrast(1) brightness(1);
+    }
+
+    .btn-direction-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: #ffffff;
+        color: #03070d;
+        padding: 20px 40px;
+        border-radius: 20px;
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 1rem;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        width: fit-content;
+        margin-top: 10px;
+        box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-direction-modern:hover {
+        background: var(--norsu-gold);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 30px 60px rgba(244, 196, 48, 0.3);
+    }
+
+    .btn-direction-modern i {
+        font-size: 1.2rem;
+        transition: transform 0.4s ease;
+    }
+
+    .btn-direction-modern:hover i {
+        transform: translate(4px, -4px);
+    }
+
+    @media (max-width: 1100px) {
+        .location-container {
+            grid-template-columns: 1fr;
+            gap: 60px;
+        }
+
+        .map-wrapper-modern {
+            height: 450px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .location-section {
+            padding: 80px 6vw !important;
+        }
+
+        .location-card-modern {
+            padding: 30px;
+        }
+    }
+
+    /* ── NEW BADGE ── */
+    .new-badge {
+        background: var(--norsu-red) !important;
+        color: white !important;
+        font-size: 10px !important;
+        font-weight: 800 !important;
+        padding: 3px 8px !important;
+        border-radius: 2px !important;
+        letter-spacing: 1px !important;
+    }
+
+    /* ── SCROLL REVEAL SYSTEM ── */
+    .reveal {
+        opacity: 0;
+        transform: translateY(50px) scale(0.98);
+        transition: opacity 1.1s cubic-bezier(0.34, 1.56, 0.64, 1), transform 1.1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .reveal.active {
+        opacity: 1 !important;
+        transform: translateY(0) scale(1) !important;
+    }
+
+    /* Staggered reveal for cards */
+    .reveal.active .uv-news-card,
+    .reveal.active .achievement-card,
+    .reveal.active .program-offered-card,
+    .reveal.active .college-card,
+    .reveal.active .card {
+        animation: staggerReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .uv-news-card {
+        opacity: 0;
+        animation-duration: 0.8s;
+    }
+
+    .uv-news-card:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .uv-news-card:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .uv-news-card:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .uv-news-card:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    .uv-news-card:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+
+    .uv-news-card:nth-child(6) {
+        animation-delay: 0.6s;
+    }
+
+    @keyframes staggerReveal {
+        from {
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .reveal-left {
+        opacity: 0;
+        transform: translateX(-50px) scale(0.98);
+        transition: opacity 1.1s cubic-bezier(0.34, 1.56, 0.64, 1), transform 1.1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .reveal-left.active {
+        opacity: 1 !important;
+        transform: translateX(0) scale(1) !important;
+    }
+
+    .reveal-right {
+        opacity: 0;
+        transform: translateX(50px) scale(0.98);
+        transition: opacity 1.1s cubic-bezier(0.34, 1.56, 0.64, 1), transform 1.1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .reveal-right.active {
+        opacity: 1 !important;
+        transform: translateX(0) scale(1) !important;
+    }
+
+    /* Premium Animations */
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-15px);
+        }
+    }
+
+    @keyframes glow {
+
+        0%,
+        100% {
+            box-shadow: 0 0 10px rgba(244, 196, 48, 0.3);
+        }
+
+        50% {
+            box-shadow: 0 0 30px rgba(244, 196, 48, 0.6);
+        }
+    }
+
+    /* ── BUTTON ENHANCEMENTS ── */
+    .uv-see-more-btn,
+    .programs-see-more-btn {
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(10, 22, 40, 0.25) !important;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        border-radius: 8px !important;
+    }
+
+    .uv-see-more-btn::after,
+    .programs-see-more-btn::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        opacity: 0;
+        animation: shimmerEffect 0.6s ease-in-out;
+        pointer-events: none;
+    }
+
+    .uv-see-more-btn:hover,
+    .programs-see-more-btn:hover {
+        transform: translateY(-6px) !important;
+        box-shadow: 0 16px 45px rgba(10, 22, 40, 0.35) !important;
+        letter-spacing: 2px;
+    }
+
+    @keyframes shimmerEffect {
+        0% {
+            transform: translateX(-100%);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+
+    .uv-read-more {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--norsu-blue);
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+
+    .uv-read-more::before {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--norsu-blue), var(--norsu-red));
+        transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border-radius: 2px;
+    }
+
+    .uv-read-more:hover {
+        color: var(--norsu-red);
+        gap: 14px !important;
+        letter-spacing: 3px;
+    }
+
+    .uv-read-more:hover::before {
+        width: 100%;
+    }
+
+    /* ── TOP CARDS BUTTON STYLING (Consolidated in main .top-cards section) ── */
+
+    /* ── ENHANCED CARD SHADOWS ── */
+    .uv-news-card {
+        position: relative;
+    }
+
+    .uv-news-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), transparent);
+        opacity: 0;
+        border-radius: 12px;
+        transition: opacity 0.4s;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .uv-news-card:hover::before {
+        opacity: 1;
+    }
+
+    /* ── PREMIUM TEXT EFFECTS ── */
+    .alumni .card h3 {
+        color: var(--norsu-navy) !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.5px;
+    }
+
+    .alumni .card p {
+        color: #6b7280 !important;
+        font-size: 14px !important;
+        line-height: 1.8 !important;
+        margin-top: 10px !important;
+    }
+
+    /* ── SECTION DIVIDER ── */
+    .section-modern-divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(30, 45, 109, 0.2), transparent);
+        margin: 0;
+    }
+
+    /* ── STATS STRIP ENHANCED ── */
+    .stats-strip {
+        background: linear-gradient(135deg, var(--norsu-navy) 0%, #0d1a2f 100%);
+        padding: 0;
+        position: relative;
+        z-index: 10;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* ── RESPONSIVE ENHANCEMENTS ── */
+    @media (max-width: 1024px) {
+        .top-cards {
+            grid-template-columns: 1fr 1fr !important;
+            grid-template-areas:
+                "top-header top-header"
+                "vision mission"
+                "vision core"
+                "vision quality"
+                "vision goals";
+            padding: 52px 40px !important;
+            gap: 20px !important;
+        }
+
+        .top-cards::before {
+            left: 40px;
+        }
+
+        .top-cards .card {
+            min-height: 280px !important;
+            padding: 34px 28px !important;
+        }
+
+        .top-cards .card:nth-child(1) {
+            min-height: 380px !important;
+        }
+
+        .top-cards .card h3 {
+            font-size: 24px !important;
+        }
+
+        .top-cards .card .label {
+            font-size: 9px !important;
+            padding: 9px 18px !important;
+        }
+
+        .main-section {
+            padding: 80px 30px !important;
+        }
+
+        .uv-news-section,
+        .colleges-section,
+        .alumni,
+        .achievements-section,
+        .programs-offered-section {
+            padding: 80px 30px !important;
+        }
+
+        .colleges-section .header h1 {
+            font-size: clamp(2.2rem, 3.8vw, 3.4rem) !important;
+        }
+
+        .colleges-section .header p {
+            font-size: 1rem !important;
+            max-width: 760px;
+        }
+
+        .colleges-section .college-card {
+            min-height: 320px !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .top-cards {
+            grid-template-columns: 1fr !important;
+            padding: 50px 30px !important;
+            gap: 18px !important;
+        }
+
+        .top-cards::before {
+            left: 32px;
+        }
+
+        .top-cards .card {
+            min-height: 260px !important;
+            padding: 32px 26px !important;
+        }
+
+        .top-cards .card:nth-child(1) {
+            min-height: 340px !important;
+        }
+
+        .top-cards .card h3 {
+            font-size: 22px !important;
+        }
+
+        .top-cards .card h2.highlight {
+            font-size: 32px !important;
+        }
+
+        .top-cards .card .label {
+            font-size: 8px !important;
+            padding: 8px 16px !important;
+            margin-bottom: 16px !important;
+        }
+
+        .top-cards .card .info-btn {
+            font-size: 11px !important;
+            padding: 13px 28px !important;
+            margin-top: 16px !important;
+        }
+
+        .stats-strip-inner {
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            flex: 1 1 50%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .hero-title {
+            font-size: clamp(2.8rem, 10vw, 5.5rem) !important;
+            letter-spacing: -1px !important;
+            line-height: 1.05 !important;
+        }
+
+        .main-section {
+            padding: 50px 20px !important;
+            grid-template-columns: 1fr !important;
+        }
+
+        .main-section::before {
+            display: none !important;
+        }
+
+        .right-image {
+            order: 2 !important;
+        }
+
+        .uv-news-section,
+        .colleges-section,
+        .alumni,
+        .achievements-section,
+        .programs-offered-section {
+            padding: 50px 20px !important;
+        }
+
+        .colleges-section {
+            padding: 80px 24px !important;
+        }
+
+        .colleges-section .header h1 {
+            font-size: clamp(2rem, 5vw, 3rem) !important;
+        }
+
+        .colleges-section .header p {
+            font-size: 0.98rem !important;
+            max-width: 100%;
+        }
+
+        .colleges-scroll {
+            animation-duration: 0s !important;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .college-card-link {
+            flex: 0 0 calc(50% - 14px);
+        }
+
+        .college-card {
+            min-height: 300px !important;
+            padding: 24px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .top-cards {
+            grid-template-columns: 1fr !important;
+            padding: 44px 18px !important;
+            gap: 16px !important;
+        }
+
+        .top-cards::before {
+            left: 20px;
+        }
+
+        .top-cards .card {
+            min-height: 260px !important;
+            padding: 30px 18px !important;
+        }
+
+        .top-cards .card:nth-child(1) {
+            min-height: 320px !important;
+        }
+
+        .top-cards .card h3 {
+            font-size: 20px !important;
+            margin-bottom: 14px !important;
+        }
+
+        .top-cards .card h2.highlight {
+            font-size: 30px !important;
+            margin: 10px 0 !important;
+        }
+
+        .top-cards .card .label {
+            font-size: 8px !important;
+            padding: 7px 14px !important;
+            margin-bottom: 14px !important;
+            letter-spacing: 1.4px;
+        }
+
+        .top-cards .card .info-btn {
+            font-size: 10px !important;
+            padding: 11px 22px !important;
+            margin-top: 14px !important;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 12vw, 4.5rem) !important;
+            line-height: 1.1 !important;
+        }
+
+        .colleges-section {
+            padding: 70px 18px !important;
+        }
+
+        .colleges-section .header h1 {
+            font-size: clamp(1.8rem, 12vw, 2.6rem) !important;
+        }
+
+        .colleges-section .header p {
+            font-size: 0.95rem !important;
+        }
+
+        .colleges-scroll {
+            animation-duration: 0s !important;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .college-card-link {
+            flex: 0 0 100%;
+        }
+
+        .college-card {
+            min-height: 280px !important;
+            padding: 22px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="hero-section" id="hero-section">
+    <video autoplay loop muted playsinline class="hero-video">
+        <source src="{% static 'dashboard/images/norsubsc.mp4' %}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <div class="hero-eyebrow">Est. 1947 · Bayawan · Negros Oriental</div>
+        <h1 class="hero-title">
+            <!-- Invisible text to hold space so it never cuts off or collapses when wrapping -->
+            <span style="opacity: 0; pointer-events: none; visibility: hidden;"><span class="hero-title-our">OUR</span>
+                FUTURE</span>
+
+            <!-- Animated sequences -->
+            <span class="animated-phrase phrase-1"><span class="hero-title-our">OUR</span> PRIDE</span>
+            <span class="animated-phrase phrase-2"><span class="hero-title-our">OUR</span> HOPE</span>
+            <span class="animated-phrase phrase-3"><span class="hero-title-our">OUR</span> FUTURE</span>
+        </h1>
+        <div class="university-name">
+            NEGROS ORIENTAL STATE UNIVERSITY<br>
+            <h4>BAYAWAN - STA. CATALINA CAMPUS</h4>
+        </div>
+    </div>
+
+</div>
+<!--NEWS-->
+<section class="uv-news-section reveal" id="uv-news-section">
+    <!-- HEADER -->
+    <div class="uv-news-header" style="text-align: center;">
+        <div class="uv-title-group" style="text-align: center;">
+            <h1 class="uv-title">Latest at <strong>NORSU</strong></h1>
+            <p class="uv-subtitle">
+                Discover the latest news, events, and announcements happening<br>
+                at NORSU.
+            </p>
+        </div>
+    </div>
+
+    <!-- NEWS GRID -->
+    <div class="uv-news-grid">
+
+        <!-- CARD 1 -->
+        {% if posts %}
+        {% for post in posts %}
+        <div class="uv-news-card">
+            {% if post.image %}
+            <img src="{{ post.image.url }}" alt="{{ post.title }}">
+            {% else %}
+            <img src="{% static 'dashboard/images/default-news.jpg' %}" alt="{{ post.title }}">
+            {% endif %}
+            {% if post.is_new %}
+            <div class="new-badge">NEW</div>
+            {% endif %}
+            <div class="uv-card-content">
+                <div class="uv-date">{{ post.created_at|date:"F d, Y" }}</div>
+                <h3 class="uv-card-title">{{ post.title }}</h3>
+                <a href="/news/{{ post.id }}/" class="uv-read-more">READ MORE</a>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="uv-news-empty-state"
+            style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #94a3b8;">
+            <i class="fas fa-newspaper" style="font-size: 48px; opacity: 0.4; margin-bottom: 16px;"></i>
+            <p>More news and announcements coming soon.</p>
+        </div>
+        {% endif %}
+    </div>
+    <!-- SEE MORE -->
+    <div class="uv-see-more-wrapper">
+        <a href="/news/" class="uv-see-more-btn">See more news</a>
+    </div>
+
+</section>
+<section class="main-section">
+
+
+    <div class="left-content">
+        <h1>Negros Oriental State University</h1>
+        <h4>Bayawan-Sta. Catalina Campus</h4>
+
+        <p class="love">❤️ we are <strong>NORSUnians</strong></p>
+
+        <p>
+            The Negros Oriental State University (NORSU) Bayawan–Sta. Catalina Campus has a
+            rich history rooted in the effort
+            to bring accessible education to the southern part of Negros Oriental after World War II.
+            It began on July 5, 1947, as Tolong Junior High School in what is now Bayawan,
+            becoming the first public secondary school outside Dumaguete in the province.
+        </p>
+        <a href="/about/#norsu-history">
+            <button class="main-btn">Learn More</button>
+        </a>
+
+    </div>
+
+    <div class="right-image">
+        <iframe
+            style="width: 100%; aspect-ratio: 16/9; border-radius: 22px; box-shadow: 0 7px 22px rgba(0, 0, 0, 0.22);"
+            src="https://www.youtube.com/embed/97PRYCQ6LFM?si=Tvvb5_LswyQR1EQS" title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <style>
+        /* Fix content overlap with sticky navbar */
+        .hero-section {
+            margin-top: 0;
+        }
+
+        /* Achievement Card Styling */
+        .achievement-card .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e2d6d;
+            margin: 15px 20px 5px 20px;
+            text-transform: uppercase;
+        }
+
+        .achievement-card .card-text {
+            font-size: 0.95rem;
+            color: #555;
+            margin: 0 20px 15px 20px;
+            line-height: 1.5;
+        }
+
+        /* Category Badges */
+        .category-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .category-academic {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .category-sports {
+            background: #f1f8e9;
+            color: #388e3c;
+        }
+
+        .category-research {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .category-community {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .category-arts {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+
+        .category-leadership {
+            background: #e8eaf6;
+            color: #303f9f;
+        }
+
+        .category-international {
+            background: #e0f2f1;
+            color: #00796b;
+        }
+
+        .category-other {
+            background: #f5f5f5;
+            color: #616161;
+        }
+    </style>
+
+</section>
+
+<div class="section-modern-divider"></div>
+
+<section class="vm-section reveal" id="vision-mission">
+
+    <!-- Intro -->
+    <div class="vm-intro">
+        <span class="eyebrow">Vision &amp; Mission</span>
+        <h2>What guides NORSU toward excellence, service &amp; growth.</h2>
+        <p>Explore how our vision, mission, values, quality policy, and strategic goals shape every campus decision and
+            student experience.</p>
+    </div>
+
+    <!-- Bento Grid -->
+    <div class="vm-grid">
+
+        <!-- VISION (featured — tall card, col 1, spans 2 rows) -->
+        <div class="vm-card featured">
+            <div>
+                <div class="vm-card-icon">🌐</div>
+                <div class="vm-card-label" style="margin-top:20px;">Vision</div>
+                <h3 style="margin-top:12px;">Our Vision</h3>
+                <p style="margin-top:16px;">
+                    {% if university_info and university_info.vision %}
+                    {{ university_info.vision|striptags|truncatewords:25 }}
+                    {% else %}
+                    Information will be updated soon.
+                    {% endif %}
+                </p>
+            </div>
+            <a href="/about/#vision" class="vm-learn-more">Learn More <span class="arrow">&rarr;</span></a>
+        </div>
+
+        <!-- MISSION -->
+        <div class="vm-card">
+            <div>
+                <div class="vm-card-icon">🎯</div>
+                <div class="vm-card-label" style="margin-top:20px;">Mission</div>
+                <h3 style="margin-top:10px;">Our Mission</h3>
+                <p style="margin-top:14px;">
+                    {% if university_info and university_info.mission %}
+                    {{ university_info.mission|striptags|truncatewords:20 }}
+                    {% else %}
+                    Information will be updated soon.
+                    {% endif %}
+                </p>
+            </div>
+            <a href="/about/#mission" class="vm-learn-more">Learn More <span class="arrow">&rarr;</span></a>
+        </div>
+
+        <!-- CORE VALUES -->
+        <div class="vm-card">
+            <div>
+                <div class="vm-card-icon">✨</div>
+                <div class="vm-card-label" style="margin-top:20px;">Core Values</div>
+                <h3 class="accent" style="margin-top:10px;">Our Core Values</h3>
+                <p style="margin-top:14px;">
+                    {% if university_info and university_info.core_values %}
+                    {{ university_info.core_values|striptags|truncatewords:20 }}
+                    {% else %}
+                    Information will be updated soon.
+                    {% endif %}
+                </p>
+            </div>
+            <a href="/about/#core-values" class="vm-learn-more">Learn More <span class="arrow">&rarr;</span></a>
+        </div>
+
+        <!-- QUALITY POLICY -->
+        <div class="vm-card">
+            <div>
+                <div class="vm-card-icon">🏅</div>
+                <div class="vm-card-label" style="margin-top:20px;">Quality Policy</div>
+                <h3 style="margin-top:10px;">Our Quality Policy</h3>
+                <p style="margin-top:14px;">
+                    {% if university_info and university_info.quality_policy %}
+                    {{ university_info.quality_policy|striptags|truncatewords:20 }}
+                    {% else %}
+                    Information will be updated soon.
+                    {% endif %}
+                </p>
+            </div>
+            <a href="/about/#quality-policy" class="vm-learn-more">Learn More <span class="arrow">&rarr;</span></a>
+        </div>
+
+        <!-- STRATEGIC GOALS -->
+        <div class="vm-card">
+            <div>
+                <div class="vm-card-icon">🚀</div>
+                <div class="vm-card-label" style="margin-top:20px;">Strategic Goals</div>
+                <h3 class="accent" style="margin-top:10px;">Our Strategic Goals</h3>
+                <p style="margin-top:14px;">
+                    {% if university_info and university_info.strategic_goals %}
+                    {{ university_info.strategic_goals|striptags|truncatewords:20 }}
+                    {% else %}
+                    Information will be updated soon.
+                    {% endif %}
+                </p>
+            </div>
+            <a href="/about/#strategic-goals" class="vm-learn-more">Learn More <span class="arrow">&rarr;</span></a>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- COLLEGE SECTION -->
+<section class="colleges-section reveal" id="colleges-section">
+
+    <div class="colleges-header-premium">
+        <span class="eyebrow">Academic Excellence</span>
+        <h2>Our Specialized Colleges</h2>
+    </div>
+
+    <div class="colleges-carousel-outer">
+        <div class="colleges-carousel-track" id="collegesTrack">
+
+            {% for college in global_colleges %}
+            <a href="/{{ college.abbreviation|lower }}/" class="college-card-modern card-{{ college.abbreviation|lower }}"{% if college.image %} style="--college-bg: url('{{ college.image.url }}');"{% endif %}>
+                <div class="card-bg"></div>
+                <div class="card-overlay"></div>
+                <div class="card-content">
+                    <h3 class="card-title">{{ college.name }}</h3>
+                    <div class="card-btn">Find out more ></div>
+                </div>
+            </a>
+            {% endfor %}
+
+        </div>
+
+        <!-- Navigation Arrows -->
+        <div class="carousel-nav">
+            <div class="carousel-arrow" id="collegePrev"><i class="fas fa-chevron-left"></i></div>
+            <div class="carousel-arrow" id="collegeNext"><i class="fas fa-chevron-right"></i></div>
+        </div>
+    </div>
+
+</section>
+<section class="alumni reveal" id="alumni">
+
+    <!-- Section Header -->
+    <div class="alumni-section-header">
+        <span class="eyebrow">Our Graduates</span>
+        <h1>Alumni Stories</h1>
+        <p>
+            NORSU–BSC graduates share stories of success, inspiration, and lasting impact —
+            carried forward with pride, purpose, and excellence.
+        </p>
+    </div>
+
+    <!-- Alumni Cards Grid -->
+    <div class="alumni-cards-grid">
+
+        {% for story in success_stories %}
+        <div class="alumni-story-card">
+
+            <!-- Card Image -->
+            <div class="alumni-card-image-wrapper">
+                {% if story.display_image_url %}
+                <img src="{{ story.display_image_url }}" alt="{{ story.alumni_name }}" class="alumni-card-image">
+                {% else %}
+                <div class="alumni-card-avatar-placeholder">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Card Body -->
+            <div class="alumni-card-body">
+                <span class="alumni-card-quote">❝</span>
+                <h3 class="alumni-card-name">{{ story.alumni_name }}</h3>
+                <div class="alumni-card-achievement">{{ story.achievement }}</div>
+                <p class="alumni-card-excerpt">{{ story.description|striptags|truncatewords:35 }}</p>
+                <a href="{% url 'alumni_success_story_detail' story.id %}" class="alumni-read-more-btn">
+                    Read More <span class="btn-arrow">&rarr;</span>
+                </a>
+            </div>
+
+        </div>
+        {% empty %}
+        <div class="alumni-empty-state">
+            <i class="fas fa-quote-left"></i>
+            <p>More success stories coming soon.</p>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- View All CTA -->
+    <div class="alumni-cta-wrapper">
+        <a href="/alumni/" class="alumni-view-all-btn">
+            View All Alumni &nbsp;&rarr;
+        </a>
+    </div>
+
+</section>
+
+<section class="achievements-section reveal" id="achievements-section">
+
+    <!-- Section Header -->
+    <div class="achievements-header">
+        <span class="eyebrow">Excellence &amp; Recognition</span>
+        <h1>NORSU <span>Achievements</span></h1>
+        <p>
+            Negros Oriental State University continues to stand as a beacon of excellence, leadership,
+            and service — showcasing remarkable milestones from students, faculty, and administrators.
+        </p>
+    </div>
+
+    <!-- Achievements Grid -->
+    <div class="achievements-grid">
+
+        {% for achievement in achievements %}
+        <div class="achievement-card-modern{% if achievement.is_highlighted %} highlighted{% endif %}">
+
+            <!-- Image -->
+            <div class="achievement-img-wrapper">
+                {% if achievement.display_image_url %}
+                <img src="{{ achievement.display_image_url }}" alt="{{ achievement.title }}">
+                {% else %}
+                <div class="achievement-img-placeholder">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                {% endif %}
+                <!-- Category badge over image -->
+                <span class="achievement-category-badge">{{ achievement.get_category_display }}</span>
+            </div>
+
+            <!-- Card Body -->
+            <div class="achievement-card-body">
+                <h3 class="achievement-card-title">{{ achievement.title }}</h3>
+                {% if achievement.recipient %}
+                <div class="achievement-card-recipient">{{ achievement.recipient }}</div>
+                {% endif %}
+                <p class="achievement-card-desc">{{ achievement.description|striptags|truncatewords:30 }}</p>
+                <a href="/achievement/{{ achievement.id }}/" class="achievement-read-more">Read More</a>
+            </div>
+
+        </div>
+        {% empty %}
+        <!-- Default static cards if no DB entries -->
+        <div class="achievement-empty-state">
+            <i class="fas fa-trophy"></i>
+            <p>More achievements coming soon.</p>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- View All CTA -->
+    <div class="achievements-cta-wrapper">
+        <a href="/news/" class="achievements-view-all-btn">
+            View All Achievements &nbsp;&rarr;
+        </a>
+    </div>
+
+</section>
+
+<!-- PROGRAMS OFFERED SECTION -->
+<section class="programs-offered-section reveal" id="programs-offered-section">
+
+    <!-- HEADER -->
+    <div class="programs-offered-header">
+        <div class="programs-offered-title-group">
+            <h1 class="programs-offered-title">Programs <strong>Offered</strong></h1>
+            <p class="programs-offered-subtitle">
+                Explore our diverse range of academic programs designed to<br>
+                prepare students for successful careers in various fields.
+            </p>
+        </div>
+    </div>
+
+    <!-- PROGRAMS GRID -->
+    <div class="programs-offered-grid">
+
+        <!-- PROGRAM 1: Information Technology -->
+        <div class="program-offered-card">
+            <img src="{% static 'dashboard/images/info.jpg' %}" alt="bsint Program">
+            <div class="program-card-content">
+                <div class="program-date">4 Years Program</div>
+                <h3 class="program-card-title">Bachelor of Science in Information Technology</h3>
+                <p class="program-college">College of Arts and Sciences </p>
+                <a href="/programs/#bsit" class="program-learn-more">LEARN MORE</a>
+            </div>
+        </div>
+
+        <!-- PROGRAM 2: Computer Science -->
+        <div class="program-offered-card">
+            <img src="{% static 'dashboard/images/coms.jpg' %}" alt="bscs Program">
+            <div class="program-card-content">
+                <div class="program-date">4 Years Program</div>
+                <h3 class="program-card-title">Bachelor of Science in Computer Science</h3>
+                <p class="program-college">College of Arts and Sciences</p>
+                <a href="/programs/#bscs" class="program-learn-more">LEARN MORE</a>
+            </div>
+        </div>
+
+        <!-- PROGRAM 3: Secondary Education -->
+        <div class="program-offered-card">
+            <img src="{% static 'dashboard/images/secondary.jpg' %}" alt="bsed Program">
+            <div class="program-card-content">
+                <div class="program-date">4 Years Program</div>
+                <h3 class="program-card-title">Bachelor of Secondary Education</h3>
+                <p class="program-college">College of Teacher Education</p>
+                <a href="/programs/#bpeed" class="program-learn-more">LEARN MORE</a>
+            </div>
+        </div>
+
+        <!-- PROGRAM 4: Elementary Education -->
+        <div class="program-offered-card">
+            <img src="{% static 'dashboard/images/elemen.jpg' %}" alt="bpeed Program">
+            <div class="program-card-content">
+                <div class="program-date">4 Years Program</div>
+                <h3 class="program-card-title">Bachelor of Elementary Education</h3>
+                <p class="program-college">College of Teacher Education</p>
+                <a href="/programs/#bsed" class="program-learn-more">LEARN MORE</a>
+            </div>
+        </div>
+
+        <!-- PROGRAM 5: Hospitality Management -->
+        <div class="program-offered-card">
+            <img src="{% static 'dashboard/images/hm.jpg' %}" alt="BSHM Program">
+            <div class="program-card-content">
+                <div class="program-date">4 Years Program</div>
+                <h3 class="program-card-title">Bachelor of Science in Hospitality Management</h3>
+                <p class="program-college">College of Business Administration</p>
+                <a href="/programs/#bshm" class="program-learn-more">LEARN MORE</a>
+            </div>
+        </div>
+
+        <!-- PROGRAM 6: Business Administration -->
+        <div class="program-offered-card">
+            <img src="{% static 'dashboard/images/bus.jpg' %}" alt="bsba Program">
+            <div class="program-card-content">
+                <div class="program-date">4 Years Program</div>
+                <h3 class="program-card-title">Bachelor of Science in Business Administration </h3>
+                <p class="program-college">College of Business Administration</p>
+                <a href="/programs/#bsba" class="program-learn-more">LEARN MORE</a>
+            </div>
+        </div>
+
+        <!-- PROGRAM 7: Office Administration -->
+        <div class="program-offered-card">
+            <img src="{% static 'dashboard/images/office.jpg' %}" alt="bsoa Program">
+            <div class="program-card-content">
+                <div class="program-date">4 Years Program</div>
+                <h3 class="program-card-title">Bachelor of Science in Office Administration </h3>
+                <p class="program-college">College of Business Administration </p>
+                <a href="/programs/#bsoa" class="program-learn-more">LEARN MORE</a>
+            </div>
+        </div>
+
+        <!-- PROGRAM 8: Forestry -->
+        <div class="program-offered-card">
+            <img src="{% static 'dashboard/images/forestry.jpg' %}" alt="Forestry Program">
+            <div class="program-card-content">
+                <div class="program-date">4 Years Program</div>
+                <h3 class="program-card-title">Bachelor of Science in Forestry</h3>
+                <p class="program-college">College of Agriculture and Forestry </p>
+                <a href="/programs/#fores" class="program-learn-more">LEARN MORE</a>
+            </div>
+        </div>
+
+        <!-- PROGRAM 9: Agriculture -->
+        <div class="program-offered-card">
+            <img src="{% static 'dashboard/images/agri.jpg' %}" alt="agriculture Program">
+            <div class="program-card-content">
+                <div class="program-date">4 Years Program</div>
+                <h3 class="program-card-title">Bachelor of Science in Agriculture</h3>
+                <p class="program-college">College of Agriculture and Forestry</p>
+                <a href="/programs/#agri" class="program-learn-more">LEARN MORE</a>
+            </div>
+        </div>
+
+        <!-- PROGRAM 10: Industrial Technology -->
+        <div class="program-offered-card">
+            <img src="{% static 'dashboard/images/cit1.jpg' %}" alt="cit Program">
+            <div class="program-card-content">
+                <div class="program-date">4 Years Program</div>
+                <h3 class="program-card-title">Bachelor of Science in Industrial Technology</h3>
+                <p class="program-college">College of Industrial Technology</p>
+                <a href="/programs/#bit" class="program-learn-more">LEARN MORE</a>
+            </div>
+        </div>
+
+        <!-- PROGRAM 11: Criminology -->
+        <div class="program-offered-card">
+            <img src="{% static 'dashboard/images/pulis.jpg' %}" alt="bscrim Program">
+            <div class="program-card-content">
+                <div class="program-date">4 Years Program</div>
+                <h3 class="program-card-title">Bachelor of Criminology Education</h3>
+                <p class="program-college">College of Criminal Justice Education</p>
+                <a href="/programs/#bscrim" class="program-learn-more">LEARN MORE</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation Dots for Programs -->
+    <div class="programs-dots">
+        <span class="programs-dot active" data-slide="0"></span>
+        <span class="programs-dot" data-slide="1"></span>
+        <span class="programs-dot" data-slide="2"></span>
+        <span class="programs-dot" data-slide="3"></span>
+        <span class="programs-dot" data-slide="4"></span>
+        <span class="programs-dot" data-slide="5"></span>
+    </div>
+
+    <!-- SEE MORE BUTTON -->
+    <div class="programs-see-more-wrapper">
+        <a href="/programs/#bsit" class="programs-see-more-btn">View All Programs</a>
+    </div>
+
+</section>
+
+
+<section class="location-section reveal">
+    <div class="location-container">
+
+        <!-- TOP-LEFT: CONTENT -->
+        <div class="location-content">
+            <div class="location-badge">
+                <i class="fas fa-map-marker-alt"></i> Our Campus
+            </div>
+
+            <div class="location-title-header">
+                <h2>Visit Our<br>Campus Today</h2>
+                <p>Located in the heart of Negros Oriental, our campus offers a vibrant environment for learning and
+                    growth.</p>
+            </div>
+
+            <div class="location-card-modern">
+                <!-- Row 1: Address -->
+                <div class="loc-info-row">
+                    <div class="loc-icon-box">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="loc-text-box">
+                        <h4>Exact Address</h4>
+                        <p>National Road, Caranoche, Santa Catalina, Bayawan City</p>
+                    </div>
+                </div>
+
+                <!-- Row 2: Coordinates -->
+                <div class="loc-info-row">
+                    <div class="loc-icon-box">
+                        <i class="fas fa-location-crosshairs"></i>
+                    </div>
+                    <div class="loc-text-box">
+                        <h4>Coordinates (N/E)</h4>
+                        <p>9.3524814° N, 122.8373582° E</p>
+                    </div>
+                </div>
+
+                <!-- Row 3: Campus Name -->
+                <div class="loc-info-row">
+                    <div class="loc-icon-box">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div class="loc-text-box">
+                        <h4>Campus Designation</h4>
+                        <p>NORSU Bayawan – Sta. Catalina Campus</p>
+                    </div>
+                </div>
+
+                <a href="https://maps.google.com/?q=9.3524814,122.8373582" target="_blank" class="btn-direction-modern">
+                    Get Directions <i class="fas fa-arrow-up-right-from-square"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- RIGHT: MAP -->
+        <div class="map-wrapper-modern">
+            <div class="map-overlay-glow"></div>
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3941.446!2d122.835!3d9.352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwMjEnMDkuMCJOIDEyMsKwNTAnMTQuNSJF!5e0!3m2!1sen!2sph!4v1730730505799"
+                class="map-frame-modern" allowfullscreen="" loading="lazy">
+            </iframe>
+        </div>
+
+    </div>
+</section>
+
+
+<script>
+    // Programs Offered Navigation - Standalone Script with Variable Cards Per Page
+    (function () {
+        'use strict';
+
+        function initProgramsNavigation() {
+            const programsGrid = document.querySelector('.programs-offered-grid');
+            const programsDots = document.querySelectorAll('.programs-dot');
+            const programsCards = document.querySelectorAll('.program-offered-card');
+
+            if (!programsGrid || programsCards.length === 0) {
+                console.error('Programs navigation: Required elements not found');
+                return;
+            }
+
+            let currentPage = 0;
+            let autoSlideInterval;
+
+            // Define which cards belong to which page (0-indexed)
+            const pageGroups = [
+                [0, 1],        // Page 0: IT + CS
+                [2, 3],        // Page 1: Secondary Ed + Elementary Ed
+                [4, 5, 6],     // Page 2: Hospitality + Office Admin + Business Admin (3 cards)
+                [7, 8],        // Page 3: Forestry + Agriculture
+                [9],           // Page 4: Industrial Tech
+                [10]           // Page 5: Criminology
+            ];
+
+            const totalPages = pageGroups.length;
+
+            console.log('Programs Navigation Initialized:', {
+                totalCards: programsCards.length,
+                totalPages: totalPages,
+                pageGroups: pageGroups
+            });
+
+            function showPage(pageIndex) {
+                const cardIndices = pageGroups[pageIndex];
+
+                console.log(`Showing page ${pageIndex + 1}/${totalPages} (cards: ${cardIndices.join(', ')})`);
+
+                // Show/hide cards with fade effect
+                programsCards.forEach((card, idx) => {
+                    if (cardIndices.includes(idx)) {
+                        card.style.display = 'block';
+                        card.style.opacity = '0';
+                        setTimeout(() => {
+                            card.style.transition = 'opacity 0.5s ease-in-out';
+                            card.style.opacity = '1';
+                        }, 50);
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Update dots
+                programsDots.forEach((dot, idx) => {
+                    if (idx === pageIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+
+                currentPage = pageIndex;
+            }
+
+            // Auto-slide function
+            function startAutoSlide() {
+                autoSlideInterval = setInterval(() => {
+                    // Move to next page, or loop back to first page
+                    currentPage = (currentPage + 1) % totalPages;
+                    showPage(currentPage);
+                    // Save current page to sessionStorage
+                    sessionStorage.setItem('programsCurrentPage', currentPage);
+                }, 2000); // Change page every 2 seconds
+            }
+
+            // Stop auto-slide
+            function stopAutoSlide() {
+                if (autoSlideInterval) {
+                    clearInterval(autoSlideInterval);
+                }
+            }
+
+            // Restart auto-slide
+            function restartAutoSlide() {
+                stopAutoSlide();
+                startAutoSlide();
+            }
+
+            // Dots click event
+            programsDots.forEach((dot, idx) => {
+                dot.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    showPage(idx);
+                    // Save current page to sessionStorage
+                    sessionStorage.setItem('programsCurrentPage', idx);
+                    restartAutoSlide(); // Restart timer after manual interaction
+                });
+            });
+
+            // Pause auto-slide on hover
+            programsGrid.addEventListener('mouseenter', stopAutoSlide);
+            programsGrid.addEventListener('mouseleave', startAutoSlide);
+
+            // Restore saved page or show first page
+            const savedPage = sessionStorage.getItem('programsCurrentPage');
+            const initialPage = savedPage ? parseInt(savedPage) : 0;
+            showPage(initialPage);
+            startAutoSlide();
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initProgramsNavigation);
+        } else {
+            initProgramsNavigation();
+        }
+    })();
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const newsGrid = document.querySelector('.uv-news-grid');
+        const prevBtn = document.getElementById('news-prev');
+        const nextBtn = document.getElementById('news-next');
+
+        let currentIndex = 0;
+        const cards = document.querySelectorAll('.uv-news-card');
+        const totalCards = cards.length;
+        const cardsPerView = 3;
+        const maxIndex = Math.ceil(totalCards / cardsPerView) - 1;
+
+        // Show cards based on current index
+        function showCards(index) {
+            const startIndex = index * cardsPerView;
+            const endIndex = Math.min(startIndex + cardsPerView, totalCards);
+
+            cards.forEach((card, i) => {
+                if (i >= startIndex && i < endIndex) {
+                    card.style.display = 'block';
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        card.style.transition = 'opacity 0.3s ease-in-out';
+                        card.style.opacity = '1';
+                    }, 50);
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Update button states
+            prevBtn.style.opacity = index === 0 ? '0.5' : '1';
+            nextBtn.style.opacity = index >= maxIndex ? '0.5' : '1';
+            prevBtn.style.cursor = index === 0 ? 'not-allowed' : 'pointer';
+            nextBtn.style.cursor = index >= maxIndex ? 'not-allowed' : 'pointer';
+        }
+
+        // Initialize
+        showCards(0);
+
+        // Previous button click
+        prevBtn.addEventListener('click', function () {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showCards(currentIndex);
+            }
+        });
+
+        // Next button click
+        nextBtn.addEventListener('click', function () {
+            if (currentIndex < maxIndex) {
+                currentIndex++;
+                showCards(currentIndex);
+            }
+        });
+
+        // Programs See More button functionality
+        const programsSeeMoreBtn = document.querySelector('.programs-see-more-btn');
+        if (programsSeeMoreBtn) {
+            programsSeeMoreBtn.addEventListener('click', function () {
+                // Navigate to programs page
+                window.location.href = '/programs/';
+            });
+        }
+
+        // Achievement Dots Navigation
+        const achievementDots = document.querySelectorAll('.achievement-dot');
+        const achievementCards = document.querySelectorAll('.achievement-card');
+        let currentSlide = 0;
+        let autoSlideInterval;
+
+        // Function to show specific slide
+        function showSlide(slideIndex) {
+            const container = document.getElementById('achievementsCardsContainer');
+            if (!container) return;
+
+            const cards = container.querySelectorAll('.achievement-card');
+            if (cards.length === 0) return;
+
+            // Remove active class from all dots
+            achievementDots.forEach(dot => dot.classList.remove('active'));
+
+            // Add active class to current dot
+            if (achievementDots[slideIndex]) {
+                achievementDots[slideIndex].classList.add('active');
+            }
+
+            // Scroll to the card corresponding to the dot
+            // Assuming cards are displayed in a flex row with gap
+            const cardWidth = cards[0].offsetWidth + 30; // 30 is the gap
+            container.scrollTo({
+                left: slideIndex * cardWidth,
+                behavior: 'smooth'
+            });
+
+            currentSlide = slideIndex;
+        }
+
+        // Add click event to each dot
+        achievementDots.forEach((dot, index) => {
+            dot.addEventListener('click', function () {
+                showSlide(index);
+                // Reset auto-slide timer
+                clearInterval(autoSlideInterval);
+                startAutoSlide();
+            });
+        });
+
+        // Auto-slide function
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(() => {
+                currentSlide = (currentSlide + 1) % achievementDots.length;
+                showSlide(currentSlide);
+            }, 5000); // Change slide every 5 seconds
+        }
+
+        // Start auto-slide
+        if (achievementDots.length > 0) {
+            startAutoSlide();
+        }
+    });
+
+    // Colleges carousel logic
+    (function () {
+        'use strict';
+
+        function initCollegesCarousel() {
+            const track = document.getElementById('collegesTrack');
+            const prevBtn = document.getElementById('collegePrev');
+            const nextBtn = document.getElementById('collegeNext');
+            const cards = document.querySelectorAll('.college-card-modern');
+
+            if (!track || !prevBtn || !nextBtn || cards.length === 0) return;
+
+            const totalOriginalCards = cards.length;
+            let cardsPerView = getCardsPerView();
+            let currentIndex = cardsPerView; // Start at the first original card (after prepended clones)
+
+            // Clone cards for infinite loop
+            // Clone first 4 at end
+            for (let i = 0; i < totalOriginalCards; i++) {
+                const cloneNode = cards[i].cloneNode(true);
+                track.appendChild(cloneNode);
+            }
+            // Clone last 4 at start
+            for (let i = totalOriginalCards - 1; i >= 0; i--) {
+                const cloneNode = cards[i].cloneNode(true);
+                track.prepend(cloneNode);
+            }
+
+            const allCards = track.querySelectorAll('.college-card-modern');
+
+            function getCardsPerView() {
+                if (window.innerWidth <= 480) return 1;
+                if (window.innerWidth <= 768) return 2;
+                if (window.innerWidth <= 1200) return 3;
+                return 4;
+            }
+
+            function updateCarousel(instant = false) {
+                const cardWidth = allCards[0].offsetWidth + 20; // 20 is gap
+                if (instant) {
+                    track.style.transition = 'none';
+                } else {
+                    track.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)';
+                }
+                track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+            }
+
+            function handleTransitionEnd() {
+                // If we reached the end clones, jump back to original start
+                if (currentIndex >= totalOriginalCards + cardsPerView) {
+                    currentIndex = cardsPerView;
+                    updateCarousel(true);
+                }
+                // If we reached the start clones, jump back to original end
+                if (currentIndex <= 0) {
+                    currentIndex = totalOriginalCards;
+                    updateCarousel(true);
+                }
+            }
+
+            nextBtn.addEventListener('click', () => {
+                currentIndex++;
+                updateCarousel();
+            });
+
+            prevBtn.addEventListener('click', () => {
+                currentIndex--;
+                updateCarousel();
+            });
+
+            track.addEventListener('transitionend', handleTransitionEnd);
+
+            window.addEventListener('resize', () => {
+                const newCardsPerView = getCardsPerView();
+                if (newCardsPerView !== cardsPerView) {
+                    cardsPerView = newCardsPerView;
+                    currentIndex = cardsPerView;
+                }
+                updateCarousel(true);
+            });
+
+            // Initialize position
+            updateCarousel(true);
+        }
+
+        document.addEventListener('DOMContentLoaded', initCollegesCarousel);
+    })();
+</script>
+
+<!-- Removed staticNewsData and modal logic -->
+
+<!-- Scroll Animations Script -->
+<style>
+    /* Scroll Animation Styles */
+    .scroll-animate {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .scroll-animate.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Stagger animation delays for child elements */
+    .scroll-animate:nth-child(1) {
+        transition-delay: 0.1s;
+    }
+
+    .scroll-animate:nth-child(2) {
+        transition-delay: 0.2s;
+    }
+
+    .scroll-animate:nth-child(3) {
+        transition-delay: 0.3s;
+    }
+
+    .scroll-animate:nth-child(4) {
+        transition-delay: 0.4s;
+    }
+</style>
+
+<script>
+    // Disable browser's automatic scroll restoration
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
+    // Save scroll position before page unload
+    window.addEventListener('beforeunload', function () {
+        sessionStorage.setItem('scrollPosition', window.scrollY.toString());
+    });
+
+    // Restore scroll position after ALL content is loaded
+    window.addEventListener('load', function () {
+        const savedScrollPosition = sessionStorage.getItem('scrollPosition');
+        if (savedScrollPosition && savedScrollPosition !== '0') {
+            setTimeout(function () {
+                window.scrollTo({
+                    top: parseInt(savedScrollPosition),
+                    left: 0,
+                    behavior: 'instant'
+                });
+            }, 150);
+        }
+    });
+
+    // Scroll Animation Observer
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Add scroll-animate class to sections
+        const sections = document.querySelectorAll('.top-cards, .main-section, .uv-news-section, .colleges-section, .alumni, .achievements-section, .programs-offered-section, .location-section');
+
+        sections.forEach(section => {
+            section.classList.add('scroll-animate');
+        });
+
+        // Add scroll-animate to cards within sections
+        const cards = document.querySelectorAll('.card, .uv-news-card, .college-card, .achievement-card, .program-offered-card');
+        cards.forEach(card => {
+            card.classList.add('scroll-animate');
+        });
+
+        // Intersection Observer for scroll animations (both directions)
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Element is entering viewport - fade in and slide up
+                    entry.target.classList.add('active');
+                } else {
+                    // Element is leaving viewport - fade out and slide down
+                    entry.target.classList.remove('active');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all elements with scroll-animate class
+        document.querySelectorAll('.scroll-animate').forEach(element => {
+            observer.observe(element);
+        });
+
+        // College card tilt interactions
+        const collegeCards = document.querySelectorAll('.college-card');
+        collegeCards.forEach(card => {
+            card.addEventListener('mousemove', function (event) {
+                const rect = card.getBoundingClientRect();
+                const x = (event.clientX - rect.left) / rect.width;
+                const y = (event.clientY - rect.top) / rect.height;
+                const rotateY = (x - 0.5) * 18;
+                const rotateX = (0.5 - y) * 10;
+                card.style.setProperty('--card-tilt-x', `${rotateX}deg`);
+                card.style.setProperty('--card-tilt-y', `${rotateY}deg`);
+            });
+            card.addEventListener('mouseleave', function () {
+                card.style.setProperty('--card-tilt-x', '0deg');
+                card.style.setProperty('--card-tilt-y', '0deg');
+            });
+        });
+
+        // Load Admin Updates
+        loadAdminUpdates();
+
+        // Load Upcoming Events
+        loadUpcomingEvents();
+    });
+
+    // Function to load admin updates
+    function loadAdminUpdates() {
+        const grid = document.getElementById('adminUpdatesGrid');
+
+        // Simulated posts data (replace with actual API call)
+        const posts = [];
+
+        if (posts.length === 0) {
+            grid.innerHTML = `
+            <div class="admin-updates-empty">
+                <i class="fas fa-inbox"></i>
+                <h3>No Updates Yet</h3>
+                <p>Check back later for the latest updates from administration.</p>
+            </div>
+        `;
+            return;
+        }
+
+        grid.innerHTML = posts.map(post => `
+        <div class="admin-update-card scroll-animate">
+            ${post.image ?
+                `<img src="${post.image}" alt="${post.title}" class="admin-update-image">` :
+                `<div class="admin-update-no-image"><i class="fas fa-image"></i></div>`
+            }
+            <div class="admin-update-content">
+                <h3 class="admin-update-title">${post.title}</h3>
+                <p class="admin-update-text">${post.content}</p>
+                <div class="admin-update-date">
+                    <i class="fas fa-calendar-alt"></i>
+                    ${post.date}
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+        // Re-observe new elements for scroll animation
+        document.querySelectorAll('.admin-update-card').forEach(element => {
+            observer.observe(element);
+        });
+    }
+
+    // Function to load upcoming events
+    function loadUpcomingEvents() {
+        const grid = document.getElementById('eventsGrid');
+
+        // Simulated events data (replace with actual API call)
+        const events = [];
+
+        if (events.length === 0) {
+            grid.innerHTML = `
+            <div class="events-loading">
+                <i class="fas fa-calendar-times"></i>
+                <p>No upcoming events at this time.</p>
+            </div>
+        `;
+            return;
+        }
+
+        grid.innerHTML = events.map(event => `
+        <div class="event-card scroll-animate">
+            <div class="event-date-badge">
+                <i class="fas fa-calendar-alt"></i> ${event.date}
+            </div>
+            <h3 class="event-title">${event.title}</h3>
+            <p class="event-description">${event.description}</p>
+            <div class="event-location">
+                <i class="fas fa-map-marker-alt"></i>
+                ${event.location}
+            </div>
+        </div>
+    `).join('');
+
+        // Re-observe new elements for scroll animation
+        document.querySelectorAll('.event-card').forEach(element => {
+            observer.observe(element);
+        });
+    }
+
+    // Load achievements when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        loadNorsuLatestPosts();
+    });
+
+    // Function to load latest NORSU posts from localStorage
+    function loadNorsuLatestPosts() {
+        try {
+            // Get posts from NORSU admin dashboard localStorage
+            const norsuPosts = JSON.parse(localStorage.getItem('norsuAdminPosts') || '[]');
+            console.log('NORSU posts:', norsuPosts);
+
+            const newsGrid = document.querySelector('.uv-news-grid');
+            if (!newsGrid) return;
+
+            // Clear existing dynamic posts (keep static cards)
+            const existingCards = newsGrid.querySelectorAll('.uv-news-card[data-dynamic="true"]');
+            existingCards.forEach(card => card.remove());
+
+            if (norsuPosts.length === 0) {
+                return; // Keep showing static cards if no dynamic posts
+            }
+
+            // Add dynamic posts at the beginning
+            norsuPosts.forEach((post, index) => {
+                const newsCard = document.createElement('div');
+                newsCard.className = 'uv-news-card';
+                newsCard.setAttribute('data-dynamic', 'true');
+
+                // Check if post is new (created within last 3 days)
+                const postDate = new Date(post.date);
+                const now = new Date();
+                const hoursSincePosted = (now - postDate) / (1000 * 60 * 60);
+                const isNewPost = hoursSincePosted <= 72;
+
+                // Format date
+                const formattedDate = post.date ? new Date(post.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }) : "March 09, 2026";
+
+                // Handle image with fallback
+                const image = post.image ? post.image : "{% static 'dashboard/images/default-news.jpg' %}";
+
+                newsCard.innerHTML = `
+                <img src="${image}" alt="${post.title}" 
+                     onerror="this.src='{% static 'dashboard/images/default-news.jpg' %}';"
+                     style="width:100%; height:200px; object-fit:cover;">
+                ${isNewPost ? '<div class="new-badge">NEW</div>' : ''}
+                <div class="uv-card-content">
+                    <div class="uv-date">${formattedDate}</div>
+                    <h3 class="uv-card-title">${post.title}</h3>
+                    <a href="/news/${post.id || index}/" class="uv-read-more">READ MORE</a>
+                </div>
+            `;
+
+                // Insert at the beginning of the grid (before static cards)
+                if (index === 0) {
+                    newsGrid.insertBefore(newsCard, newsGrid.firstChild);
+                } else {
+                    newsGrid.insertBefore(newsCard, existingCards[index] || newsGrid.children[index]);
+                }
+            });
+
+        } catch (error) {
+            console.error("Error loading NORSU posts:", error);
+        }
+    }
+
+</script>
+
+
+
+<script>
+    // Achievement Slider functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById('achievementsCardsContainer');
+        const prevBtn = document.getElementById('prevAchievement');
+        const nextBtn = document.getElementById('nextAchievement');
+        const dots = document.querySelectorAll('.achievement-dot');
+        const cards = document.querySelectorAll('.achievement-card');
+
+        let currentIndex = 0;
+        const totalCards = cards.length;
+
+        function getCardsToShow() {
+            if (window.innerWidth <= 768) return 1;
+            if (window.innerWidth <= 1200) return 2;
+            return 3;
+        }
+
+        function updateSlider() {
+            const cardsToShow = getCardsToShow();
+            const maxIndex = Math.max(0, totalCards - cardsToShow);
+
+            if (currentIndex > maxIndex) currentIndex = maxIndex;
+
+            // Calculate offset
+            const cardWidth = cards[0].offsetWidth + 30; // card width + gap
+            const offset = -currentIndex * cardWidth;
+            container.style.transform = `translateX(${offset}px)`;
+
+            // Update dots
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex);
+                if (index > maxIndex) {
+                    dot.style.display = 'none';
+                } else {
+                    dot.style.display = 'inline-block';
+                }
+            });
+
+            // Update button states
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex >= maxIndex;
+
+            // Hide arrows if not enough cards
+            if (totalCards <= cardsToShow) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'flex';
+                nextBtn.style.display = 'flex';
+            }
+        }
+
+        if (prevBtn && nextBtn && container) {
+            prevBtn.addEventListener('click', () => {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateSlider();
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                const maxIndex = Math.max(0, totalCards - getCardsToShow());
+                if (currentIndex < maxIndex) {
+                    currentIndex++;
+                    updateSlider();
+                }
+            });
+
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    const maxIndex = Math.max(0, totalCards - getCardsToShow());
+                    if (index <= maxIndex) {
+                        currentIndex = index;
+                        updateSlider();
+                    }
+                });
+            });
+
+            // Initialize slider
+            window.addEventListener('resize', updateSlider);
+            updateSlider();
+        }
+    });
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,670 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block title %}Programs - NORSU{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'dashboard/css/navbar.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/css/program.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<div class="main-wrapper">
+    <!-- LEFT SIDE (FIXED / NOT SCROLLABLE) -->
+    <div class="left-panel">
+        <div class="program-box">
+            <h3>PROGRAMS OFFERED</h3>
+            <div class="program-buttons">
+                <button class="program-btn" onclick="switchTab('bsit')"><i class="fa-solid fa-circle"></i> BS
+                    INFORMATION TECHNOLOGY</button>
+                <button class="program-btn" onclick="switchTab('bscs')"><i class="fa-regular fa-circle"></i> BS COMPUTER
+                    SCIENCE</button>
+                <button class="program-btn" onclick="switchTab('bsed')"><i class="fa-regular fa-circle"></i> BS
+                    ELEMENTARY EDUCATION</button>
+                <button class="program-btn" onclick="switchTab('bpeed')"><i class="fa-regular fa-circle"></i> BS
+                    SECONDARY EDUCATION</button>
+                <button class="program-btn" onclick="switchTab('bshm')"><i class="fa-regular fa-circle"></i> BS
+                    HOSPITALITY MANAGEMENT</button>
+                <button class="program-btn" onclick="switchTab('bsba')"><i class="fa-regular fa-circle"></i> BS BUSINESS
+                    ADMINISTRATION</button>
+                <button class="program-btn" onclick="switchTab('bsoa')"><i class="fa-regular fa-circle"></i> BS OFFICE
+                    ADMINISTRATION</button>
+                <button class="program-btn" onclick="switchTab('fores')"><i class="fa-regular fa-circle"></i> BS
+                    FORESTRY</button>
+                <button class="program-btn" onclick="switchTab('bit')"><i class="fa-regular fa-circle"></i> BS
+                    INDUSTRIAL TECHNOLOGY</button>
+                <button class="program-btn" onclick="switchTab('bscrim')"><i class="fa-regular fa-circle"></i> BS
+                    CRIMINOLOGY</button>
+                <button class="program-btn" onclick="switchTab('agri')"><i class="fa-regular fa-circle"></i> BS
+                    AGRICULTURE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE (CONTENT) -->
+        <!-- BSIT -->
+        <div id="bsit" class="right-panel">
+            <h1>BACHELOR OF SCIENCES INFORMATION TECHNOLOGY</h1>
+            <div class="title-line"></div>
+
+            <p id="bsit-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bsit-images">
+                    <img src="{% static 'dashboard/images/info.jpg' %}" alt="BSIT Image">
+                    <img src="{% static 'dashboard/images/sec a.jpg' %}" alt="BSIT Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bsit-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bsit-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bsit-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bsit-objectives">Loading objectives...</p>
+
+            <div class="section-title" id="bsit-dresscode-title" style="display:none;">COURSE UNIFORM</div>
+            <div class="section-divider" id="bsit-dresscode-divider" style="display:none;"></div>
+            <p id="bsit-dresscode-schedule" style="display:none;">Loading course uniform...</p>
+            <div class="content-image" id="bsit-dresscode-block" style="display:none; margin-top:20px;">
+                <div id="bsit-dresscode-images" class="dresscode-gallery"></div>
+            </div>
+        </div>
+
+        <!-- BSCS -->
+        <div id="bscs" class="right-panel">
+            <h1>BACHELOR OF SCIENCE IN COMPUTER SCIENCE</h1>
+            <div class="title-line"></div>
+
+            <p id="bscs-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bscs-images">
+                    <img src="{% static 'dashboard/images/coms.jpg' %}" alt="BSCS Image">
+                    <img src="{% static 'dashboard/images/coms.jpg' %}" alt="BSCS Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bscs-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bscs-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bscs-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bscs-objectives">Loading objectives...</p>
+
+            <div class="section-title" id="bscs-dresscode-title" style="display:none;">COURSE UNIFORM</div>
+            <div class="section-divider" id="bscs-dresscode-divider" style="display:none;"></div>
+            <p id="bscs-dresscode-schedule" style="display:none;">Loading course uniform...</p>
+            <div class="content-image" id="bscs-dresscode-block" style="display:none; margin-top:20px;">
+                <div id="bscs-dresscode-images" class="dresscode-gallery"></div>
+            </div>
+        </div>
+
+        <!-- BSED -->
+        <div id="bsed" class="right-panel">
+            <h1>BACHELOR OF ELEMENTARY EDUCATION</h1>
+            <div class="title-line"></div>
+
+            <p id="bsed-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bsed-images">
+                    <img src="{% static 'dashboard/images/cted1.jpg' %}" alt="BSED Image">
+                    <img src="{% static 'dashboard/images/cted2.jpg' %}" alt="BSED Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bsed-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bsed-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bsed-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bsed-objectives">Loading objectives...</p>
+
+            <div class="section-title" id="bsed-dresscode-title" style="display:none;">COURSE UNIFORM</div>
+            <div class="section-divider" id="bsed-dresscode-divider" style="display:none;"></div>
+            <p id="bsed-dresscode-schedule" style="display:none;">Loading course uniform...</p>
+            <div class="content-image" id="bsed-dresscode-block" style="display:none; margin-top:20px;">
+                <div id="bsed-dresscode-images" class="dresscode-gallery"></div>
+            </div>
+        </div>
+
+        <!-- BPEED -->
+        <div id="bpeed" class="right-panel">
+            <h1>BACHELOR OF SECONDARY EDUCATION</h1>
+            <div class="title-line"></div>
+
+            <p id="bpeed-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bpeed-images">
+                    <img src="{% static 'dashboard/images/cted3.jpg' %}" alt="BPEED Image">
+                    <img src="{% static 'dashboard/images/cted4.jpg' %}" alt="BPEED Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bpeed-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bpeed-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bpeed-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bpeed-objectives">Loading objectives...</p>
+
+            <div class="section-title" id="bpeed-dresscode-title" style="display:none;">COURSE UNIFORM</div>
+            <div class="section-divider" id="bpeed-dresscode-divider" style="display:none;"></div>
+            <p id="bpeed-dresscode-schedule" style="display:none;">Loading course uniform...</p>
+            <div class="content-image" id="bpeed-dresscode-block" style="display:none; margin-top:20px;">
+                <div id="bpeed-dresscode-images" class="dresscode-gallery"></div>
+            </div>
+        </div>
+
+        <!-- BSHM -->
+        <div id="bshm" class="right-panel">
+            <h1>BACHELOR OF HOSPITALITY MANAGEMENT</h1>
+            <div class="title-line"></div>
+
+            <p id="bshm-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bshm-images">
+                    <img src="{% static 'dashboard/images/hm.jpg' %}" alt="BSHM Image">
+                    <img src="{% static 'dashboard/images/hm1.jpg' %}" alt="BSHM Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bshm-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bshm-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bshm-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bshm-objectives">Loading objectives...</p>
+
+            <div class="section-title" id="bshm-dresscode-title" style="display:none;">COURSE UNIFORM</div>
+            <div class="section-divider" id="bshm-dresscode-divider" style="display:none;"></div>
+            <p id="bshm-dresscode-schedule" style="display:none;">Loading course uniform...</p>
+            <div class="content-image" id="bshm-dresscode-block" style="display:none; margin-top:20px;">
+                <div id="bshm-dresscode-images" class="dresscode-gallery"></div>
+            </div>
+        </div>
+
+        <!-- BSBA -->
+        <div id="bsba" class="right-panel">
+            <h1>BACHELOR OF SCIENCES BUSINESS ADMINISTRATION</h1>
+            <div class="title-line"></div>
+
+            <p id="bsba-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bsba-images">
+                    <img src="{% static 'dashboard/images/business.jpg' %}" alt="BSBA Image">
+                    <img src="{% static 'dashboard/images/bus.jpg' %}" alt="BSBA Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bsba-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bsba-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bsba-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bsba-objectives">Loading objectives...</p>
+
+            <div class="section-title" id="bsba-dresscode-title" style="display:none;">COURSE UNIFORM</div>
+            <div class="section-divider" id="bsba-dresscode-divider" style="display:none;"></div>
+            <p id="bsba-dresscode-schedule" style="display:none;">Loading course uniform...</p>
+            <div class="content-image" id="bsba-dresscode-block" style="display:none; margin-top:20px;">
+                <div id="bsba-dresscode-images" class="dresscode-gallery"></div>
+            </div>
+        </div>
+
+        <!-- BSOA -->
+        <div id="bsoa" class="right-panel">
+            <h1>BACHELOR OF SCIENCE IN OFFICE ADMINISTRATION</h1>
+            <div class="title-line"></div>
+
+            <p id="bsoa-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bsoa-images">
+                    <img src="{% static 'dashboard/images/office.jpg' %}" alt="BSOA Image">
+                    <img src="{% static 'dashboard/images/bus.jpg' %}" alt="BSOA Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bsoa-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bsoa-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bsoa-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bsoa-objectives">Loading objectives...</p>
+
+            <div class="section-title" id="bsoa-dresscode-title" style="display:none;">COURSE UNIFORM</div>
+            <div class="section-divider" id="bsoa-dresscode-divider" style="display:none;"></div>
+            <p id="bsoa-dresscode-schedule" style="display:none;">Loading course uniform...</p>
+            <div class="content-image" id="bsoa-dresscode-block" style="display:none; margin-top:20px;">
+                <div id="bsoa-dresscode-images" class="dresscode-gallery"></div>
+            </div>
+        </div>
+
+        <!-- AGRI -->
+        <div id="agri" class="right-panel">
+            <h1>BACHELOR OF SCIENCES IN AGRICULTURE</h1>
+            <div class="title-line"></div>
+
+            <p id="agri-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="agri-images">
+                    <img src="{% static 'dashboard/images/agri.jpg' %}" alt="AGRI Image">
+                    <img src="{% static 'dashboard/images/farm.jpg' %}" alt="AGRI Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="agri-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="agri-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="agri-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="agri-objectives">Loading objectives...</p>
+
+            <div class="section-title" id="agri-dresscode-title" style="display:none;">COURSE UNIFORM</div>
+            <div class="section-divider" id="agri-dresscode-divider" style="display:none;"></div>
+            <p id="agri-dresscode-schedule" style="display:none;">Loading course uniform...</p>
+            <div class="content-image" id="agri-dresscode-block" style="display:none; margin-top:20px;">
+                <div id="agri-dresscode-images" class="dresscode-gallery"></div>
+            </div>
+        </div>
+
+        <!-- FORES -->
+        <div id="fores" class="right-panel">
+            <h1>BACHELOR OF SCIENCE IN FORESTRY</h1>
+            <div class="title-line"></div>
+
+            <p id="fores-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="fores-images">
+                    <img src="{% static 'dashboard/images/forestry.jpg' %}" alt="FORES Image">
+                    <img src="{% static 'dashboard/images/back.jpg' %}" alt="FORES Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="fores-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="fores-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="fores-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="fores-objectives">Loading objectives...</p>
+
+            <div class="section-title" id="fores-dresscode-title" style="display:none;">COURSE UNIFORM</div>
+            <div class="section-divider" id="fores-dresscode-divider" style="display:none;"></div>
+            <p id="fores-dresscode-schedule" style="display:none;">Loading course uniform...</p>
+            <div class="content-image" id="fores-dresscode-block" style="display:none; margin-top:20px;">
+                <div id="fores-dresscode-images" class="dresscode-gallery"></div>
+            </div>
+        </div>
+
+        <!-- BIT -->
+        <div id="bit" class="right-panel">
+            <h1>BACHELOR OF SCIENCES INDUSTRIAL TECHNOLOGY</h1>
+            <div class="title-line"></div>
+
+            <p id="bit-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bit-images">
+                    <img src="{% static 'dashboard/images/tech.jpg' %}" alt="BIT Image">
+                    <img src="{% static 'dashboard/images/industrial.jpg' %}" alt="BIT Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bit-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bit-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bit-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bit-objectives">Loading objectives...</p>
+
+            <div class="section-title" id="bit-dresscode-title" style="display:none;">COURSE UNIFORM</div>
+            <div class="section-divider" id="bit-dresscode-divider" style="display:none;"></div>
+            <p id="bit-dresscode-schedule" style="display:none;">Loading course uniform...</p>
+            <div class="content-image" id="bit-dresscode-block" style="display:none; margin-top:20px;">
+                <div id="bit-dresscode-images" class="dresscode-gallery"></div>
+            </div>
+        </div>
+
+        <!-- BSCRIM -->
+        <div id="bscrim" class="right-panel">
+            <h1>BACHELOR OF SCIENCES IN CRIMINOLOGY</h1>
+            <div class="title-line"></div>
+
+            <p id="bscrim-desc">Loading program description...</p>
+
+            <div class="content-image">
+                <div class="image-row" id="bscrim-images">
+                    <img src="{% static 'dashboard/images/pulis.jpg' %}" alt="BSCRIM Image">
+                    <img src="{% static 'dashboard/images/ccjeuni.jpg' %}" alt="BSCRIM Image 2">
+                </div>
+            </div>
+
+            <div class="section-title">PROGRAM DESCRIPTION</div>
+            <div class="section-divider"></div>
+            <p id="bscrim-full-desc">Loading full program description...</p>
+
+            <div class="section-title">Vision</div>
+            <div class="section-divider"></div>
+            <p id="bscrim-vision">Loading vision...</p>
+
+            <div class="section-title">Mission</div>
+            <div class="section-divider"></div>
+            <p id="bscrim-mission">Loading mission...</p>
+
+            <div class="section-title">OBJECTIVES</div>
+            <div class="section-divider"></div>
+            <p id="bscrim-objectives">Loading objectives...</p>
+
+            <div class="section-title" id="bscrim-dresscode-title" style="display:none;">COURSE UNIFORM</div>
+            <div class="section-divider" id="bscrim-dresscode-divider" style="display:none;"></div>
+            <p id="bscrim-dresscode-schedule" style="display:none;">Loading course uniform...</p>
+
+            <div class="content-image" id="bscrim-dresscode-block" style="display:none; margin-top:20px;">
+                <div id="bscrim-dresscode-images" class="dresscode-gallery"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dynamic Program Data Loader for All Programs
+    const programConfigs = {
+        'bsit': { college: 'cas', titleKeywords: ['information technology', 'bsit'] },
+        'bscs': { college: 'cas', titleKeywords: ['computer science', 'bscs'] },
+        'bsed': { college: 'cted', titleKeywords: ['elementary education', 'bsed'] },
+        'bpeed': { college: 'cted', titleKeywords: ['secondary education', 'bpeed'] },
+        'bshm': { college: 'cba', titleKeywords: ['hospitality management', 'bshm'] },
+        'bsba': { college: 'cba', titleKeywords: ['business administration', 'bsba'] },
+        'bsoa': { college: 'cba', titleKeywords: ['office administration', 'bsoa'] },
+        'agri': { college: 'caf', titleKeywords: ['agriculture', 'bsa'] },
+        'fores': { college: 'caf', titleKeywords: ['forestry', 'bsf'] },
+        'bit': { college: 'cit', titleKeywords: ['industrial technology', 'bit'] },
+        'bscrim': { college: 'ccje', titleKeywords: ['criminology', 'bscrim'] }
+    };
+
+    function hasMeaningfulText(value) {
+        return typeof value === 'string' && value.trim().length > 0;
+    }
+
+    function getDefaultCourseUniformText(programTitle) {
+        const safeTitle = (programTitle || 'this program').trim();
+        return `Course uniform details for ${safeTitle} have not yet been published. Students are expected to follow the official NORSU dress code and any department-issued guidelines on prescribed uniforms, ID use, and professional attire.`;
+    }
+
+    function looksLikeCourseUniform(value) {
+        return /(uniform|dress\s*code|dresscode|college shirt|white shirt|organization|intrams|monday|tuesday|wednesday|thursday|friday|saturday|sunday)/i.test(value || '');
+    }
+
+    function setElementDisplay(id, shouldShow, displayMode = 'block') {
+        const element = document.getElementById(id);
+        if (element) {
+            element.style.display = shouldShow ? displayMode : 'none';
+        }
+        return element;
+    }
+
+    async function loadProgramData(programId) {
+        try {
+            const config = programConfigs[programId];
+            if (!config) return;
+
+            const response = await fetch(`/api/programs/?college=${config.college}`);
+            const data = await response.json();
+
+            if (data.success && data.programs) {
+                // Find the matching program
+                const program = data.programs.find(p => {
+                    const title = p.title.toLowerCase();
+                    return config.titleKeywords.some(keyword => title.includes(keyword.toLowerCase()));
+                });
+
+                if (program) {
+                    updateProgramContent(programId, program);
+                }
+            }
+        } catch (error) {
+            console.error(`Error loading ${programId} data:`, error);
+        }
+    }
+
+    function updateProgramContent(programId, program) {
+        // Update Title
+        const titleElem = document.querySelector(`#${programId} h1`);
+        if (titleElem) titleElem.textContent = program.title;
+
+        const programTitle = (program && program.title) || (titleElem ? titleElem.textContent : '');
+        const objectivesText = hasMeaningfulText(program.objectives)
+            ? program.objectives.trim()
+            : '';
+        const courseUniformText = hasMeaningfulText(program.dresscode_schedule)
+            ? program.dresscode_schedule.trim()
+            : (looksLikeCourseUniform(objectivesText) ? objectivesText : getDefaultCourseUniformText(programTitle));
+        const hasDresscodeImages = Array.isArray(program.dresscode_images) && program.dresscode_images.length > 0;
+        const showCourseUniformSection = true;
+
+        // Update main images
+        const imageRow = document.getElementById(`${programId}-images`);
+        if (imageRow && (program.image || program.image2)) {
+            imageRow.innerHTML = ''; // Clear
+            const images = [];
+            if (program.image) images.push(program.image);
+            if (program.image2) images.push(program.image2);
+
+            images.forEach(src => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = `${programId} Main Image`;
+                imageRow.appendChild(img);
+            });
+        }
+
+        // Update descriptions
+        if (program.description) {
+            const desc = document.getElementById(`${programId}-desc`);
+            if (desc) desc.textContent = program.description;
+
+            const fullDesc = document.getElementById(`${programId}-full-desc`);
+            if (fullDesc) fullDesc.textContent = program.description;
+        }
+
+        // Update Vision/Mission
+        if (program.vision) {
+            const vision = document.getElementById(`${programId}-vision`);
+            if (vision) vision.textContent = program.vision;
+        }
+        if (program.mission) {
+            const mission = document.getElementById(`${programId}-mission`);
+            if (mission) mission.textContent = program.mission;
+        }
+
+        // Update Objectives (using description field if objectives not available)
+        if (program.objectives || program.description) {
+            const objectives = document.getElementById(`${programId}-objectives`);
+            if (objectives) objectives.textContent = program.objectives || program.description;
+        }
+
+        // Update Course Uniform section
+        setElementDisplay(`${programId}-dresscode-title`, showCourseUniformSection);
+        setElementDisplay(`${programId}-dresscode-divider`, showCourseUniformSection);
+        setElementDisplay(`${programId}-dresscode-schedule`, hasMeaningfulText(courseUniformText));
+
+        const dresscodeSchedule = document.getElementById(`${programId}-dresscode-schedule`);
+        if (dresscodeSchedule && hasMeaningfulText(courseUniformText)) {
+            dresscodeSchedule.textContent = courseUniformText;
+        }
+
+        setElementDisplay(`${programId}-dresscode-block`, hasDresscodeImages);
+        const diContainer = document.getElementById(`${programId}-dresscode-images`);
+        if (diContainer) {
+            diContainer.innerHTML = '';
+
+            if (hasDresscodeImages) {
+                program.dresscode_images.forEach(imgData => {
+                    const img = document.createElement('img');
+                    img.src = typeof imgData === 'string' ? imgData : imgData.url;
+                    const dayLabel = typeof imgData === 'string' ? 'Course Uniform' : (imgData.day || 'Course Uniform');
+                    img.alt = `${program.title} ${dayLabel}`;
+                    img.title = dayLabel;
+                    diContainer.appendChild(img);
+                });
+            }
+        }
+    }
+
+    function ensureCourseUniformFallback(programId) {
+        const titleElem = document.querySelector(`#${programId} h1`);
+        const programTitle = titleElem ? titleElem.textContent.trim() : 'this program';
+        const scheduleEl = document.getElementById(`${programId}-dresscode-schedule`);
+
+        setElementDisplay(`${programId}-dresscode-title`, true);
+        setElementDisplay(`${programId}-dresscode-divider`, true);
+        setElementDisplay(`${programId}-dresscode-schedule`, true);
+        setElementDisplay(`${programId}-dresscode-block`, false);
+
+        if (scheduleEl && (!hasMeaningfulText(scheduleEl.textContent) || /loading course uniform/i.test(scheduleEl.textContent))) {
+            scheduleEl.textContent = getDefaultCourseUniformText(programTitle);
+        }
+    }
+
+    // Load data for all programs when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        Object.keys(programConfigs).forEach(programId => {
+            ensureCourseUniformFallback(programId);
+        });
+
+        Object.keys(programConfigs).forEach(programId => {
+            loadProgramData(programId);
+        });
+    });
+
+    // Tab switching function
+    function switchTab(programId) {
+        // Hide all programs
+        const allPrograms = document.querySelectorAll('.right-panel');
+        allPrograms.forEach(panel => panel.style.display = 'none');
+
+        // Show selected program
+        const selectedProgram = document.getElementById(programId);
+        if (selectedProgram) {
+            selectedProgram.style.display = 'block';
+        }
+
+        // Update button states
+        const allButtons = document.querySelectorAll('.program-btn');
+        allButtons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.querySelector('i').className = 'fa-regular fa-circle';
+        });
+
+        const activeButton = Array.from(allButtons).find(btn =>
+            btn.getAttribute('onclick').includes(`'${programId}'`)
+        );
+        if (activeButton) {
+            activeButton.classList.add('active');
+            activeButton.querySelector('i').className = 'fa-solid fa-circle';
+        }
+    }
+
+    // Initialize with BSIT visible
+    document.addEventListener('DOMContentLoaded', function () {
+        switchTab('bsit');
+    });
+</script>
+
+
+{% endblock %}

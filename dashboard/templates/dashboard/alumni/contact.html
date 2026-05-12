@@ -1,0 +1,253 @@
+{% extends 'dashboard/alumni/base.html' %}
+{% load static %}
+
+{% block title %}Contact & Feedback - NORSU-BSC Alumni{% endblock %}
+
+{% block content %}
+<style>
+    /* Harvard Editorial - Contact Page */
+    
+    .contact-hero {
+        background: var(--black);
+        padding: 120px 0 80px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 4px solid var(--crimson);
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .hero-title {
+        color: white;
+        font-family: var(--font-serif);
+        font-size: 4.5rem;
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.03em;
+    }
+    
+    .hero-subtitle {
+        color: rgba(255,255,255,0.7);
+        font-size: 1.4rem;
+        font-weight: 400;
+    }
+
+    .contact-container {
+        padding: 100px 0 140px;
+        background: white;
+    }
+
+    .contact-wrapper {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 80px;
+        align-items: start;
+    }
+
+    .contact-form-card {
+        background: white;
+        padding: 60px;
+        border: 1px solid var(--border-color);
+    }
+
+    .section-editorial-title {
+        font-family: var(--font-serif);
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 40px;
+    }
+
+    .form-group {
+        margin-bottom: 30px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        color: var(--crimson);
+        margin-bottom: 10px;
+    }
+
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 15px 20px;
+        border: 1px solid var(--border-color);
+        background: var(--ivory);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+        outline: none;
+        border-color: var(--black);
+        background: white;
+    }
+
+    .form-textarea {
+        min-height: 200px;
+        resize: vertical;
+    }
+
+    .submit-btn {
+        padding: 18px 40px;
+        background: var(--crimson);
+        color: white;
+        border: none;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        background: var(--black);
+        transform: translateY(-2px);
+    }
+
+    .contact-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .info-block {
+        padding: 40px;
+        background: var(--ivory);
+        border-left: 4px solid var(--crimson);
+    }
+
+    .info-block-title {
+        font-family: var(--font-serif);
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 15px;
+    }
+
+    .info-block-text {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .info-block-text a {
+        color: var(--crimson);
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .social-stack {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .social-link {
+        width: 44px;
+        height: 44px;
+        background: var(--black);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .social-link:hover {
+        background: var(--crimson);
+        transform: translateY(-3px);
+    }
+
+    @media (max-width: 992px) {
+        .contact-wrapper { grid-template-columns: 1fr; gap: 60px; }
+        .hero-title { font-size: 3rem; }
+    }
+</style>
+
+<section class="contact-hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">CONTACT US</h1>
+            <p class="hero-subtitle">Strengthening the bonds of the NORSU-BSC Alumni community</p>
+        </div>
+    </div>
+</section>
+
+<section class="contact-container">
+    <div class="container">
+        <div class="contact-wrapper">
+            <!-- Form Section -->
+            <div class="contact-form-card">
+                <h2 class="section-editorial-title">Send a Message</h2>
+                <form method="post" action="{% url 'contact' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="name" class="form-input" placeholder="Your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" name="email" class="form-input" placeholder="your@email.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Subject</label>
+                        <input type="text" name="subject" class="form-input" placeholder="What is this regarding?" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea name="message" class="form-textarea" placeholder="How can we help you?" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+
+            <!-- Sidebar Section -->
+            <div class="contact-sidebar">
+                <div class="info-block">
+                    <h3 class="info-block-title">Campus Office</h3>
+                    <p class="info-block-text">
+                        Negros Oriental State University<br>
+                        Bayawan-Santa Catalina Campus<br>
+                        Negros Oriental, Philippines
+                    </p>
+                </div>
+
+                <div class="info-block">
+                    <h3 class="info-block-title">Direct Contact</h3>
+                    <div class="info-block-text">
+                        <p>📧 <a href="mailto:alumni@norsu.edu.ph">alumni@norsu.edu.ph</a></p>
+                        <p>📞 <a href="tel:+631234567890">+63 123 456 7890</a></p>
+                    </div>
+                </div>
+
+                <div class="info-block">
+                    <h3 class="info-block-title">Connect With Us</h3>
+                    <p class="info-block-text">Follow our official channels for real-time updates and community stories.</p>
+                    <div class="social-stack">
+                        <a href="#" class="social-link">FB</a>
+                        <a href="#" class="social-link">YT</a>
+                        <a href="#" class="social-link">IN</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

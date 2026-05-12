@@ -1,0 +1,352 @@
+{% extends 'dashboard/alumni/base.html' %}
+{% load static %}
+
+{% block title %}Career Opportunities - NORSU-BSC Alumni{% endblock %}
+
+{% block content %}
+<style>
+    /* Harvard Editorial - Careers Page */
+    
+    .careers-hero {
+        background: var(--black);
+        padding: 120px 0 80px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 4px solid var(--crimson);
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .hero-title {
+        color: white;
+        font-family: var(--font-serif);
+        font-size: 4.5rem;
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.03em;
+    }
+    
+    .hero-subtitle {
+        color: rgba(255,255,255,0.7);
+        font-size: 1.4rem;
+        font-weight: 400;
+        letter-spacing: 0.01em;
+    }
+
+    .search-filter-area {
+        background: var(--ivory);
+        padding: 60px 0;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 80px;
+    }
+
+    .filter-tags {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .filter-tag {
+        padding: 12px 24px;
+        background: white;
+        border: 1px solid var(--border-color);
+        color: var(--black);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.8rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .filter-tag:hover, .filter-tag.active {
+        background: var(--crimson);
+        color: white;
+        border-color: var(--crimson);
+        transform: translateY(-2px);
+    }
+
+    .careers-container {
+        padding-bottom: 120px;
+    }
+
+    .jobs-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .job-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        padding: 60px;
+        display: grid;
+        grid-template-columns: 1fr 200px;
+        gap: 40px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .job-card:hover {
+        border-color: var(--crimson);
+        box-shadow: var(--shadow-md);
+        transform: translateX(10px);
+    }
+
+    .job-main {
+        border-right: 1px solid var(--border-color);
+        padding-right: 40px;
+    }
+
+    .job-header {
+        margin-bottom: 30px;
+    }
+
+    .job-title {
+        font-family: var(--font-serif);
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 10px;
+        letter-spacing: -0.02em;
+    }
+
+    .job-company {
+        font-weight: 800;
+        color: var(--crimson);
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        letter-spacing: 0.15em;
+    }
+
+    .job-meta {
+        display: flex;
+        gap: 30px;
+        margin-bottom: 30px;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .job-description {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin-bottom: 30px;
+    }
+
+    .job-requirements-mini {
+        background: var(--ivory);
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+    .job-requirements-mini h4 {
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        margin-bottom: 15px;
+        color: var(--black);
+    }
+
+    .job-requirements-mini ul {
+        list-style: none;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .job-requirements-mini li {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .job-requirements-mini li::before {
+        content: "•";
+        color: var(--crimson);
+    }
+
+    .job-side {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .job-type-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        background: var(--black);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 20px;
+    }
+
+    .job-salary {
+        font-family: var(--font-serif);
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 30px;
+    }
+
+    .apply-btn {
+        display: inline-block;
+        padding: 15px 30px;
+        background: var(--crimson);
+        color: white;
+        text-decoration: none;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+    }
+
+    .apply-btn:hover {
+        background: var(--black);
+        transform: translateY(-2px);
+    }
+
+    /* Career Tips */
+    .tips-section {
+        margin-top: 100px;
+        padding: 100px 0;
+        background: var(--black);
+        color: white;
+    }
+
+    .tips-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
+    }
+
+    .tip-card {
+        background: rgba(255,255,255,0.05);
+        padding: 40px;
+        border-top: 4px solid var(--crimson);
+    }
+
+    .tip-title {
+        font-family: var(--font-serif);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .tip-text {
+        color: rgba(255,255,255,0.7);
+        line-height: 1.7;
+        font-size: 0.95rem;
+    }
+
+    @media (max-width: 992px) {
+        .job-card { grid-template-columns: 1fr; }
+        .job-main { border-right: none; padding-right: 0; }
+        .tips-grid { grid-template-columns: 1fr; }
+        .hero-title { font-size: 3rem; }
+    }
+</style>
+
+<section class="careers-hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">CAREER PORTAL</h1>
+            <p class="hero-subtitle">Connecting NORSU-BSC talent with global professional opportunities</p>
+        </div>
+    </div>
+</section>
+
+<div class="search-filter-area">
+    <div class="container">
+        <div class="filter-tags">
+            <a href="{% url 'careers' %}" class="filter-tag {% if not selected_type %}active{% endif %}">All Opportunities</a>
+            {% for code, label in job_types %}
+            <a href="{% url 'careers' %}?type={{ code }}" class="filter-tag {% if selected_type == code %}active{% endif %}">{{ label }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<section class="careers-container">
+    <div class="container">
+        <div class="jobs-grid">
+            {% for job in opportunities %}
+            <div class="job-card">
+                <div class="job-main">
+                    <div class="job-header">
+                        <h3 class="job-title">{{ job.title }}</h3>
+                        <span class="job-company">{{ job.company }}</span>
+                    </div>
+                    
+                    <div class="job-meta">
+                        <span>📍 {{ job.location }}</span>
+                        <span>📅 {{ job.posted_date|date:"F d, Y" }}</span>
+                    </div>
+                    
+                    <p class="job-description">{{ job.description|truncatewords:60 }}</p>
+                    
+                    <div class="job-requirements-mini">
+                        <h4>Key Qualifications</h4>
+                        <ul>
+                            {% for req in job.requirements|slice:":4" %}
+                            <li>{{ req }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="job-side">
+                    <span class="job-type-badge">{{ job.get_job_type_display }}</span>
+                    {% if job.salary_range %}
+                    <div class="job-salary">{{ job.salary_range }}</div>
+                    {% endif %}
+                    <a href="mailto:{{ job.contact_email }}?subject=Application for {{ job.title }}" class="apply-btn">Apply Now</a>
+                    <p style="font-size: 0.75rem; margin-top: 20px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Deadline: {{ job.deadline|date:"M d" }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align: center; padding: 100px 0; border: 2px dashed var(--border-color);">
+                <div style="font-size: 4rem; margin-bottom: 24px; color: var(--light-gray);">💼</div>
+                <h3 style="font-family: var(--font-serif); font-size: 2.5rem; color: var(--black);">No Active Listings</h3>
+                <p style="color: var(--text-secondary);">Check back soon for new professional opportunities.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="tips-section">
+    <div class="container">
+        <h2 style="font-family: var(--font-serif); font-size: 3.5rem; font-weight: 900; margin-bottom: 60px; text-align: center;">CAREER EXCELLENCE</h2>
+        <div class="tips-grid">
+            <div class="tip-card">
+                <h3 class="tip-title">Editorial Resumes</h3>
+                <p class="tip-text">Craft a narrative that highlights your impact. Focus on storytelling and concrete data to demonstrate your professional growth.</p>
+            </div>
+            <div class="tip-card">
+                <h3 class="tip-title">Network Authority</h3>
+                <p class="tip-text">Leverage the NORSU-BSC global network. Professional relationships are often the most direct path to elite opportunities.</p>
+            </div>
+            <div class="tip-card">
+                <h3 class="tip-title">Continuous Growth</h3>
+                <p class="tip-text">The professional landscape is evolving. Staying ahead requires a commitment to lifelong learning and academic discipline.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

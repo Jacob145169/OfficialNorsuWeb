@@ -1,0 +1,391 @@
+{% load static %}
+<nav class="main-navbar">
+    <div class="navbar-container">
+        <!-- Left: Logo and Text -->
+        <div class="navbar-logo-section">
+            <img src="{% static 'dashboard/images/logo1.png' %}" alt="NORSU Logo" class="navbar-logo">
+            <div class="navbar-logo-text">
+                <div class="navbar-subtitle">NEGROS ORIENTAL STATE UNIVERSITY</div>
+                <div class="navbar-campus">BAYAWAN-STA. CATALINA CAMPUS</div>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <ul class="nav-links">
+            <li><a href="{% url 'home' %}">HOME</a></li>
+            <li class="dropdown">
+                <a href="#about">ABOUT <span class="dropdown-arrow">▼</span></a>
+                <div class="dropdown-menu">
+                    <a href="{% url 'about' %}">ABOUT NORSU</a>
+                    <a href="/news/">LATEST AT NORSU</a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="#academics">ACADEMICS <span class="dropdown-arrow">▼</span></a>
+                <div class="dropdown-menu">
+                    <a href="{% url 'academic_calendar' %}">ACADEMIC CALENDAR</a>
+                    <a href="/programs/">ACADEMIC PROGRAMS</a>
+                </div>
+            </li>
+            
+            <li class="dropdown">
+                <a href="#colleges">COLLEGES <span class="dropdown-arrow">▼</span></a>
+                <div class="dropdown-menu">
+                    {% for college in global_colleges %}
+                    <a href="/{{ college.abbreviation|lower }}/" class="college-link">{{ college.name|upper }}</a>
+                    {% endfor %}
+                </div>
+            </li>
+            
+            <li><a href="/contacts/">CONTACTS</a></li>
+            <li><a href="{% url 'alumni' %}">ALUMNI</a></li>
+        </ul>
+
+        <!-- Right Section: Search and Admin -->
+        <div class="navbar-right">
+            <!-- Search Box -->
+            <div class="navbar-search">
+                <input type="text" class="navbar-search-input" placeholder="SEARCH...">
+                <button class="navbar-search-btn" aria-label="Search">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+            </div>
+
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" aria-label="Toggle Mobile Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-menu">
+        <ul class="mobile-nav-links">
+            <li><a href="{% url 'home' %}">HOME</a></li>
+            <li class="mobile-dropdown">
+                <a href="#about">ABOUT <span class="dropdown-arrow">▼</span></a>
+                <div class="mobile-dropdown-menu">
+                    <a href="{% url 'about' %}">ABOUT NORSU</a>
+                    <a href="/news/">LATEST AT NORSU</a>
+                </div>
+            </li>
+
+            <li class="mobile-dropdown">
+                <a href="#academics">ACADEMICS <span class="dropdown-arrow">▼</span></a>
+                <div class="mobile-dropdown-menu">
+                    <a href="{% url 'academic_calendar' %}">ACADEMIC CALENDAR</a>
+                    <a href="/programs/">ACADEMIC PROGRAMS</a>
+                </div>
+            </li>
+
+            <li class="mobile-dropdown">
+                <a href="#colleges">COLLEGES <span class="dropdown-arrow">▼</span></a>
+                <div class="mobile-dropdown-menu">
+                    {% for college in global_colleges %}
+                    <a href="/{{ college.abbreviation|lower }}/" class="mobile-college-link">{{ college.name|upper }}</a>
+                    {% endfor %}
+                </div>
+            </li>
+
+            <li><a href="/contacts/">CONTACTS</a></li>
+            <li><a href="{% url 'alumni' %}">ALUMNI</a></li>
+        </ul>
+        <div class="mobile-search">
+            <input type="text" class="mobile-search-input" placeholder="SEARCH...">
+            <button class="mobile-search-btn" aria-label="Search">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </button>
+        </div>
+        
+    </div>
+</nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get DOM elements
+    const mobileToggle = document.querySelector('.mobile-menu-toggle');
+    const mobileMenu = document.querySelector('.mobile-nav-menu');
+    const body = document.body;
+    
+    // Set active nav link based on current URL (like alumni navbar)
+    function setActiveNavLink() {
+        const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+        const navLinks = document.querySelectorAll('.nav-links > li > a');
+        const mobileLinks = document.querySelectorAll('.mobile-nav-links > li > a');
+        
+        const allLinks = [...navLinks, ...mobileLinks];
+        allLinks.forEach(link => {
+            const href = (link.getAttribute('href') || '').replace(/\/+$/, '') || '/';
+            if (currentPath === href) {
+                link.classList.add('active');
+            }
+        });
+        
+        // Also check dropdown parents — if a dropdown child matches, activate the parent
+        const dropdownLinks = document.querySelectorAll('.dropdown-menu a, .mobile-dropdown-menu a');
+        dropdownLinks.forEach(link => {
+            const href = (link.getAttribute('href') || '').replace(/\/+$/, '') || '/';
+            if (currentPath === href || currentPath.startsWith(href + '/')) {
+                link.classList.add('active');
+                // Activate parent dropdown trigger
+                const parentDropdown = link.closest('.dropdown, .mobile-dropdown');
+                if (parentDropdown) {
+                    const trigger = parentDropdown.querySelector(':scope > a');
+                    if (trigger) trigger.classList.add('active');
+                }
+            }
+        });
+    }
+    
+    setActiveNavLink();
+    
+    console.log('Navbar initialization started');
+    console.log('Mobile toggle found:', !!mobileToggle);
+    console.log('Mobile menu found:', !!mobileMenu);
+    
+    // Define menu functions globally so they can be accessed from all event listeners
+    window.openMobileMenu = function() {
+        console.log('Opening mobile menu');
+        if (!mobileToggle || !mobileMenu) return;
+        
+        mobileMenu.classList.add('active');
+        mobileToggle.classList.add('active');
+        body.style.overflow = 'hidden';
+        
+        // Add overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'mobile-menu-overlay';
+        overlay.setAttribute('data-overlay', 'true');
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        `;
+        body.appendChild(overlay);
+        
+        // Fade in overlay
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+        }, 10);
+        
+        // Close menu when clicking overlay
+        overlay.addEventListener('click', window.closeMobileMenu);
+    };
+    
+    window.closeMobileMenu = function() {
+        console.log('Closing mobile menu');
+        if (!mobileToggle || !mobileMenu) return;
+        
+        mobileMenu.classList.remove('active');
+        mobileToggle.classList.remove('active');
+        body.style.overflow = '';
+        
+        // Remove overlay
+        const overlay = document.querySelector('[data-overlay="true"]');
+        if (overlay) {
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.remove();
+            }, 300);
+        }
+        
+        // Close all dropdowns
+        const dropdowns = document.querySelectorAll('.mobile-dropdown.active');
+        dropdowns.forEach(dropdown => {
+            dropdown.classList.remove('active');
+        });
+    };
+    
+    // Setup mobile menu toggle
+    if (mobileToggle && mobileMenu) {
+        mobileToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const isOpen = mobileMenu.classList.contains('active');
+            if (isOpen) {
+                window.closeMobileMenu();
+            } else {
+                window.openMobileMenu();
+            }
+        });
+        
+        // Close menu on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+                window.closeMobileMenu();
+            }
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768 && mobileMenu.classList.contains('active')) {
+                window.closeMobileMenu();
+            }
+        });
+    } else {
+        console.error('Mobile menu elements not found!');
+    }
+
+    // Mobile dropdown functionality
+    const mobileDropdowns = document.querySelectorAll('.mobile-dropdown');
+    
+    mobileDropdowns.forEach(dropdown => {
+        const link = dropdown.querySelector('a:not(.nested-trigger)');
+        const menu = dropdown.querySelector('.mobile-dropdown-menu');
+        
+        if (link && menu) {
+            link.addEventListener('click', function(e) {
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('/') && !href.includes('#')) return; // Let real links work
+                
+                e.preventDefault(); e.stopPropagation();
+                dropdown.classList.toggle('active');
+                
+                // Close others at same level
+                mobileDropdowns.forEach(other => {
+                    if (other !== dropdown) other.classList.remove('active');
+                });
+            });
+        }
+    });
+
+    // Mobile Nested Dropdown (Colleges)
+    const nestedTrigger = document.querySelector('.nested-trigger');
+    const nestedContent = document.querySelector('.mobile-nested-content');
+    if (nestedTrigger && nestedContent) {
+        nestedTrigger.addEventListener('click', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            this.parentElement.classList.toggle('nested-active');
+        });
+    }
+
+    // Handle dropdown menu links
+    const dropdownLinks = document.querySelectorAll('.dropdown-menu a, .mobile-dropdown-menu a');
+    
+    dropdownLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            
+            // Allow absolute paths
+            if (href && href.startsWith('/') && !href.startsWith('/#')) {
+                console.log('Navigating to:', href);
+                window.closeMobileMenu();
+                return;
+            } else if (href && href.startsWith('#')) {
+                // Handle anchor links
+                e.preventDefault();
+                console.log('Anchor link clicked:', href);
+                window.closeMobileMenu();
+                
+                // Smooth scroll to section
+                const targetId = href.substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            } else {
+                // For other links
+                console.log('Link clicked:', href);
+                window.closeMobileMenu();
+            }
+        });
+    });
+
+    // Search functionality
+    const searchInput = document.querySelector('.navbar-search-input');
+    const searchBtn = document.querySelector('.navbar-search-btn');
+    const mobileSearchInput = document.querySelector('.mobile-search-input');
+    const mobileSearchBtn = document.querySelector('.mobile-search-btn');
+
+    function performSearch(query) {
+        if (!query || query.trim() === '') {
+            console.log('Please enter a search term');
+            return;
+        }
+
+        const searchTerm = query.trim().toLowerCase();
+        console.log('Searching for:', searchTerm);
+
+        const searchMappings = {
+            'agriculture': '/caf/', 'forestry': '/caf/', 'caf': '/caf/',
+            'arts': '/cas/', 'sciences': '/cas/', 'cas': '/cas/',
+            'business': '/cba/', 'administration': '/cba/', 'cba': '/cba/',
+            'criminal': '/ccje/', 'justice': '/ccje/', 'criminology': '/ccje/', 'ccje': '/ccje/',
+            'teacher': '/cted/', 'education': '/cted/', 'cted': '/cted/',
+            'technology': '/cit/', 'industrial': '/cit/', 'cit': '/cit/',
+            'home': '/', 'about': '/about/', 'news': '/news/', 'alumni': '/alumni/',
+            'programs': '/programs/', 'admissions': '/admissions/', 'contacts': '/contacts/',
+            'academic': '/academic-calendar/', 'calendar': '/academic-calendar/',
+            'course': '/programs/', 'courses': '/programs/',
+            'contact': '/contacts/', 'email': '/contacts/', 'phone': '/contacts/', 'address': '/contacts/',
+            'admin': '/admin/', 'login': '/admin/', 'dashboard': '/admin/'
+        };
+
+        // Check for exact matches first
+        if (searchMappings[searchTerm]) {
+            window.location.href = searchMappings[searchTerm];
+            return;
+        }
+
+        // Check for partial matches
+        for (const [key, url] of Object.entries(searchMappings)) {
+            if (searchTerm.includes(key) || key.includes(searchTerm)) {
+                window.location.href = url;
+                return;
+            }
+        }
+
+        console.log('No results found for:', searchTerm);
+        alert(`No results found for "${query}". Try searching for: agriculture, business, education, technology, arts, sciences, criminal justice, or admin.`);
+    }
+
+    // Desktop search
+    if (searchBtn && searchInput) {
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            performSearch(searchInput.value);
+        });
+
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch(searchInput.value);
+            }
+        });
+    }
+
+    // Mobile search
+    if (mobileSearchBtn && mobileSearchInput) {
+        mobileSearchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            performSearch(mobileSearchInput.value);
+        });
+
+        mobileSearchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch(mobileSearchInput.value);
+            }
+        });
+    }
+});
+</script>

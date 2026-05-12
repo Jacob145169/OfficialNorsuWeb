@@ -1,0 +1,813 @@
+{% extends 'dashboard/base.html' %}
+
+{% load static %}
+
+{% block header %}
+<!-- Removed header for About page -->
+{% endblock %}
+
+{% block title %}About NORSU - Negros Oriental State University{% endblock %}
+
+{% block extra_css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+    :root {
+        /* Harvard-inspired Palette - Maximum Contrast */
+        --h-crimson: #A51C30;
+        --h-black: #000000;
+        --h-dark-gray: #111111;
+        --h-light-gray: #FAFAFA;
+        --h-white: #FFFFFF;
+        --h-border: #C0C0C0;
+
+        --font-heading: 'Lora', 'Crimson Pro', serif;
+        --font-body: 'Source Sans 3', sans-serif;
+
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .about-page {
+        font-family: var(--font-body);
+        color: var(--h-black);
+        background: var(--h-white);
+        line-height: 1.8;
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* Editorial Hero Section */
+    .hero-section {
+        position: relative;
+        width: 100%;
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        background: url("{% static 'dashboard/images/theater.jpg' %}") center/cover no-repeat;
+        background-attachment: fixed;
+    }
+
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(5, 5, 5, 0.95) 0%, rgba(5, 5, 5, 0.7) 60%, rgba(5, 5, 5, 0.4) 100%);
+        z-index: 1;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 100px 40px;
+    }
+
+    .hero-subtitle {
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+        color: var(--h-white);
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .hero-subtitle::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 3px;
+        background-color: var(--h-crimson);
+    }
+
+    .hero-title {
+        font-family: var(--font-heading);
+        font-size: clamp(3.5rem, 7vw, 6rem);
+        font-weight: 700;
+        line-height: 1;
+        color: var(--h-white);
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.02em;
+    }
+
+    .hero-desc {
+        font-family: var(--font-heading);
+        font-size: clamp(1.35rem, 2vw, 1.85rem);
+        color: #FFFFFF;
+        max-width: 700px;
+        font-weight: 400;
+        font-style: italic;
+        line-height: 1.6;
+    }
+
+    /* Base Editorial Layout Styles */
+    .section-wrapper {
+        padding: 100px 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .section-label {
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--h-crimson);
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    /* President Section - Journalistic Split */
+    .leadership-section {
+        position: relative;
+        padding: 120px 40px;
+        background: var(--h-white);
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .leadership-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 4rem;
+        align-items: center;
+    }
+
+    @media(min-width: 900px) {
+        .leadership-grid {
+            grid-template-columns: 5fr 7fr;
+        }
+    }
+
+    .leadership-image-wrap {
+        position: relative;
+    }
+
+    .leadership-image-wrap::after {
+        content: '';
+        position: absolute;
+        bottom: -20px;
+        right: -20px;
+        width: 100%;
+        height: 100%;
+        border: 2px solid var(--h-crimson);
+        z-index: 0;
+    }
+
+    .leadership-image {
+        width: 100%;
+        aspect-ratio: 3/4;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        background: #f0f0f0;
+    }
+
+    .leadership-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(10%) contrast(110%);
+    }
+
+    .leadership-info {
+        position: relative;
+        z-index: 2;
+    }
+
+    .leadership-role {
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.2rem;
+        color: var(--h-crimson);
+        margin-bottom: 1rem;
+        border-bottom: 2px solid var(--h-border);
+        padding-bottom: 1rem;
+        display: inline-block;
+    }
+
+    .leadership-name {
+        font-family: var(--font-heading);
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: var(--h-black);
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+    }
+
+    .leadership-quote {
+        font-family: var(--font-heading);
+        font-size: 1.5rem;
+        font-style: italic;
+        font-weight: 500;
+        color: var(--h-black);
+        line-height: 1.6;
+        padding-left: 2rem;
+        border-left: 5px solid var(--h-crimson);
+        margin-bottom: 2rem;
+    }
+
+    /* Core Values & Mission Area */
+    .core-section {
+        background: var(--h-light-gray);
+        padding: 120px 40px;
+        border-top: 2px solid var(--h-border);
+        border-bottom: 2px solid var(--h-border);
+    }
+
+    .core-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .vision-mission-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        margin-bottom: 5rem;
+    }
+
+    @media(min-width: 800px) {
+        .vision-mission-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .editorial-block {
+        background: var(--h-white);
+        padding: 3rem;
+        border-top: 8px solid var(--h-crimson);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .editorial-block[data-type="mission"] {
+        background: var(--h-black);
+        color: var(--h-white);
+        border-top: 8px solid var(--h-crimson);
+    }
+
+    .editorial-title {
+        font-family: var(--font-heading);
+        font-size: 2.25rem;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+    }
+
+    .editorial-block[data-type="mission"] .editorial-title {
+        color: var(--h-white);
+    }
+
+    .editorial-content {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--h-black);
+        line-height: 1.8;
+    }
+
+    .editorial-block[data-type="mission"] .editorial-content {
+        color: #FFFFFF;
+        font-family: var(--font-heading);
+        font-size: 1.5rem;
+        font-style: italic;
+        font-weight: 400;
+    }
+
+    /* Rich text content from CKEditor */
+    [data-field] p {
+        margin: 0 0 0.75em 0;
+    }
+
+    [data-field] p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Details Grid */
+    .details-section {
+        padding: 120px 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 4rem;
+    }
+
+    @media(min-width: 992px) {
+        .details-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    .text-module {
+        position: relative;
+        padding-top: 2rem;
+        border-top: 2px solid var(--h-border);
+    }
+
+    .text-module::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: var(--h-crimson);
+        transition: width 0.3s ease;
+    }
+
+    .text-module:hover::before {
+        width: 100px;
+    }
+
+    .text-module-title {
+        font-family: var(--font-heading);
+        font-size: 1.8rem;
+        color: var(--h-black);
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+    }
+
+    .text-module-content {
+        font-size: 1.15rem;
+        font-weight: 500;
+        color: var(--h-black);
+        line-height: 1.8;
+    }
+
+    /* History Narrative Elements */
+    .history-section {
+        background: var(--h-black);
+        color: #FFFFFF;
+        padding: 120px 40px;
+    }
+
+    .history-inner {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .history-pretitle {
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+        color: var(--h-crimson);
+        margin-bottom: 1rem;
+        display: block;
+        text-align: center;
+    }
+
+    .history-title {
+        font-family: var(--font-heading);
+        font-size: clamp(3rem, 5vw, 4.5rem);
+        color: var(--h-white);
+        text-align: center;
+        margin-bottom: 4rem;
+        font-weight: 600;
+    }
+
+    .history-content p {
+        font-family: var(--font-heading);
+        font-size: 1.35rem;
+        line-height: 2.2;
+        color: #FFFFFF;
+        margin-bottom: 2.5rem;
+    }
+
+    .history-content p::first-letter {
+        font-family: var(--font-heading);
+        color: var(--h-crimson);
+        float: left;
+        font-size: 5.5rem;
+        line-height: 0.8;
+        padding-right: 0.75rem;
+        padding-top: 0.25rem;
+        font-weight: 700;
+    }
+
+    /* Call to Action - Academic Publication Style */
+    .cta-section {
+        padding: 120px 40px;
+        background: var(--h-white);
+        text-align: center;
+        border-top: 2px solid var(--h-border);
+    }
+
+    .cta-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .cta-title {
+        font-family: var(--font-heading);
+        font-size: 2.75rem;
+        color: var(--h-black);
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+    }
+
+    .cta-desc {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--h-black);
+        margin-bottom: 3rem;
+        line-height: 1.8;
+    }
+
+    .btn-editorial {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 48px;
+        background: transparent;
+        color: var(--h-crimson);
+        border: 2px solid var(--h-crimson);
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 1.05rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        text-decoration: none;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+
+    .btn-editorial:hover {
+        background: var(--h-crimson);
+        color: var(--h-white);
+    }
+
+    .btn-editorial i {
+        font-size: 1.3rem;
+    }
+
+    @media(max-width: 768px) {
+        .hero-content {
+            padding: 80px 20px;
+        }
+
+        .leadership-section,
+        .core-section,
+        .details-section,
+        .history-section,
+        .cta-section {
+            padding: 60px 20px;
+        }
+
+        .leadership-image-wrap::after {
+            display: none;
+        }
+
+        .history-content p::first-letter {
+            font-size: 4rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-page">
+
+    <!-- Hero Section -->
+    <header class="hero-section">
+        <div class="hero-content">
+            <span class="hero-subtitle">University Overview</span>
+            <h1 class="hero-title">About NORSU</h1>
+            <p class="hero-desc">Advancing progressive leadership, excellence in education, and impactful research since
+                our founding.</p>
+        </div>
+    </header>
+
+    <!-- Leadership Section -->
+    <section class="leadership-section" aria-labelledby="president-heading">
+        <div class="leadership-grid">
+            <div class="leadership-image-wrap">
+                <div class="leadership-image">
+                    <img id="presidentPhotoImg" src="{% static 'dashboard/images/pres.png' %}"
+                        data-default-src="{% static 'dashboard/images/pres.png' %}" alt="University President">
+                </div>
+            </div>
+            <div class="leadership-info">
+                <span class="leadership-role" id="presidentRole">Loading...</span>
+                <h2 class="leadership-name" id="president-heading">
+                    <span id="presidentName">Loading...</span>
+                </h2>
+                <div class="leadership-quote" id="presidentCaption">Loading caption...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Grid -->
+    <section class="core-section" id="contentArea" aria-live="polite">
+        <div class="core-container">
+            <span class="section-label">Founding Principles</span>
+
+            <div class="vision-mission-grid">
+                <div class="editorial-block" id="mission" data-type="mission">
+                    <h2 class="editorial-title">Our Mission</h2>
+                    <div class="editorial-content" data-field="mission"></div>
+                </div>
+
+                <div class="editorial-block" id="vision" data-type="vision">
+                    <h2 class="editorial-title">Our Vision</h2>
+                    <div class="editorial-content" data-field="vision"></div>
+                </div>
+            </div>
+
+            <div class="text-module"
+                style="background: var(--h-white); padding: 3rem; border: 2px solid var(--h-border);">
+                <h3 class="text-module-title">General Mandate</h3>
+                <div class="text-module-content" data-field="generalMandate"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Details Section -->
+    <section class="details-section">
+        <span class="section-label">Strategic Priorities</span>
+        <div class="details-grid">
+            <div class="text-module" id="strategic-goals">
+                <h3 class="text-module-title">Strategic Goals</h3>
+                <div class="text-module-content" data-field="strategicGoals"></div>
+            </div>
+            <div class="text-module" id="core-values">
+                <h3 class="text-module-title">Core Values</h3>
+                <div class="text-module-content" data-field="coreValues"></div>
+            </div>
+            <div class="text-module" id="quality-policy">
+                <h3 class="text-module-title">Quality Policy</h3>
+                <div class="text-module-content" data-field="qualityPolicy"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- History Section -->
+    <section class="history-section" id="norsu-history">
+        <div class="history-inner">
+            <span class="history-pretitle">The Origins</span>
+            <h2 class="history-title">Institutional History</h2>
+            <div class="history-content">
+                <p id="norsu-history-content">
+                    Loading history...
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <span class="section-label">Official Documentation</span>
+            <h2 class="cta-title">University Profile</h2>
+            <p class="cta-desc">For a formalized and comprehensive overview of Negros Oriental State University's
+                institutional information, including our policy, mandate, and history, please retrieve the official
+                document.</p>
+            <button onclick="downloadNORSUPDF();" class="btn-editorial">
+                <i class="fas fa-file-pdf"></i>
+                Download Document
+            </button>
+        </div>
+    </section>
+
+</div>
+<script src="{% static 'dashboard/js/aboutnorsu.js' %}?v=20260429c"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    function downloadNORSUPDF() {
+        try {
+            // Check if jsPDF is loaded
+            if (typeof window.jspdf === 'undefined') {
+                alert('PDF library is loading. Please try again in a moment.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+
+            // Create new PDF document
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Set font
+            doc.setFont('helvetica');
+
+            const getFieldText = (selector, fallback = '') => {
+                const el = document.querySelector(selector);
+                const text = (el?.innerText || el?.textContent || '')
+                    .replace(/\r\n/g, '\n')
+                    .replace(/[ \t]+/g, ' ')
+                    .replace(/\n{2,}/g, '\n')
+                    .trim();
+                return text || fallback;
+            };
+
+            // Add title
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Negros Oriental State University (NORSU)', 20, 30);
+
+            // Add subtitle
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'normal');
+            doc.text('University Information', 20, 45);
+
+            // Add line separator
+            doc.setDrawColor(0, 120, 212);
+            doc.setLineWidth(0.5);
+            doc.line(20, 50, 190, 50);
+
+            let yPosition = 60;
+
+            // Add General Mandate
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('General Mandate:', 20, yPosition);
+            yPosition += 10;
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            const mandateText = getFieldText('[data-field="generalMandate"]',
+                'University information for this section will appear here once it is published by the administrator.');
+
+            // Check if we need a new page
+            if (yPosition > 200) {
+                doc.addPage();
+                yPosition = 30;
+            }
+
+            const mandateLines = doc.splitTextToSize(mandateText, 170);
+            mandateLines.forEach(line => {
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 30;
+                }
+                doc.text(line, 20, yPosition);
+                yPosition += 6;
+            });
+
+            yPosition += 10;
+
+            // Check if we need a new page for Vision
+            if (yPosition > 250) {
+                doc.addPage();
+                yPosition = 30;
+            }
+
+            // Add Vision
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Vision:', 20, yPosition);
+            yPosition += 10;
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            const visionText = getFieldText('[data-field="vision"]', 'Information will be updated soon.');
+            const visionLines = doc.splitTextToSize(visionText, 170);
+            visionLines.forEach(line => {
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 30;
+                }
+                doc.text(line, 20, yPosition);
+                yPosition += 6;
+            });
+            yPosition += 9;
+
+            // Add Mission
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Mission:', 20, yPosition);
+            yPosition += 10;
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            const missionText = getFieldText('[data-field="mission"]', 'Information will be updated soon.');
+            const missionLines = doc.splitTextToSize(missionText, 170);
+            missionLines.forEach(line => {
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 30;
+                }
+                doc.text(line, 20, yPosition);
+                yPosition += 6;
+            });
+
+            yPosition += 10;
+
+            // Add Strategic Goals
+            if (yPosition > 250) {
+                doc.addPage();
+                yPosition = 30;
+            }
+
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Strategic Goals:', 20, yPosition);
+            yPosition += 10;
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            const goalsText = getFieldText('[data-field="strategicGoals"]', 'Information will be updated soon.');
+            const goals = goalsText.split(/\n+/).map(item => item.trim()).filter(Boolean);
+            const normalizedGoals = goals.length ? goals : [goalsText];
+
+            normalizedGoals.forEach(goal => {
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 30;
+                }
+                doc.text(goal, 25, yPosition);
+                yPosition += 6;
+            });
+
+            yPosition += 10;
+
+            // Add Core Values
+            if (yPosition > 250) {
+                doc.addPage();
+                yPosition = 30;
+            }
+
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Core Values:', 20, yPosition);
+            yPosition += 10;
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            const valuesText = getFieldText('[data-field="coreValues"]', 'Information will be updated soon.');
+            const values = valuesText.split(/\n+/).map(item => item.trim()).filter(Boolean);
+            const normalizedValues = values.length ? values : [valuesText];
+
+            normalizedValues.forEach(value => {
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 30;
+                }
+                doc.text(value, 25, yPosition);
+                yPosition += 6;
+            });
+
+            yPosition += 10;
+
+            // Add Quality Policy
+            if (yPosition > 250) {
+                doc.addPage();
+                yPosition = 30;
+            }
+
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Quality Policy:', 20, yPosition);
+            yPosition += 10;
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            const policyText = getFieldText('[data-field="qualityPolicy"]', 'Information will be updated soon.');
+            const policyLines = doc.splitTextToSize(policyText, 170);
+            policyLines.forEach(line => {
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 30;
+                }
+                doc.text(line, 20, yPosition);
+                yPosition += 6;
+            });
+
+            // Add footer
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'italic');
+            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 280);
+
+            // Save the PDF
+            doc.save('NORSU_Information.pdf');
+
+            // Show success message
+            setTimeout(() => {
+                alert('NORSU PDF downloaded successfully!');
+            }, 500);
+
+        } catch (error) {
+            console.error('PDF generation error:', error);
+            alert('There was an error generating the PDF. Please try again.');
+        }
+    }
+
+
+</script>
+
+
+{% endblock %}

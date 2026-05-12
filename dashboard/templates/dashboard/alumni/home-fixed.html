@@ -1,0 +1,404 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}NORSU-BSC Alumni Network - Home{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Alumni Home Page - Fixed Version */
+
+/* Hero Section */
+.hero-modern {
+    position: relative;
+    height: 100vh;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1e3a5f 0%, #3b5b92 100%);
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.hero-container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+.hero-content-modern {
+    animation: fadeInUp 1s ease-out;
+}
+
+.hero-title-modern {
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 800;
+    color: white;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 2px;
+}
+
+.hero-subtitle-modern {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 300;
+    color: #3ea1a9;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+}
+
+/* Stats Section */
+.stats-section-modern {
+    padding: 80px 0;
+    background: white;
+}
+
+.stats-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.stat-card-modern {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.stat-card-modern:hover {
+    transform: translateY(-5px);
+    border-color: #3b5b92;
+    box-shadow: 0 15px 30px rgba(59, 91, 146, 0.2);
+}
+
+.stat-card-modern h3 {
+    font-size: 48px;
+    font-weight: 800;
+    color: #3b5b92;
+    margin-bottom: 10px;
+    line-height: 1;
+}
+
+.stat-card-modern p {
+    font-size: 16px;
+    color: #666;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Featured Alumni Section */
+.featured-alumni-section {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+.section-header-modern {
+    text-align: center;
+    margin-bottom: 50px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 20px;
+}
+
+.section-header-modern h2 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.section-header-modern p {
+    font-size: 18px;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.alumni-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.alumni-card-modern {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.alumni-card-modern:hover {
+    transform: translateY(-5px);
+    border-color: #3b5b92;
+    box-shadow: 0 15px 30px rgba(59, 91, 146, 0.2);
+}
+
+.alumni-avatar-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #3b5b92 0%, #1e3a5f 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 auto 20px;
+}
+
+.alumni-info-modern h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.alumni-position {
+    font-size: 14px;
+    color: #3b5b92;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.alumni-class {
+    font-size: 14px;
+    color: #666;
+    font-style: italic;
+}
+
+/* CTA Section */
+.cta-section-modern {
+    padding: 100px 0;
+    background: #87CEEB;
+    color: white;
+    text-align: center;
+}
+
+.cta-content-modern {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.cta-content-modern h2 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.cta-content-modern p {
+    font-size: 18px;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+.cta-buttons-modern {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b5b92 0%, #1e3a5f 100%);
+    color: white;
+    text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(244, 185, 66, 0.3);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: white;
+    text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    border: 2px solid white;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-secondary:hover {
+    background: white;
+    color: #3b5b92;
+    transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title-modern {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle-modern {
+        font-size: 1.5rem;
+    }
+    
+    .stats-grid-modern {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .alumni-grid-modern {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-buttons-modern {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid-modern {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-card-modern h3 {
+        font-size: 36px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-modern">
+    <div class="hero-overlay"></div>
+    
+    <div class="hero-container">
+        <div class="hero-content-modern">
+            <h1 class="hero-title-modern">We Are Proud</h1>
+            <p class="hero-subtitle-modern">NORSUNIAN</p>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section-modern">
+    <div class="stats-grid-modern">
+        <div class="stat-card-modern">
+            <h3>5000+</h3>
+            <p>Alumni Members</p>
+        </div>
+        <div class="stat-card-modern">
+            <h3>75+</h3>
+            <p>Years of Excellence</p>
+        </div>
+        <div class="stat-card-modern">
+            <h3>25+</h3>
+            <p>Active Chapters</p>
+        </div>
+        <div class="stat-card-modern">
+            <h3>150+</h3>
+            <p>Major Awards</p>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Alumni Section -->
+<section class="featured-alumni-section">
+    <div class="section-header-modern">
+        <h2>Featured Alumni</h2>
+        <p>Meet our distinguished alumni making a difference</p>
+    </div>
+    
+    <div class="alumni-grid-modern">
+        <div class="alumni-card-modern">
+            <div class="alumni-avatar-large">M</div>
+            <div class="alumni-info-modern">
+                <h3>Maria Santos</h3>
+                <p class="alumni-position">CEO of Tech Innovations Inc.</p>
+                <p class="alumni-class">Class of 2015</p>
+            </div>
+        </div>
+        
+        <div class="alumni-card-modern">
+            <div class="alumni-avatar-large">J</div>
+            <div class="alumni-info-modern">
+                <h3>Juan Reyes</h3>
+                <p class="alumni-position">Award-winning Software Engineer</p>
+                <p class="alumni-class">Class of 2018</p>
+            </div>
+        </div>
+        
+        <div class="alumni-card-modern">
+            <div class="alumni-avatar-large">A</div>
+            <div class="alumni-info-modern">
+                <h3>Ana Cruz</h3>
+                <p class="alumni-position">International Research Scientist</p>
+                <p class="alumni-class">Class of 2012</p>
+            </div>
+        </div>
+        
+        <div class="alumni-card-modern">
+            <div class="alumni-avatar-large">C</div>
+            <div class="alumni-info-modern">
+                <h3>Carlos Mendoza</h3>
+                <p class="alumni-position">Successful Entrepreneur</p>
+                <p class="alumni-class">Class of 2010</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section-modern">
+    <div class="cta-content-modern">
+        <h2>Join Our Growing Network</h2>
+        <p>Connect with fellow alumni, access exclusive opportunities, and stay engaged with your alma mater</p>
+        <div class="cta-buttons-modern">
+            <a href="{% url 'directory' %}" class="btn-primary">Join Network</a>
+            <a href="{% url 'contact' %}" class="btn-secondary">Contact Us</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

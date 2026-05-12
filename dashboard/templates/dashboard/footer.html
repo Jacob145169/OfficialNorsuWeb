@@ -1,0 +1,96 @@
+{% load static %}
+<footer class="modern-footer-v3">
+    <!-- NEW: Top Accent Section -->
+    <div class="footer-top-accent">
+        <div class="social-follow-section">
+
+            <h3>Follow NORSU on social media</h3>
+            <div class="social-square-grid">
+                <a href="https://www.facebook.com/norsuofficial" class="social-square" target="_blank"><i
+                        class="fab fa-facebook-f"></i></a>
+                <a href="https://x.com" class="social-square" target="_blank"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://www.youtube.com" class="social-square" target="_blank"><i
+                        class="fab fa-youtube"></i></a>
+                <a href="https://www.instagram.com/norsuofficial" class="social-square" target="_blank"><i
+                        class="fab fa-instagram"></i></a>
+                <a href="#" class="social-square"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clean, subtle top border -->
+    <div class="footer-top-border"></div>
+
+    <div class="footer-container-v3">
+        <!-- Main Footer Grid -->
+        <div class="footer-grid-v3">
+
+            <!-- Column 1: Brand & Statement -->
+            <div class="footer-col-brand">
+                <div class="footer-brand-header">
+                    <img src="{% static 'dashboard/images/logo1.png' %}" alt="NORSU Logo" class="footer-logo-v3">
+                    <h2>NORSU—BSC</h2>
+                </div>
+                <p class="brand-statement">
+                    Empowering minds and communities through high-impact education, innovation, and an unwavering
+                    commitment to regional and global excellence.
+                </p>
+            </div>
+
+            <!-- Column 2: Navigation -->
+            <div class="footer-col-links">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="/about/">About Us</a></li>
+                    <li><a href="#colleges-section">Academics</a></li>
+                    <li><a href="#">Admissions</a></li>
+                    <li><a href="/news/">News & Updates</a></li>
+                    <li><a href="{% url 'alumni' %}">Alumni Stories</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Services / Colleges -->
+            <div class="footer-col-links">
+                <h4>Colleges</h4>
+                <ul>
+                    <li><a href="/ccje/">Criminal Justice Ed.</a></li>
+                    <li><a href="/cit/">Industrial Technology</a></li>
+                    <li><a href="/cas/">Arts and Sciences</a></li>
+                    <li><a href="/cba/">Business Admin.</a></li>
+                    <li><a href="/cted/">Teacher Education</a></li>
+                    <li><a href="/caf/">Agriculture & Forestry</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 4: Contact -->
+            <div class="footer-col-contact">
+                <h4>Contact Us</h4>
+                <div class="contact-line">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ site_contact_info.address_text|linebreaksbr }}</span>
+                </div>
+                <div class="contact-line">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>{{ site_contact_info.phone_number }}</span>
+                </div>
+                <div class="contact-line">
+                    <i class="fas fa-envelope"></i>
+                    <a href="mailto:{{ site_contact_info.email_address }}">{{ site_contact_info.email_address }}</a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer-divider-v3"></div>
+
+        <!-- Footer Bottom Region -->
+        <div class="footer-bottom-v3">
+            <p>&copy; 2026 NORSU Bayawan-Sta. Catalina Campus. All Rights Reserved.</p>
+            <div class="footer-legal">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Sitemap</a>
+            </div>
+        </div>
+    </div>
+</footer>

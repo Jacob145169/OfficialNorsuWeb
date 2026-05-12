@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NORSU - Negros Oriental State University</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --text-dark: #333;
+            --text-light: #666;
+            --bg-light: #f8f9fa;
+            --border-color: #e0e0e0;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 36px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .admin-login-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .admin-login-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 60px 30px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+
+        /* College Filter */
+        .college-filter {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin: 30px 0;
+        }
+
+        .filter-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--bg-light);
+            border: 2px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Posts Section */
+        .posts-section {
+            margin: 30px 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            color: var(--text-dark);
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .toggle-btn {
+            background: white;
+            border: 2px solid var(--border-color);
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Posts Grid */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .post-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .post-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .post-college {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .college-badge {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .college-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+
+        .post-type {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: auto;
+        }
+
+        .type-announcement {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .type-news {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .type-update {
+            background: #e8f5e8;
+            color: #388e3c;
+        }
+
+        .post-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .post-date {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .post-content {
+            padding: 20px;
+        }
+
+        .post-excerpt {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .read-more {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .read-more:hover {
+            gap: 10px;
+        }
+
+        /* List View */
+        .posts-list {
+            display: none;
+        }
+
+        .posts-list.active {
+            display: block;
+        }
+
+        .posts-grid.active {
+            display: grid;
+        }
+
+        .list-item {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .list-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .list-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .list-content {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .close-modal {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            float: right;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .container {
+                padding: 0 20px;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-buttons {
+                justify-content: center;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-university"></i>
+                <h1>NORSU</h1>
+            </div>
+            <a href="admin-login.html" class="admin-login-btn">
+                <i class="fas fa-user-shield"></i>
+                Admin Login
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Negros Oriental State University</h1>
+        <p>Stay updated with the latest announcements, news, and updates from all colleges</p>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- College Filter -->
+        <div class="college-filter">
+            <h2 class="filter-title">Filter by College</h2>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterPosts('all')">All Colleges</button>
+                <button class="filter-btn" onclick="filterPosts('CAS')">College of Arts and Sciences</button>
+                <button class="filter-btn" onclick="filterPosts('CBA')">College of Business and Accountancy</button>
+                <button class="filter-btn" onclick="filterPosts('CCJE')">College of Criminal Justice Education</button>
+                <button class="filter-btn" onclick="filterPosts('CAF')">College of Agriculture and Forestry</button>
+                <button class="filter-btn" onclick="filterPosts('CIT')">College of Industrial Technology</button>
+                <button class="filter-btn" onclick="filterPosts('CTED')">College of Teacher Education</button>
+            </div>
+        </div>
+
+        <!-- Posts Section -->
+        <section class="posts-section">
+            <div class="section-header">
+                <h2 class="section-title">Latest Posts</h2>
+                <div class="view-toggle">
+                    <button class="toggle-btn active" onclick="toggleView('grid')">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="toggle-btn" onclick="toggleView('list')">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid View -->
+            <div id="postsGrid" class="posts-grid active">
+                <!-- Posts will be loaded here -->
+            </div>
+
+            <!-- List View -->
+            <div id="postsList" class="posts-list">
+                <!-- Posts will be loaded here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">About NORSU</a>
+                <a href="#">Programs</a>
+                <a href="#">Admissions</a>
+                <a href="#">Research</a>
+                <a href="#">Contact</a>
+            </div>
+            <p>&copy; 2024 Negros Oriental State University. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Post Modal -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+                <h2 id="modalTitle">Post Title</h2>
+                <div id="modalMeta"></div>
+            </div>
+            <div class="modal-body">
+                <div id="modalContent">Post content will appear here</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // College colors
+        const collegeColors = {
+            CAS: '#2c7f76',
+            CBA: '#1e4a8a',
+            CCJE: '#056410',
+            CAF: '#056410',
+            CIT: '#1e4a8a',
+            CTED: '#056410'
+        };
+
+        // Global variables
+        let allPosts = [];
+        let currentFilter = 'all';
+        let currentView = 'grid';
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPosts();
+        });
+
+        function loadPosts() {
+            // Get posts from localStorage
+            const storedPosts = localStorage.getItem('allPosts');
+            allPosts = storedPosts ? JSON.parse(storedPosts) : [];
+            
+            // Sort by date (newest first)
+            allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Display posts
+            displayPosts();
+        }
+
+        function displayPosts() {
+            const filteredPosts = currentFilter === 'all' 
+                ? allPosts 
+                : allPosts.filter(post => post.college === currentFilter);
+
+            if (filteredPosts.length === 0) {
+                displayEmptyState();
+                return;
+            }
+
+            if (currentView === 'grid') {
+                displayGridView(filteredPosts);
+            } else {
+                displayListView(filteredPosts);
+            }
+        }
+
+        function displayGridView(posts) {
+            const gridContainer = document.getElementById('postsGrid');
+            
+            gridContainer.innerHTML = posts.map(post => `
+                <div class="post-card" onclick="openPost(${post.id})">
+                    <div class="post-header">
+                        <div class="post-college">
+                            <div class="college-badge" style="background: ${collegeColors[post.college]}"></div>
+                            <span class="college-name">${post.collegeFullName}</span>
+                            <span class="post-type type-${post.type}">${post.type}</span>
+                        </div>
+                        <h3 class="post-title">${post.title}</h3>
+                        <p class="post-date">${formatDate(post.date)}</p>
+                    </div>
+                    <div class="post-content">
+                        <p class="post-excerpt">${truncateText(post.content, 150)}</p>
+                        <a href="#" class="read-more">
+                            Read More <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayListView(posts) {
+            const listContainer = document.getElementById('postsList');
+            
+            listContainer.innerHTML = posts.map(post => `
+                <div class="list-item" onclick="openPost(${post.id})">
+                    <div class="list-header">
+                        <div class="post-college">
+                            <div class="college-badge" style="background: ${collegeColors[post.college]}"></div>
+                            <span class="college-name">${post.collegeFullName}</span>
+                            <span class="post-type type-${post.type}">${post.type}</span>
+                        </div>
+                        <p class="post-date">${formatDate(post.date)}</p>
+                    </div>
+                    <h3 class="list-title">${post.title}</h3>
+                    <p class="list-content">${truncateText(post.content, 300)}</p>
+                </div>
+            `).join('');
+        }
+
+        function displayEmptyState() {
+            const emptyMessage = currentFilter === 'all' 
+                ? 'No posts found. Be the first to create a post!'
+                : `No posts found for ${getCollegeName(currentFilter)}.`;
+
+            const emptyHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h3>No Posts Found</h3>
+                    <p>${emptyMessage}</p>
+                </div>
+            `;
+
+            document.getElementById('postsGrid').innerHTML = emptyHTML;
+            document.getElementById('postsList').innerHTML = emptyHTML;
+        }
+
+        function filterPosts(college) {
+            currentFilter = college;
+            
+            // Update active button
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Redisplay posts
+            displayPosts();
+        }
+
+        function toggleView(view) {
+            currentView = view;
+            
+            // Update active button
+            const toggleButtons = document.querySelectorAll('.toggle-btn');
+            toggleButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Toggle views
+            const gridView = document.getElementById('postsGrid');
+            const listView = document.getElementById('postsList');
+            
+            if (view === 'grid') {
+                gridView.classList.add('active');
+                listView.classList.remove('active');
+            } else {
+                gridView.classList.remove('active');
+                listView.classList.add('active');
+            }
+            
+            // Redisplay posts
+            displayPosts();
+        }
+
+        function openPost(postId) {
+            const post = allPosts.find(p => p.id === postId);
+            if (!post) return;
+
+            document.getElementById('modalTitle').textContent = post.title;
+            document.getElementById('modalMeta').innerHTML = `
+                <div class="post-college">
+                    <div class="college-badge" style="background: ${collegeColors[post.college]}"></div>
+                    <span class="college-name">${post.collegeFullName}</span>
+                    <span class="post-type type-${post.type}">${post.type}</span>
+                </div>
+                <p style="margin: 10px 0; opacity: 0.8;">
+                    By ${post.author} • ${formatDate(post.date)}
+                </p>
+            `;
+            document.getElementById('modalContent').innerHTML = `
+                <p style="line-height: 1.8; font-size: 16px;">${post.content}</p>
+            `;
+
+            document.getElementById('postModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('postModal').style.display = 'none';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return date.toLocaleDateString(undefined, options);
+        }
+
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.substr(0, maxLength) + '...';
+        }
+
+        function getCollegeName(code) {
+            const names = {
+                CAS: 'College of Arts and Sciences',
+                CBA: 'College of Business and Accountancy',
+                CCJE: 'College of Criminal Justice Education',
+                CAF: 'College of Agriculture and Forestry',
+                CIT: 'College of Industrial Technology',
+                CTED: 'College of Teacher Education'
+            };
+            return names[code] || code;
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('postModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Refresh posts every 30 seconds
+        setInterval(loadPosts, 30000);
+    </script>
+</body>
+</html>

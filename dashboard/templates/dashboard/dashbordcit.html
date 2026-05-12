@@ -1,0 +1,739 @@
+{% extends 'dashboard/base_simple.html' %}
+{% load static %}
+
+{% block title %}College of Industrial Technology — NORSU{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/css/citstyle.css' %}?v=20260429k">
+<link rel="stylesheet" href="{% static 'dashboard/css/footer.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/css/footer-v2.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+{% include 'dashboard/navbar.html' %}
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- ═══════════════════════════════════════════
+     IN-PAGE NAVIGATION (Sticky)
+════════════════════════════════════════════ -->
+<nav class="cit-subnav" id="cit-subnav">
+  <div class="cit-subnav-inner">
+    <a class="snav-link active" onclick="scrollToSec('about-section')">
+      <i class="fas fa-circle-info"></i> About
+    </a>
+    <a class="snav-link" onclick="scrollToSec('programs-section')">
+      <i class="fas fa-book-open"></i> Programs
+    </a>
+    <a class="snav-link" onclick="scrollToSec('news-section')">
+      <i class="fas fa-newspaper"></i> News
+    </a>
+    <a class="snav-link" onclick="scrollToSec('alumni-section')">
+      <i class="fas fa-user-graduate"></i> Alumni
+    </a>
+    <a class="snav-link" onclick="scrollToSec('awards-section')">
+      <i class="fas fa-award"></i> Awards
+    </a>
+    <a class="snav-link" onclick="scrollToSec('facilities-section')">
+      <i class="fas fa-building"></i> Facilities
+    </a>
+    <a class="snav-link" onclick="scrollToSec('administration-section')">
+      <i class="fas fa-users"></i> Administration
+    </a>
+  </div>
+</nav>
+<!-- ═══════════════════════════════════════════
+     HERO — Cinematic, full-screen
+════════════════════════════════════════════ -->
+<section class="cit-hero" id="hero-section">
+  <div class="hero-bg"></div>
+  <div class="hero-grain"></div>
+
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <i class="fas fa-star"></i>
+      Center of Excellence — CHED Recognized
+    </div>
+
+    <h1 class="hero-title">
+      <span class="hero-title-prefix">College of</span>
+      <em>Industrial Technology</em>
+    </h1>
+
+    <p class="hero-desc">
+      Transforming CIT from a traditional engineering school into a modern Center of Excellence for technology.
+      Strengthen moral standards. Pagpalig-on sa moralidad nga sukdanan.
+    </p>
+
+    <div class="hero-actions">
+      <button class="btn-hero-primary"
+        onclick="document.getElementById('programs-section').scrollIntoView({behavior:'smooth'})">
+        <i class="fas fa-graduation-cap"></i>
+        Explore Programs
+      </button>
+      <button class="btn-hero-ghost"
+        onclick="document.getElementById('about-section').scrollIntoView({behavior:'smooth'})">
+        Learn About CIT <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="hero-statsbar">
+    <div class="hstat">
+      <i class="fas fa-book-open"></i>
+      <div>
+        <div class="hstat-num" id="hero-program-count">—</div>
+        <div class="hstat-lbl">Programs</div>
+      </div>
+    </div>
+    <div class="hstat">
+      <i class="fas fa-chalkboard-teacher"></i>
+      <div>
+        <div class="hstat-num" id="hero-faculty-count">—</div>
+        <div class="hstat-lbl">Faculty</div>
+      </div>
+    </div>
+    <div class="hstat">
+      <i class="fas fa-calendar-alt"></i>
+      <div>
+        <div class="hstat-num">25+</div>
+        <div class="hstat-lbl">Years of Excellence</div>
+      </div>
+    </div>
+    <div class="hstat">
+      <i class="fas fa-trophy"></i>
+      <div>
+        <div class="hstat-num">COE</div>
+        <div class="hstat-lbl">Center of Excellence</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- ═══════════════════════════════════════════
+     ABOUT — Two-column editorial
+════════════════════════════════════════════ -->
+<section class="cit-about" id="about-section">
+  <div class="about-wrap">
+
+    <!-- Left: text + goals -->
+    <div>
+      <div class="about-label">About the College</div>
+      <h2 class="about-title">Engineering<br>The Future</h2>
+      <p class="about-body">
+        For the past 25 years, the College of Industrial Technology continuously brings professional training to
+        students, for them to be intellectually, morally, physically and socially skilled individuals equipped to
+        contribute to global demands.
+      </p>
+
+      <button class="goals-toggle-btn" id="goals-toggle-btn" onclick="toggleGoals()">
+        <i class="fas fa-bullseye"></i> View CIT Goals
+      </button>
+
+      <div class="cit-goal-list" id="cit-goals-list">
+        <div class="cit-goal">
+          <span class="goal-letter gl-c">C</span>
+          <div class="goal-text">
+            <h4>Collaborative approaches to university-based and community-based planning.</h4>
+            <em>Tambarayong nga pamaagi basi sa mga plano sa unibersidad og komunidad.</em>
+          </div>
+        </div>
+        <div class="cit-goal">
+          <span class="goal-letter gl-i">I</span>
+          <div class="goal-text">
+            <h4>Attain excellent status in providing a pool of competent and competitive human resources.</h4>
+            <em>Pagkab-ot sa taas nga matang sa pag pangalagad ug dli palupig nga tawhanong mamumuo.</em>
+          </div>
+        </div>
+        <div class="cit-goal">
+          <span class="goal-letter gl-t">T</span>
+          <div class="goal-text">
+            <h4>Strengthen moral standards.</h4>
+            <em>Pagpalig-on sa moralidad nga sukdanan.</em>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: stat cards -->
+    <div class="about-stats-grid">
+      <div class="astat-card">
+        <i class="fas fa-book-open"></i>
+        <span class="astat-num" id="stat-programs">—</span>
+        <span class="astat-lbl">Programs</span>
+      </div>
+      <div class="astat-card">
+        <i class="fas fa-chalkboard-teacher"></i>
+        <span class="astat-num" id="stat-faculty">—</span>
+        <span class="astat-lbl">Faculty</span>
+      </div>
+      <div class="astat-card">
+        <i class="fas fa-user-graduate"></i>
+        <span class="astat-num">1,000+</span>
+        <span class="astat-lbl">Graduates</span>
+      </div>
+      <div class="astat-card">
+        <i class="fas fa-calendar-alt"></i>
+        <span class="astat-num">25+</span>
+        <span class="astat-lbl">Years of Service</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     NEWS — Editorial grid
+════════════════════════════════════════════ -->
+<section class="cit-news" id="news-section">
+  <div class="news-wrap">
+    <div class="news-head" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+      <div class="sec-label">News &amp; Updates</div>
+      <h2 class="sec-title" style="color:var(--navy)">Latest at CIT</h2>
+    </div>
+    <div class="news-grid" id="cit-latest">
+      <!-- Dynamically loaded -->
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     PROGRAMS — Dark editorial grid
+════════════════════════════════════════════ -->
+<section class="cit-programs" id="programs-section">
+  <div class="prog-head" style="justify-content: center; text-align: center;">
+    <div class="prog-head-left" style="display: flex; flex-direction: column; align-items: center;">
+      <div class="sec-label">Academic Offerings</div>
+      <h2 class="sec-title">Programs Offered</h2>
+    </div>
+  </div>
+  <div class="prog-grid" id="cit-programs">
+    <!-- Dynamically loaded -->
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     ALUMNI — Dark full-bleed
+════════════════════════════════════════════ -->
+<section class="cit-alumni" id="alumni-section">
+  <div class="alumni-wrap" style="display: flex; flex-direction: column; align-items: center;">
+    <div class="sec-label">Our Graduates</div>
+    <h2 class="sec-title">Distinguished Alumni</h2>
+
+    <div class="alumni-split-container">
+      <!-- Left: Summa Cum Laude -->
+      <div class="alumni-left-featured" id="alumni-featured">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Right: Scrollable List -->
+      <div class="alumni-right-list" id="alumni-scrollable">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     AWARDS — Clean white
+════════════════════════════════════════════ -->
+<section class="cit-awards" id="awards-section">
+  <div class="awards-wrap" style="display: flex; flex-direction: column; align-items: center;">
+    <div class="sec-label">Achievements</div>
+    <h2 class="sec-title" style="color:var(--navy)">Awards &amp; Recognition</h2>
+    <div class="awards-grid" id="cit-awards">
+      <!-- Dynamically loaded -->
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FACILITIES — Photo grid
+════════════════════════════════════════════ -->
+<section class="cit-facilities" id="facilities-section">
+  <div class="fac-wrap">
+    <div class="fac-head" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+      <div class="sec-label">Campus Spaces</div>
+      <h2 class="sec-title" style="color:var(--navy)">CIT Facilities</h2>
+    </div>
+    <div class="fac-grid" id="cit-facilities">
+      <!-- Dynamically loaded -->
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     ADMINISTRATION — Dark org chart
+════════════════════════════════════════════ -->
+<section class="cit-admin" id="administration-section">
+  <div class="admin-wrap">
+    <div class="admin-header">
+      <div class="sub-tag">College of Industrial Technology</div>
+      <h1><span>Faculty &</span> Staff</h1>
+      <p>Meet the dedicated administrators and faculty who lead the College of Industrial Technology.</p>
+    </div>
+    <div class="org-chart" id="cit-organizational-chart">
+      <!-- Dynamically loaded -->
+    </div>
+  </div>
+</section>
+
+{% include 'dashboard/footer.html' %}
+
+<div class="floating-arrow" id="floatingArrow" onclick="scrollToTop()" title="Back to top">
+  <i class="fas fa-arrow-up"></i>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  /* ════════════════════════════════════════════════
+     INIT
+  ════════════════════════════════════════════════ */
+  document.addEventListener('DOMContentLoaded', async function () {
+    await Promise.all([
+      loadCollegeInfo(),
+      loadCITPrograms(),
+      loadCITFaculty(),
+      loadCitLatestPosts(),
+      loadCitAlumni(),
+      loadCitAwards(),
+      loadCitFacilities()
+    ]);
+    initScrollReveal();
+    initSubnav();
+
+    window.addEventListener('storage', function (e) {
+      if (e.key && (e.key.includes('Updated') || e.key.includes('Posts'))) {
+        loadCITPrograms(); loadCITFaculty(); loadCitLatestPosts();
+        loadCitAlumni(); loadCitAwards(); loadCitFacilities();
+      }
+    });
+  });
+
+  /* ─── SUB-NAV ACTIVE STATE ─── */
+  function initSubnav() {
+    const sections = ['about-section', 'programs-section', 'news-section',
+      'alumni-section', 'awards-section', 'facilities-section', 'administration-section'];
+    const links = document.querySelectorAll('.snav-link');
+
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const id = e.target.id;
+          links.forEach(l => l.classList.remove('active'));
+          const active = [...links].find(l => l.getAttribute('onclick')?.includes(id));
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { threshold: 0.3 });
+
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) obs.observe(el);
+    });
+  }
+
+  function scrollToSec(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  /* ─── COLLEGE INFO ─── */
+  async function loadCollegeInfo() {
+    try {
+      const res = await fetch(`/api/colleges/?t=${Date.now()}`, { cache: 'no-store' });
+      const data = await res.json();
+      if (data.success && data.colleges) {
+        const info = data.colleges.find(c => (c.abbreviation || '').toLowerCase() === 'cit');
+        if (info) {
+          if (info.hero_description) {
+            const heroDesc = document.querySelector('.hero-desc');
+            if (heroDesc) heroDesc.innerHTML = info.hero_description;
+          }
+          if (info.about) {
+            const aboutBody = document.querySelector('.about-body');
+            if (aboutBody) aboutBody.innerHTML = info.about;
+          }
+          if (info.goals && Array.isArray(info.goals) && info.goals.length > 0) {
+            const goalsList = document.getElementById('cit-goals-list');
+            if (goalsList) {
+              goalsList.innerHTML = info.goals.map(g => `
+                <div class="cit-goal">
+                  <span class="goal-letter gl-${(g.letter || 'C').toLowerCase()}">${g.letter || ''}</span>
+                  <div class="goal-text">
+                    <div class="goal-content">${g.english || ''}</div>
+                    ${g.translated ? `<div class="goal-translation">${g.translated}</div>` : ''}
+                  </div>
+                </div>
+              `).join('');
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error('College Info error:', e);
+    }
+  }
+
+  /* ─── GOALS TOGGLE ─── */
+  function toggleGoals() {
+    const list = document.getElementById('cit-goals-list');
+    const btn = document.getElementById('goals-toggle-btn');
+    if (!list) return;
+    const hidden = list.style.display === 'none';
+    list.style.display = hidden ? 'flex' : 'none';
+    btn.innerHTML = hidden
+      ? '<i class="fas fa-times"></i> Hide Goals'
+      : '<i class="fas fa-bullseye"></i> View CIT Goals';
+  }
+
+  /* ─── PROGRAMS ─── */
+  async function loadCITPrograms() {
+    const container = document.getElementById('cit-programs');
+    if (!container) return;
+    try {
+      const res = await fetch(`/api/programs/?college=cit&t=${Date.now()}`);
+      const data = await res.json();
+      if (data.success && data.programs) {
+        const progs = data.programs.filter(p => (p.college || '').toLowerCase() === 'cit');
+        const el = document.getElementById('prog-count-display');
+        if (el) el.textContent = progs.length || '—';
+        ['hero-program-count', 'stat-programs'].forEach(id => {
+          const e = document.getElementById(id);
+          if (e) e.textContent = progs.length || '—';
+        });
+        if (!progs.length) {
+          container.innerHTML = `<div style="color:rgba(255,255,255,.5);padding:60px 0;font-size:18px;grid-column:1/-1">No programs listed yet.</div>`;
+          return;
+        }
+        container.innerHTML = progs.map(p => `
+        <div class="prog-card">
+          <div class="prog-img">
+            <img src="${p.image || '/static/dashboard/images/casuni.jpg'}"
+                 onerror="this.src='/static/dashboard/images/casuni.jpg'" loading="lazy" alt="${p.title}">
+            <span class="prog-duration-badge">${(p.duration || '4 Years').toUpperCase()} DEGREE</span>
+          </div>
+          <div class="prog-body">
+            <div class="prog-name">${p.title}</div>
+            <div class="prog-desc">${p.description || 'A comprehensive program designed to equip students with the skills needed for a successful career.'}</div>
+            <a href="javascript:void(0)" class="prog-link" onclick="navigateToProgram('${p.title}')">
+              Learn More <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      `).join('');
+      }
+    } catch (e) { console.error('Programs error:', e); }
+  }
+
+  function navigateToProgram(title) {
+    window.location.href = '/programs/';
+  }
+
+  /* ─── FACULTY / ORG CHART ─── */
+  async function loadCITFaculty() {
+    try {
+      const res = await fetch('/api/faculty/?college=cit');
+      const data = await res.json();
+      if (data.success && data.faculty) {
+        updateOrganizationalChart(data.faculty);
+        ['hero-faculty-count', 'stat-faculty'].forEach(id => {
+          const e = document.getElementById(id);
+          if (e) e.textContent = data.faculty.length || '—';
+        });
+      }
+    } catch (e) { console.error('Faculty error:', e); }
+  }
+
+  function updateOrganizationalChart(faculty) {
+    const container = document.getElementById('cit-organizational-chart');
+    if (!container) return;
+    if (!faculty || !faculty.length) {
+      container.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,.5);padding:40px">No faculty data available.</p>';
+      return;
+    }
+    const rank = pos => {
+      pos = (pos || '').toLowerCase();
+      if (pos.includes('dean') && !pos.includes('assistant')) return 1;
+      if (pos.includes('assistant dean')) return 2;
+      return 3;
+    };
+    const sorted = [...faculty].sort((a, b) => rank(a.position) - rank(b.position));
+    const dean = sorted.find(f => rank(f.position) === 1);
+    const assts = sorted.filter(f => rank(f.position) === 2);
+    const others = sorted.filter(f => rank(f.position) === 3);
+    const fallback = '/static/dashboard/images/citdean.jpg';
+    const cardHTML = (f, cls) => `
+    <div class="org-box ${cls}">
+      <img src="${f.image || fallback}" class="org-avatar" loading="lazy"
+           onerror="this.src='${fallback}'" alt="${f.name}">
+      <div class="org-info">
+        <h3>${f.name}</h3>
+        <p>${f.position}</p>
+      </div>
+    </div>`;
+
+    let html = '';
+    if (dean) {
+      html += `<div class="org-level"><div class="org-row">${cardHTML(dean, 'dean-box')}</div></div>
+             <div class="org-connector"></div>`;
+    }
+    if (assts.length) {
+      html += `<div class="org-level"><div class="org-row">${assts.map(a => cardHTML(a, 'assistant-box')).join('')}</div></div>
+             <div class="org-connector"></div>`;
+    }
+    if (others.length) {
+      html += `<div class="org-level"><div class="org-grid">${others.map(f => cardHTML(f, 'faculty-box')).join('')}</div></div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  /* ─── NEWS / LATEST POSTS ─── */
+  async function loadCitLatestPosts() {
+    const container = document.getElementById('cit-latest');
+    if (!container) return;
+    try {
+      const res = await fetch('/api/posts/get/?college=cit');
+      const data = await res.json();
+      if (!data.success || !data.posts?.length) {
+        container.innerHTML = '<p style="color:var(--gray-500);padding:40px 0;font-size:18px">No news available.</p>';
+        return;
+      }
+      const posts = data.posts.filter(p => !['alumni', 'award'].includes((p.post_type || p.type || '').toLowerCase()));
+      if (!posts.length) {
+        container.innerHTML = '<p style="color:var(--gray-500);padding:40px 0">No news available.</p>';
+        return;
+      }
+      const fmt = d => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      const isNew = d => (new Date() - new Date(d)) / 3600000 <= 72;
+      const fallback = '/static/dashboard/images/news.jpg';
+
+      let html = '';
+      posts.slice(0, 5).forEach(p => {
+        html += `
+        <a href="/news/${p.id}/" class="news-card-sm news-card-link">
+          <div class="news-sm-img">
+            <img src="${p.image || fallback}" onerror="this.src='${fallback}'" loading="lazy" alt="${p.title}">
+          </div>
+          <div class="news-sm-body">
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              ${isNew(p.date_posted || p.date) ? '<span class="news-tag news-is-new">New</span>' : ''}
+            <span class="news-tag">${(p.post_type || p.type || 'Announcement').toUpperCase()}</span>
+          </div>
+          <div class="news-date">${fmt(p.date_posted || p.date)}</div>
+          <h4 class="news-title-sm">${p.title}</h4>
+          <p class="news-excerpt-sm">${(p.content || '').substring(0, 100)}…</p>
+          <span class="news-read">Read More <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </a>`;
+      });
+
+      container.innerHTML = html;
+    } catch (e) { console.error('Posts error:', e); }
+  }
+
+  /* ─── ALUMNI ─── */
+  async function loadCitAlumni() {
+    const featContainer = document.getElementById('alumni-featured');
+    const listContainer = document.getElementById('alumni-scrollable');
+    if (!featContainer || !listContainer) return;
+
+    try {
+      const res = await fetch('/api/alumni/');
+      const data = await res.json();
+      if (!data.success || !data.alumni?.length) {
+        featContainer.innerHTML = '<p style="color:rgba(255,255,255,.5)">No alumni data.</p>';
+        return;
+      }
+
+      const CIT_PROGRAMS = [
+        'bachelor of industrial technology',
+        'industrial technology'
+      ];
+
+      const filtered = data.alumni.filter(a => {
+        const course = (a.course || '').toLowerCase().trim();
+        return CIT_PROGRAMS.some(p => course.includes(p));
+      });
+
+      if (!filtered.length) {
+        featContainer.innerHTML = '<p style="color:rgba(255,255,255,.5)">No CIT alumni data available.</p>';
+        return;
+      }
+
+      const fallback = '/static/dashboard/images/pulis.jpg';
+
+      // ── SORTING LOGIC: Summa Cum Laude vs Others ──
+      const featured = filtered.filter(a => (a.latin_honors || '').toLowerCase().includes('summa cum laude'));
+      const others = filtered.filter(a => !(a.latin_honors || '').toLowerCase().includes('summa cum laude'));
+
+      // Helper to render card
+      const renderCard = (a) => `
+      <div class="alumni-card">
+        <div class="alumni-photo">
+          <img src="${a.profile_image || a.image || fallback}"
+               onerror="this.src='${fallback}'" loading="lazy" alt="">
+        </div>
+        <div class="alumni-name">${a.full_name || a.name || 'Alumni'}</div>
+        <div class="alumni-meta">${a.course || 'Bachelor of Industrial Technology'}</div>
+        <div class="alumni-batch-label">BATCH ${a.graduation_year || a.batch || '2025'}</div>
+        <div class="alumni-quote">
+          "The education at CIT gave me the foundation to innovate and lead in the fast-evolving world of technology."
+        </div>
+      </div>
+    `;
+
+      // Populate Left (Featured Master Profile)
+      if (featured.length > 0) {
+        featContainer.innerHTML = `
+        <div class="featured-honor-label"><i class="fas fa-crown"></i> Summa Cum Laude</div>
+        ${featured.map(a => `
+          <div class="master-card">
+            <div class="alumni-photo">
+              <img src="${a.profile_image || a.image || fallback}"
+                   onerror="this.src='${fallback}'" loading="lazy" alt="">
+            </div>
+            <div class="alumni-name">${a.full_name || a.name || 'Alumni'}</div>
+            <div class="alumni-meta">${a.course || 'Bachelor of Industrial Technology'}</div>
+            <div class="alumni-batch-label">BATCH ${a.graduation_year || a.batch || '2025'}</div>
+            <div class="alumni-quote">
+              "The foundation of excellence starts at CIT. I am proud to represent the pinnacle of academic achievement."
+            </div>
+          </div>
+        `).join('')}
+      `;
+      } else {
+        featContainer.innerHTML = '<p style="color:rgba(255,255,255,.3); text-align: center; width: 100%; grid-column: 1/-1; padding: 40px 0;">No Summa candidates found.</p>';
+      }
+
+      // Populate Right (Small Grid)
+      listContainer.innerHTML = `
+      <div class="small-grid">
+        ${others.map(a => `
+          <div class="mini-card">
+            <div class="alumni-photo">
+              <img src="${a.profile_image || a.image || fallback}"
+                   onerror="this.src='${fallback}'" loading="lazy" alt="">
+            </div>
+            <div class="alumni-name">${a.full_name || a.name || 'Alumni'}</div>
+            <div class="alumni-meta">${a.course || 'Bachelor of Industrial Technology'}</div>
+            <div class="alumni-batch-label">BATCH ${a.graduation_year || a.batch || '2025'}</div>
+            <div class="alumni-quote">"Building a legacy of innovation."</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    } catch (e) { console.error('Alumni error:', e); }
+  }
+
+  /* ─── AWARDS ─── */
+  async function loadCitAwards() {
+    const container = document.getElementById('cit-awards');
+    if (!container) return;
+    try {
+      const res = await fetch('/api/posts/get/?college=cit&type=award');
+      const data = await res.json();
+      if (!data.success || !data.posts?.length) {
+        container.innerHTML = '<p style="color:var(--gray-500);padding:40px 0">No awards listed.</p>';
+        return;
+      }
+      const unique = data.posts.filter((a, i, arr) =>
+        arr.findIndex(b => b.id === a.id) === i
+      );
+      const fallback = '/static/dashboard/images/acads.jpg';
+      container.innerHTML = unique.map(post => `
+      <a href="/news/${post.id}/" class="award-card award-card-link">
+        <div class="award-img">
+          <div class="award-trophy"><i class="fas fa-trophy"></i></div>
+          <img src="${post.image || fallback}"
+               onerror="this.src='${fallback}'" loading="lazy" alt="${post.title}">
+        </div>
+        <div class="award-body">
+          <h3 class="award-title">${post.title}</h3>
+          <p class="award-desc">${(post.content || 'No description available.').substring(0, 160)}${post.content?.length > 160 ? '…' : ''}</p>
+          <span class="award-link">
+            Read More <i class="fas fa-arrow-right"></i>
+          </span>
+        </div>
+      </a>
+    `).join('');
+    } catch (e) { console.error('Awards error:', e); }
+  }
+
+  /* ─── FACILITIES ─── */
+  async function loadCitFacilities() {
+    const container = document.getElementById('cit-facilities');
+    if (!container) return;
+    try {
+      const res = await fetch('/api/facilities/?college=cit');
+      const data = await res.json();
+      if (!data.success || !data.facilities?.length) {
+        container.innerHTML = '<p style="color:var(--gray-500);padding:40px 0">No facilities listed.</p>';
+        return;
+      }
+      const fallback = '/static/dashboard/images/ITBUILDING.jpg';
+      container.innerHTML = data.facilities.map(f => `
+      <div class="fac-card">
+        <div class="fac-label">${f.name}</div>
+        <img src="${f.image || fallback}"
+             onerror="this.src='${fallback}'" loading="lazy" alt="${f.name}">
+      </div>
+    `).join('');
+    } catch (e) { console.error('Facilities error:', e); }
+  }
+
+  /* ─── SCROLL REVEAL ─── */
+  function initScrollReveal() {
+    const SEL = [
+      '.astat-card', '.cit-goal', '.prog-card',
+      '.news-card-feat', '.news-card-sm',
+      '.alumni-card', '.award-card', '.fac-card',
+      '.org-box', '.sec-label', '.sec-title', '.about-label', '.about-title'
+    ].join(',');
+
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+    document.querySelectorAll(SEL).forEach((el, i) => {
+      el.classList.add('reveal');
+      const siblings = [...el.parentElement.children].filter(c => c.classList.contains('reveal'));
+      el.style.transitionDelay = `${Math.min(siblings.indexOf(el) * 0.08, 0.4)}s`;
+      obs.observe(el);
+    });
+  }
+
+  /* ─── SCROLL EFFECTS ─── */
+  const floatingArrow = document.getElementById('floatingArrow');
+  const scrollProgress = document.getElementById('scrollProgress');
+
+  window.addEventListener('scroll', () => {
+    // Arrow Visibility
+    floatingArrow.classList.toggle('visible', window.scrollY > 600);
+
+    // Progress Bar
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+    if (scrollProgress) {
+      scrollProgress.style.width = scrolled + "%";
+    }
+  });
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+{% endblock %}

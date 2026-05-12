@@ -1,0 +1,150 @@
+{% extends 'dashboard/base.html' %}
+{% load static rich_text %}
+
+{% block title %}{{ post.title }} - NORSU{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/css/navbar.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/css/detail-page.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@400;700&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<section class="detail-banner">
+    <div class="detail-banner-inner">
+        <div>
+            <div class="detail-eyebrow">NORSU Bayawan - Sta. Catalina Campus</div>
+            <h1 class="detail-section-title">
+                {% if post.post_type == 'announcement' or post.category == 'announcement' %}
+                Announcements
+                {% elif post.category == 'event' %}
+                Events &amp; Updates
+                {% elif post.category == 'academic' %}
+                Academic News
+                {% elif post.category == 'sports' %}
+                Sports News
+                {% else %}
+                News &amp; Announcements
+                {% endif %}
+            </h1>
+        </div>
+        <div class="detail-section-date">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>{{ post.created_at|date:"F d, Y" }}</span>
+        </div>
+    </div>
+</section>
+
+<div class="detail-shell">
+    <nav class="detail-breadcrumb" aria-label="Breadcrumb">
+        <a href="{% url 'home' %}">Home</a>
+        <span>/</span>
+        <a href="{% url 'news' %}">
+            {% if post.post_type == 'announcement' or post.category == 'announcement' %}
+            Announcements
+            {% elif post.category == 'event' %}
+            Events &amp; Updates
+            {% elif post.category == 'academic' %}
+            Academic News
+            {% elif post.category == 'sports' %}
+            Sports News
+            {% else %}
+            News &amp; Announcements
+            {% endif %}
+        </a>
+        <span>/</span>
+        <span>{{ post.title|truncatewords:10 }}</span>
+    </nav>
+
+    <article class="detail-card">
+        <div class="detail-card-top">
+            <span class="detail-chip {% if post.post_type == 'announcement' or post.category == 'announcement' %}detail-chip--announcement{% elif post.category == 'event' %}detail-chip--event{% elif post.category == 'academic' %}detail-chip--academic{% elif post.category == 'sports' %}detail-chip--sports{% endif %}">
+                {% if post.post_type == 'announcement' or post.category == 'announcement' %}
+                Announcement
+                {% elif post.category == 'event' %}
+                Event
+                {% elif post.category == 'academic' %}
+                Academic
+                {% elif post.category == 'sports' %}
+                Sports
+                {% else %}
+                News
+                {% endif %}
+            </span>
+            <span class="detail-meta-inline">
+                Posted on {{ post.created_at|date:"F d, Y" }}{% if post.author %} by {{ post.author }}{% endif %}
+            </span>
+        </div>
+
+        <h2 class="detail-title">{{ post.title }}</h2>
+
+        {% if post.author %}
+        <p class="detail-subtitle">Written by {{ post.author }}</p>
+        {% endif %}
+
+        {% if post.display_image_url %}
+        <figure class="detail-feature">
+            <img src="{{ post.display_image_url }}" alt="{{ post.title }}">
+            <figcaption>{{ post.title }}</figcaption>
+        </figure>
+        {% endif %}
+
+        <div class="detail-content{% if post.display_image_url %} has-feature-image{% endif %}">
+            {{ post.content|autolink_html }}
+        </div>
+
+        <div class="detail-share">
+            <span class="detail-share-label">Share this article:</span>
+            <a class="detail-share-btn fb" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" rel="noopener" title="Share on Facebook">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a class="detail-share-btn tw" href="https://twitter.com/intent/tweet?text={{ post.title|urlencode }}&url={{ request.build_absolute_uri }}" target="_blank" rel="noopener" title="Share on X">
+                <i class="fa-brands fa-x-twitter"></i>
+            </a>
+            <a class="detail-share-btn gl" href="https://mail.google.com/mail/?view=cm&fs=1&to=&su={{ post.title|urlencode }}&body={{ request.build_absolute_uri }}" target="_blank" rel="noopener" title="Share via Gmail">
+                <i class="fa-solid fa-envelope"></i>
+            </a>
+            <button class="detail-share-btn cp" id="detail-copy-btn" onclick="copyDetailLink()" title="Copy link">
+                <i class="fas fa-link"></i>
+            </button>
+        </div>
+    </article>
+</div>
+
+<div class="detail-copy-toast" id="detail-copy-toast">Link copied to clipboard.</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function copyDetailLink() {
+        const url = window.location.href;
+        const btn = document.getElementById('detail-copy-btn');
+        const toast = document.getElementById('detail-copy-toast');
+
+        navigator.clipboard.writeText(url).then(() => {
+            btn.classList.add('copied');
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.innerHTML = '<i class="fas fa-link"></i>';
+            }, 2200);
+
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        }).catch(() => {
+            const textarea = document.createElement('textarea');
+            textarea.value = url;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,239 @@
+{% extends 'dashboard/alumni/base.html' %}
+{% load static %}
+
+{% block title %}Colleges - NORSU-BSC Alumni Network{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Harvard Editorial - Programs Page */
+
+    .programs-hero {
+        background: var(--black);
+        padding: 72px 0 44px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 4px solid var(--crimson);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .hero-title {
+        color: white;
+        font-family: var(--font-serif);
+        font-size: 3.35rem;
+        font-weight: 900;
+        margin-bottom: 0.9rem;
+        letter-spacing: -0.03em;
+        line-height: 1.08;
+    }
+
+    .hero-subtitle {
+        color: rgba(255,255,255,0.7);
+        font-size: 1.1rem;
+        font-weight: 400;
+        letter-spacing: 0.01em;
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    .search-filter-area {
+        background: var(--ivory);
+        padding: 60px 0;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 80px;
+    }
+
+    .search-box {
+        display: flex;
+        max-width: 800px;
+        margin: 0 auto;
+        gap: 0;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 18px 30px;
+        border: 2px solid var(--border-color);
+        border-right: none;
+        font-size: 1.1rem;
+        background: white;
+    }
+
+    .search-btn {
+        padding: 0 40px;
+        background: var(--crimson);
+        color: white;
+        border: none;
+        font-weight: 800;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+
+    .programs-container {
+        padding-bottom: 120px;
+    }
+
+    .programs-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
+    }
+
+    .program-card {
+        background: white;
+        padding: 40px;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .program-card:hover {
+        border-color: var(--crimson);
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .program-icon-container {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 30px;
+        background: var(--ivory);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .program-icon-container img {
+        width: 80%;
+        height: 80%;
+        object-fit: contain;
+    }
+
+    .program-icon-fallback {
+        width: 80%;
+        height: 80%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        font-size: 1.2rem;
+    }
+
+    .program-name {
+        font-family: var(--font-serif);
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 15px;
+        line-height: 1.2;
+    }
+
+    .program-description {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 30px;
+        flex-grow: 1;
+    }
+
+    .view-directory-btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background: var(--black);
+        color: white;
+        text-decoration: none;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+    }
+
+    .view-directory-btn:hover {
+        background: var(--crimson);
+    }
+
+    @media (max-width: 1200px) {
+        .programs-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+        .programs-grid { grid-template-columns: 1fr; }
+        .programs-hero { padding: 56px 0 36px; }
+        .hero-title { font-size: 2.35rem; }
+        .hero-subtitle { font-size: 1rem; }
+    }
+</style>
+
+<section class="programs-hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">COLLEGES</h1>
+            <p class="hero-subtitle">Exploring excellence across all disciplines of NORSU-BSC</p>
+        </div>
+    </div>
+</section>
+
+<div class="search-filter-area">
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search for a college or academic program...">
+            <button class="search-btn" onclick="filterPrograms()">Search</button>
+        </div>
+    </div>
+</div>
+
+<section class="programs-container" id="mainProgramsSection">
+    <div class="container">
+        <div class="programs-grid" id="programsGrid">
+            {% for college in alumni_college_navigation %}
+            <div class="program-card" data-search="{{ college.name }} {{ college.description }} {% for program in college.programs %}{{ program.title }} {% endfor %}" onclick="window.location.href='{% url 'directory' %}?college={{ college.key|urlencode }}'">
+                <div class="program-icon-container">
+                    {% if college.image_url %}
+                    <img src="{{ college.image_url }}" alt="{{ college.abbreviation|upper }}">
+                    {% else %}
+                    <div class="program-icon-fallback" style="background: {{ college.theme_color }};">{{ college.abbreviation|upper }}</div>
+                    {% endif %}
+                </div>
+                <h3 class="program-name">{{ college.name }}</h3>
+                <p class="program-description">{{ college.description }}</p>
+                <a href="{% url 'directory' %}?college={{ college.key|urlencode }}" class="view-directory-btn">
+                    Explore Directory
+                </a>
+            </div>
+            {% empty %}
+            <div class="program-card">
+                <h3 class="program-name">No colleges available yet</h3>
+                <p class="program-description">Add a college in Super Admin and it will appear here automatically.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<script>
+    function filterPrograms() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.querySelectorAll('.program-card');
+        cards.forEach(card => {
+            const text = (card.dataset.search || card.textContent).toLowerCase();
+            card.style.display = text.includes(searchTerm) ? 'flex' : 'none';
+        });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', filterPrograms);
+</script>
+
+{% endblock %}

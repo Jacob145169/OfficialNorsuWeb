@@ -1,0 +1,276 @@
+{% extends 'dashboard/alumni/base.html' %}
+{% load static %}
+
+{% block title %}Topnotchers - NORSU-BSC Alumni{% endblock %}
+
+{% block content %}
+<style>
+    /* Harvard Editorial - Achievements/Topnotchers Page */
+    
+    .achievements-hero {
+        background: var(--black);
+        padding: 72px 0 44px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 4px solid var(--crimson);
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .hero-title {
+        color: white;
+        font-family: var(--font-serif);
+        font-size: 3.35rem;
+        font-weight: 900;
+        margin-bottom: 0.9rem;
+        letter-spacing: -0.03em;
+        line-height: 1.08;
+    }
+    
+    .hero-subtitle {
+        color: rgba(255,255,255,0.7);
+        font-size: 1.1rem;
+        font-weight: 400;
+        letter-spacing: 0.01em;
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    .search-filter-area {
+        background: var(--ivory);
+        padding: 60px 0;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 80px;
+    }
+    
+    .search-box {
+        display: flex;
+        max-width: 800px;
+        margin: 0 auto;
+        gap: 0;
+    }
+    
+    .search-input {
+        flex: 1;
+        padding: 18px 30px;
+        border: 2px solid var(--border-color);
+        border-right: none;
+        font-size: 1.1rem;
+        background: white;
+    }
+    
+    .search-btn {
+        padding: 0 40px;
+        background: var(--crimson);
+        color: white;
+        border: none;
+        font-weight: 800;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+
+    .filter-tags {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+
+    .filter-tag {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    .filter-tag:hover, .filter-tag.active {
+        color: var(--crimson);
+        border-bottom-color: var(--crimson);
+    }
+
+    .achievements-container {
+        padding-bottom: 140px;
+    }
+
+    .alumni-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
+    }
+
+    .alumni-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        padding: 50px 40px;
+        text-align: center;
+        position: relative;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .alumni-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--crimson);
+        box-shadow: var(--shadow-md);
+    }
+
+    .alumni-card::before {
+        content: "🏆";
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 1.2rem;
+        opacity: 0.2;
+    }
+
+    .alumni-photo-container {
+        width: 140px;
+        height: 140px;
+        margin: 0 auto 30px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 4px solid var(--ivory);
+        background: var(--ivory);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .alumni-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .alumni-initial {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--crimson);
+        font-family: var(--font-serif);
+    }
+
+    .alumni-name {
+        font-family: var(--font-serif);
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 10px;
+        letter-spacing: -0.02em;
+    }
+
+    .alumni-profession {
+        font-weight: 800;
+        color: var(--crimson);
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+        margin-bottom: 25px;
+        display: block;
+    }
+
+    .alumni-story {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        line-height: 1.8;
+        font-style: italic;
+        margin-bottom: 30px;
+    }
+
+    .alumni-year {
+        display: inline-block;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        border-top: 1px solid var(--border-color);
+        padding-top: 15px;
+        width: 100%;
+    }
+
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 100px 0;
+        border: 2px dashed var(--border-color);
+    }
+
+    @media (max-width: 1100px) {
+        .alumni-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+        .alumni-grid { grid-template-columns: 1fr; }
+        .achievements-hero { padding: 56px 0 36px; }
+        .hero-title { font-size: 2.35rem; }
+        .hero-subtitle { font-size: 1rem; }
+    }
+</style>
+
+<section class="achievements-hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">DISTINGUISHED TOPNOTCHERS</h1>
+            <p class="hero-subtitle">Celebrating the academic excellence and professional impact of our graduates</p>
+        </div>
+    </div>
+</section>
+
+<div class="search-filter-area">
+    <div class="container">
+        <form method="GET" action="{% url 'achievements' %}" class="search-box">
+            <input type="text" name="search" id="searchInput" class="search-input" placeholder="Search for a name or achievement..." value="{{ request.GET.search|default:'' }}">
+            <button type="submit" class="search-btn">Search</button>
+        </form>
+        
+        <div class="filter-tags">
+            <a href="{% url 'achievements' %}" class="filter-tag {% if not selected_category %}active{% endif %}">All Achievements</a>
+            {% for code, label in categories %}
+            <a href="{% url 'achievements' %}?category={{ code }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="filter-tag {% if selected_category == code %}active{% endif %}">{{ label }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<section class="achievements-container">
+    <div class="container">
+        <div class="alumni-grid">
+            {% for alumni in notable_alumni %}
+            <div class="alumni-card">
+                <div class="alumni-photo-container">
+                    {% if alumni.display_image_url %}
+                        <img src="{{ alumni.display_image_url }}" alt="{{ alumni.alumni_name }}" class="alumni-photo">
+                    {% else %}
+                        <span class="alumni-initial">{{ alumni.alumni_name|slice:":1"|upper }}</span>
+                    {% endif %}
+                </div>
+                
+                <h3 class="alumni-name">{{ alumni.alumni_name }}</h3>
+                <span class="alumni-profession">{{ alumni.achievement }}</span>
+                
+                <p class="alumni-story">"{{ alumni.description|striptags|truncatewords:40 }}"</p>
+                
+                <div class="alumni-year">
+                    CLASS OF {{ alumni.created_at|date:"Y" }}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <div style="font-size: 4rem; margin-bottom: 24px; color: var(--light-gray);">🏆</div>
+                <h2 style="font-family: var(--font-serif); font-size: 2.5rem; color: var(--black); margin-bottom: 15px;">No Records Found</h2>
+                <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto;">We couldn't find any achievements matching your search criteria. Try a different term or browse all records.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

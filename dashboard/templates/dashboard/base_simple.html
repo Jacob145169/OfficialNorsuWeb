@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% block title %}NORSU Dashboard{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'dashboard/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/global-responsive.css' %}">
+    {% block extra_css %}{% endblock %}
+    
+    {% if college and college.theme_color %}
+    <style>
+        /* Apply theme color to hero title highlights */
+        .hero-title em, 
+        .hero-title span:not(.hero-title-prefix),
+        .admin-header h1 span {
+            color: {{ college.theme_color }} !important;
+        }
+        
+        /* Apply theme color to about section letters */
+        .goal-letter,
+        .gl-c, .gl-a, .gl-s, .gl-b, .gl-f, .gl-e, .gl-i, .gl-t {
+            color: {{ college.theme_color }} !important;
+        }
+
+        /* Apply theme color to stat cards */
+        .astat-card, .stat-card {
+            border-top-color: {{ college.theme_color }} !important;
+        }
+        
+        .astat-card i, .stat-card i,
+        .hstat i, .hero-badge i {
+            color: {{ college.theme_color }} !important;
+        }
+        
+        /* Subnav background and contrast */
+        .cas-subnav, .caf-subnav, .subnav,
+        .cba-subnav, .ccje-subnav, .cit-subnav, .cted-subnav {
+            background-color: {{ college.theme_color }} !important;
+            border-bottom: none !important;
+        }
+        
+        .cas-subnav .snav-link,
+        .caf-subnav .snav-link,
+        .subnav .snav-link,
+        .cba-subnav .snav-link,
+        .ccje-subnav .snav-link,
+        .cit-subnav .snav-link,
+        .cted-subnav .snav-link {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+
+        .cas-subnav .snav-link:hover,
+        .caf-subnav .snav-link:hover,
+        .subnav .snav-link:hover,
+        .cba-subnav .snav-link:hover,
+        .ccje-subnav .snav-link:hover,
+        .cit-subnav .snav-link:hover,
+        .cted-subnav .snav-link:hover {
+            color: #000000 !important;
+        }
+
+        /* Subnav active state */
+        .cas-subnav .snav-link.active,
+        .caf-subnav .snav-link.active,
+        .subnav .snav-link.active,
+        .cba-subnav .snav-link.active,
+        .ccje-subnav .snav-link.active,
+        .cit-subnav .snav-link.active,
+        .cted-subnav .snav-link.active {
+            color: #000000 !important;
+            border-bottom-color: #000000 !important;
+        }
+        
+        /* Highlight borders/accents for cards */
+        .prog-card {
+            border-top-color: {{ college.theme_color }} !important;
+        }
+    </style>
+    {% endif %}
+</head>
+<body style="margin:0; padding:0;">
+
+
+    
+    <main class="main-content" style="margin:0; padding:0;">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Centralized navbar logic is handled within navbar.html
+            // This base block preserves space for global non-nav interactions
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

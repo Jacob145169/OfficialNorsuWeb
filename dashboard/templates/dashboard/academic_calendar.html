@@ -1,0 +1,436 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block header %}
+    <!-- Removed header for Calendar page -->
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'dashboard/css/navbar.css' %}">
+<link rel="stylesheet" href="{% static 'dashboard/css/newstyle.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    /* ── Calendar Specific Refinements ────────────────── */
+    .calendar-display {
+        background: var(--surface);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius);
+        padding: 72px 64px;
+        margin-bottom: 40px;
+        box-shadow: var(--shadow-card);
+        text-align: center;
+    }
+
+    .calendar-layout {
+        display: block;
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 32px 48px 60px;
+    }
+
+    .calendar-container {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .calendar-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.2rem, 4vw, 3.4rem);
+        color: var(--navy);
+        margin-bottom: 32px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .calendar-title::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 3px;
+        background: var(--gold);
+        margin: 12px auto 0;
+    }
+
+    .calendar-description {
+        font-family: var(--font-serif);
+        font-size: 1.24rem;
+        color: var(--text-secondary);
+        line-height: 1.8;
+        max-width: 980px;
+        margin: 0 auto 60px;
+    }
+
+    .calendar-description img {
+        max-width: 100%;
+        height: auto;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius);
+        margin: 1rem auto;
+        box-shadow: var(--shadow-card);
+        display: block;
+    }
+    
+    .calendar-description figure.image {
+        margin: 2rem auto;
+        display: block;
+        text-align: center;
+    }
+
+    .calendar-image-item {
+        background: var(--white);
+        padding: 22px;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        margin-bottom: 40px;
+        width: min(100%, 860px);
+        max-width: 860px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .calendar-image-item:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .calendar-image-item img {
+        width: 100%;
+        height: auto;
+        border: 1px solid #f0f0f0;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .calendar-images-grid {
+        display: grid;
+        justify-items: center;
+        gap: 40px;
+    }
+
+    @media (max-width: 768px) {
+        .calendar-layout {
+            padding: 24px 20px 48px;
+        }
+
+        .calendar-display {
+            padding: 40px 20px;
+        }
+
+        .calendar-title {
+            font-size: clamp(1.9rem, 8vw, 2.5rem);
+        }
+
+        .calendar-description {
+            font-size: 1.08rem;
+        }
+
+        .calendar-image-item {
+            width: 100%;
+            padding: 14px;
+        }
+    }
+
+    .download-section {
+        background: var(--navy);
+        padding: 40px;
+        border-radius: var(--radius);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        margin-top: 60px;
+    }
+
+    .download-section p {
+        color: rgba(255,255,255,0.8);
+        font-family: var(--font-sans);
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .calendar-download-btn {
+        background: var(--crimson);
+        color: white;
+        padding: 14px 32px;
+        border-radius: 2px;
+        text-decoration: none;
+        font-family: var(--font-sans);
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+    }
+
+    .calendar-download-btn:hover {
+        background: var(--crimson-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .no-calendar {
+        background: var(--white);
+        border: 1px solid var(--border-light);
+        padding: 100px 48px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-card);
+        text-align: center;
+    }
+
+    .no-calendar i {
+        color: var(--crimson);
+        font-size: 4rem;
+        margin-bottom: 24px;
+        opacity: 0.3;
+    }
+
+    .no-calendar h2 {
+        font-family: var(--font-display);
+        color: var(--navy);
+        margin-bottom: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page academic-calendar-page">
+    <!-- ═══ CRIMSON MASTHEAD ═══ -->
+    <div class="news-masthead">
+        <div class="masthead-inner">
+            <div class="masthead-title-group">
+                <div class="masthead-eyebrow">NORSU Bayawan &ndash; Sta. Catalina Campus</div>
+                <h1>Academic Calendar</h1>
+            </div>
+            <div class="masthead-meta">
+                <span class="masthead-date"><i class="far fa-calendar-alt"></i> &nbsp;{% now "F d, Y" %}</span>
+            </div>
+        </div>
+    </div>
+    <div class="masthead-divider"></div>
+
+    <div class="layout calendar-layout">
+        <div class="calendar-container">
+            {% if calendar %}
+            <div class="calendar-display">
+                <h2 class="calendar-title">{{ calendar.title }}</h2>
+            
+            {% if calendar.description %}
+            <div class="calendar-description ck-content">
+                {{ calendar.description|safe }}
+            </div>
+            {% endif %}
+            
+            {% if calendar.images %}
+            <div class="calendar-images-grid">
+                {% for img_url in calendar.images %}
+                <div class="calendar-image-item">
+                    <img src="{{ img_url }}" alt="Calendar Page {{ forloop.counter }}">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+            <div class="download-section">
+                <p>Official Document Access</p>
+                {% if calendar.pdf_file %}
+                <a href="{{ calendar.pdf_file.url }}" class="calendar-download-btn" download>
+                    <i class="fas fa-file-pdf"></i>
+                    Download NORSU Calendar PDF
+                </a>
+                {% elif calendar.images or calendar.description %}
+                <button id="downloadBtn" onclick="generatePDFFromImages()" class="calendar-download-btn">
+                    <i class="fas fa-file-pdf"></i>
+                    Generate Calendar PDF
+                </button>
+            <!-- Use jspdf to generate PDF from images -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+            {{ calendar.images|json_script:"calendarImages" }}
+            <script>
+                async function generatePDFFromImages() {
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const downloadBtn = document.getElementById('downloadBtn');
+                    const originalText = downloadBtn.innerHTML;
+                    
+                    downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+                    downloadBtn.disabled = true;
+
+                    // Support legacy array format OR inline CKEditor images
+                    let images = JSON.parse(document.getElementById('calendarImages').textContent) || [];
+                    if (!images || !Array.isArray(images)) images = [];
+                    
+                    document.querySelectorAll('.calendar-description img').forEach(img => {
+                        images.push(img.src);
+                    });
+
+                    if (images.length === 0) {
+                        alert('No images attached to this calendar to generate PDF.');
+                        downloadBtn.innerHTML = originalText;
+                        downloadBtn.disabled = false;
+                        return;
+                    }
+
+                    try {
+                        for (let i = 0; i < images.length; i++) {
+                            if (i > 0) pdf.addPage();
+                            
+                            const imgData = await getImageData(images[i]);
+                            const imgProps = pdf.getImageProperties(imgData);
+                            const pdfWidth = pdf.internal.pageSize.getWidth();
+                            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                            
+                            // Center if image is smaller than page height, otherwise scale
+                            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                        }
+                        pdf.save(`NORSU_Calendar_{{ calendar.academic_year }}.pdf`);
+                    } catch (error) {
+                        console.error('Error generating PDF:', error);
+                        alert('Error generating PDF. Please try again.');
+                    } finally {
+                        downloadBtn.innerHTML = originalText;
+                        downloadBtn.disabled = false;
+                    }
+                }
+
+                function getImageData(url) {
+                    return new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.crossOrigin = 'Anonymous';
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0);
+                            resolve(canvas.toDataURL('image/jpeg', 0.95));
+                        };
+                        img.onerror = reject;
+                        img.src = url;
+                    });
+                }
+            </script>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="no-calendar">
+            <i class="fas fa-calendar-times"></i>
+            <h2>Schedule Currently Unavailable</h2>
+            <p>The academic calendar is currently being synchronized with institutional updates. Please check back later for the finalized schedule.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Floating arrow button -->
+<div class="floating-arrow" onclick="scrollToTop()">
+  <i class="fas fa-arrow-up"></i>
+</div>
+
+
+<style>
+/* Floating Arrow Button */
+.floating-arrow {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 35px;
+  height: 35px;
+  background: linear-gradient(135deg, #007fff, #0056b3);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 127, 255, 0.3);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(100px) scale(0.8);
+  pointer-events: none;
+}
+
+.floating-arrow.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-arrow:hover {
+  background: linear-gradient(135deg, #0056b3, #003d82);
+  box-shadow: 0 4px 12px rgba(0, 127, 255, 0.4);
+  transform: translateY(-1px) scale(1.05);
+  transition: all 0.3s ease;
+}
+
+.floating-arrow i {
+  font-size: 14px;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: rotate(0deg);
+}
+
+.floating-arrow.visible i {
+  transform: rotate(0deg);
+}
+
+.floating-arrow:hover i {
+  transform: translateY(-1px) rotate(5deg);
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .floating-arrow {
+    bottom: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+  }
+  
+  .floating-arrow i {
+    font-size: 12px;
+  }
+}
+</style>
+
+<script>
+// Floating arrow functionality
+const floatingArrow = document.querySelector('.floating-arrow');
+
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// Show/hide floating arrow based on scroll position
+window.addEventListener('scroll', function() {
+    if (floatingArrow) {
+        if (window.pageYOffset > 300) {
+            floatingArrow.classList.add('visible');
+        } else {
+            floatingArrow.classList.remove('visible');
+        }
+    }
+});
+
+// Initial check
+if (floatingArrow) {
+    if (window.pageYOffset > 300) {
+        floatingArrow.classList.add('visible');
+    }
+}
+</script>
+{% endblock %}

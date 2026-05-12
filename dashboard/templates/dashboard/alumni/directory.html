@@ -1,0 +1,461 @@
+{% extends 'dashboard/alumni/base.html' %}
+
+{% block title %}Alumni Directory - NORSU-BSC Alumni Network{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Harvard Editorial - Directory Page */
+    
+    .directory-hero {
+        background: var(--black);
+        padding: 120px 0 80px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 4px solid var(--crimson);
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .hero-content--featured {
+        max-width: 1700px;
+        padding: 0 24px;
+    }
+    
+    .hero-title {
+        color: white;
+        font-family: var(--font-serif);
+        font-size: 4.5rem;
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.03em;
+    }
+
+    .hero-title--featured {
+        font-size: clamp(1.5rem, 2.25vw, 2.8rem);
+        line-height: 1.04;
+        letter-spacing: -0.04em;
+        white-space: nowrap;
+    }
+    
+    .hero-subtitle {
+        color: rgba(255,255,255,0.7);
+        font-size: 1.4rem;
+        font-weight: 400;
+        letter-spacing: 0.01em;
+    }
+    
+    .directory-container {
+        padding: 0 0 120px;
+        background: white;
+        min-height: 80vh;
+    }
+    
+    /* Search Section */
+    .search-section {
+        background: var(--ivory);
+        padding: 10px;
+        margin-bottom: 0px;
+        border-bottom: 1px solid var(--border-color);
+        position: relative;
+    }
+    
+    .search-form {
+        display: flex;
+        gap: 20px;
+        max-width: 1000px;
+        margin: 0 auto 40px;
+    }
+    
+    .search-input {
+        flex: 1;
+        padding: 18px 30px;
+        border: 2px solid var(--border-color);
+        border-radius: 0;
+        font-size: 1.1rem;
+        color: var(--black);
+        background: white;
+        transition: all 0.3s ease;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: var(--crimson);
+        box-shadow: 0 10px 30px rgba(165, 28, 48, 0.1);
+    }
+    
+    .btn-search {
+        padding: 0 45px;
+        background: var(--crimson);
+        color: white;
+        border: none;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-search:hover {
+        background: var(--crimson-dark);
+        transform: translateY(-2px);
+    }
+    
+    /* Filter Bars */
+    .filter-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        max-width: 100%;
+        margin: 0 auto;
+        align-items: stretch;
+    }
+
+    .year-filters {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .filter-label {
+        font-weight: 800;
+        color: var(--black);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.85rem;
+        flex: 0 0 185px;
+        width: 185px;
+        margin-right: 0;
+        white-space: nowrap;
+    }
+
+    .year-filters--program {
+        align-items: flex-start;
+    }
+
+    .year-filters--program .filter-label {
+        padding-top: 10px;
+    }
+
+    .program-filter-content {
+        display: flex;
+        gap: 15px;
+        align-items: flex-start;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .program-filter-content > .year-btn {
+        white-space: nowrap;
+    }
+
+    .program-filter-grid {
+        display: grid;
+        gap: 15px;
+        flex: 1;
+        min-width: 0;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .program-filter-grid--three {
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+        max-width: 880px;
+    }
+
+    .program-filter-grid .year-btn {
+        text-align: center;
+    }
+    
+    .year-btn {
+        padding: 8px 18px;
+        background: white;
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+    }
+    
+    .year-btn:hover, .year-btn.active {
+        background: var(--crimson);
+        color: white;
+        border-color: var(--crimson);
+    }
+    
+    /* Alumni Cards */
+    .alumni-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 40px;
+    }
+    
+    .alumni-card {
+        background: white;
+        padding: 40px;
+        display: flex;
+        gap: 30px;
+        align-items: flex-start;
+        border-bottom: 1px solid var(--border-color);
+        transition: transform 0.3s ease;
+        position: relative;
+    }
+    
+    .alumni-card:hover {
+        transform: translateX(10px);
+    }
+    
+    .alumni-avatar-wrapper {
+        width: 120px;
+        height: 120px;
+        flex-shrink: 0;
+        overflow: hidden;
+        border-radius: 0;
+        background: var(--light-gray);
+    }
+    
+    .alumni-avatar-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .alumni-avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--crimson);
+        color: white;
+        font-family: var(--font-serif);
+        font-size: 2.5rem;
+        font-weight: 900;
+    }
+    
+    .alumni-info {
+        flex: 1;
+    }
+    
+    .alumni-info h3 {
+        color: var(--black);
+        font-family: var(--font-serif);
+        font-size: 1.8rem;
+        font-weight: 900;
+        margin-bottom: 10px;
+    }
+    
+    .alumni-info .course {
+        color: var(--crimson);
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .alumni-info .batch {
+        font-size: 1rem;
+        color: var(--text-muted);
+        margin-bottom: 15px;
+    }
+    
+    .alumni-info .position {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        padding-top: 15px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .latin-honor-badge {
+        position: absolute;
+        top: 20px;
+        right: 0;
+        background: var(--gold);
+        color: white;
+        padding: 6px 14px;
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    /* Empty State */
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 100px 0;
+        border: 2px dashed var(--border-color);
+    }
+
+    @media (max-width: 1200px) {
+        .alumni-list { grid-template-columns: 1fr; }
+        .search-form { flex-direction: column; }
+        .btn-search { padding: 18px; }
+        .filter-label {
+            flex: 0 0 auto;
+            width: auto;
+        }
+        .year-filters--program {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .program-filter-content {
+            flex-direction: column;
+        }
+        .program-filter-grid,
+        .program-filter-grid--three {
+            grid-template-columns: repeat(2, minmax(240px, 1fr));
+            max-width: none;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 3rem;
+            line-height: 1.1;
+        }
+
+        .hero-title--featured {
+            font-size: clamp(2.2rem, 8vw, 3rem);
+            white-space: normal;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+        }
+
+        .program-filter-grid,
+        .program-filter-grid--three {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<section class="directory-hero">
+    <div class="container">
+        <div class="hero-content{% if selected_college_name or selected_program %} hero-content--featured{% endif %}">
+            <h1 class="hero-title{% if selected_college_name or selected_program %} hero-title--featured{% endif %}">
+                {% if selected_program %}
+                    {{ selected_program|upper }}
+                {% elif selected_college_name %}
+                    {{ selected_college_name|upper }}
+                {% else %}
+                    ALUMNI DIRECTORY
+                {% endif %}
+            </h1>
+            <p class="hero-subtitle">
+                {% if selected_program %}
+                    Explore the professional accomplishments of our {{ selected_program }} graduates
+                {% elif selected_college_name %}
+                    Explore the professional accomplishments of our {{ selected_college_name }} graduates
+                {% else %}
+                    Discover and re-engage with the global network of Negros Oriental State University graduates
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="directory-container">
+    <div class="search-section">
+        <div class="container">
+            <form action="{% url 'directory' %}" method="get" class="search-form">
+                <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Search by name, course, or industry..." class="search-input">
+                {% if selected_program %}
+                <input type="hidden" name="program" value="{{ selected_program }}">
+                {% endif %}
+                {% if selected_college %}
+                <input type="hidden" name="college" value="{{ selected_college }}">
+                {% endif %}
+                {% if selected_year %}
+                <input type="hidden" name="year" value="{{ selected_year }}">
+                {% endif %}
+                <button type="submit" class="btn-search">Search Directory</button>
+            </form>
+
+            <div class="filter-stack">
+                {% if selected_college and available_programs %}
+                <div class="year-filters year-filters--program">
+                    <span class="filter-label">Filter by Program:</span>
+                    <div class="program-filter-content">
+                        <a href="{% url 'directory' %}?college={{ selected_college|urlencode }}{% if selected_year %}&year={{ selected_year|urlencode }}{% endif %}{% if query %}&q={{ query|urlencode }}{% endif %}" class="year-btn {% if not selected_program %}active{% endif %}">All Programs</a>
+                        <div class="program-filter-grid{% if available_programs|length == 3 %} program-filter-grid--three{% endif %}">
+                            {% for program_option in available_programs %}
+                            <a href="{% url 'directory' %}?college={{ selected_college|urlencode }}&program={{ program_option.title|urlencode }}{% if selected_year %}&year={{ selected_year|urlencode }}{% endif %}{% if query %}&q={{ query|urlencode }}{% endif %}" class="year-btn {% if selected_program == program_option.title %}active{% endif %}">{{ program_option.title }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="year-filters">
+                    <span class="filter-label">Filter by Batch:</span>
+                    <a href="{% url 'directory' %}?{% if selected_college %}college={{ selected_college|urlencode }}&{% endif %}{% if selected_program %}program={{ selected_program|urlencode }}&{% endif %}{% if query %}q={{ query|urlencode }}{% endif %}" class="year-btn {% if not selected_year %}active{% endif %}">All Batches</a>
+                    {% for batch in available_batches %}
+                    <a href="{% url 'directory' %}?{% if selected_college %}college={{ selected_college|urlencode }}&{% endif %}{% if selected_program %}program={{ selected_program|urlencode }}&{% endif %}{% if query %}q={{ query|urlencode }}&{% endif %}year={{ batch|urlencode }}" class="year-btn {% if selected_year == batch %}active{% endif %}">Batch {{ batch }}</a>
+                    {% endfor %}
+                    {% if selected_year or query or selected_program or selected_college %}
+                    <a href="{% url 'directory' %}" class="year-btn">Clear All</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="alumni-list">
+            {% for person in alumni %}
+            <div class="alumni-card">
+                {% if person.latin_honors %}
+                <div class="latin-honor-badge">
+                    {{ person.latin_honors }}
+                </div>
+                {% endif %}
+                
+                <div class="alumni-avatar-wrapper">
+                    {% if person.image %}
+                    <img src="{{ person.image.url }}" alt="{{ person.name }}">
+                    {% else %}
+                    <div class="alumni-avatar-placeholder">
+                        {{ person.name|first }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="alumni-info">
+                    <span class="course">{{ person.course }}</span>
+                    <h3>{{ person.name }}</h3>
+                    <p class="batch">Class of {{ person.batch }}</p>
+                    {% if person.position %}
+                    <p class="position">
+                        {{ person.position }}
+                        {% if person.company %}<br><span style="color: var(--text-muted); font-size: 0.9rem;">{{ person.company }}</span>{% endif %}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <div style="font-size: 4rem; margin-bottom: 24px; color: var(--light-gray);">🎓</div>
+                <h3 style="font-family: var(--font-serif); color: var(--black); font-size: 1.8rem; margin-bottom: 12px;">No alumni found</h3>
+                <p style="color: var(--text-secondary);">We couldn't find any graduates matching your search criteria.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

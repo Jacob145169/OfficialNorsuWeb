@@ -1,0 +1,349 @@
+{% extends 'dashboard/alumni/base.html' %}
+
+{% block title %}About - NORSU-BSC Alumni Network{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Harvard Editorial - About Page */
+
+    .about-hero {
+        background: var(--black);
+        padding: 72px 0 44px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 4px solid var(--crimson);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .hero-title {
+        color: white;
+        font-family: var(--font-serif);
+        font-size: 3.35rem;
+        font-weight: 900;
+        margin-bottom: 0.9rem;
+        letter-spacing: -0.03em;
+        line-height: 1.08;
+    }
+
+    .hero-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.1rem;
+        font-weight: 400;
+        letter-spacing: 0.01em;
+        line-height: 1.6;
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    .section-padding {
+        padding: 120px 0;
+    }
+
+    .page-section-header {
+        text-align: center;
+        margin-bottom: 80px;
+    }
+
+    .page-section-title {
+        font-family: var(--font-serif);
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 1.5rem;
+    }
+
+    .mv-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 60px;
+    }
+
+    .mv-card {
+        padding: 60px;
+        background: var(--ivory);
+        border-top: 6px solid var(--crimson);
+        transition: transform 0.3s ease;
+    }
+
+    .mv-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .mv-icon {
+        font-size: 3rem;
+        margin-bottom: 30px;
+        display: block;
+    }
+
+    .mv-card h3 {
+        font-family: var(--font-serif);
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 25px;
+    }
+
+    .mv-card p {
+        font-size: 1.15rem;
+        color: var(--text-secondary);
+        line-height: 1.8;
+    }
+
+    /* Officers Grid */
+    .officers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+    }
+
+    .officer-card {
+        background: white;
+        padding: 40px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .officer-card:hover {
+        background: var(--ivory);
+        border-bottom-color: var(--crimson);
+    }
+
+    .officer-avatar {
+        width: 130px;
+        height: 130px;
+        background: var(--crimson);
+        color: white;
+        font-size: 2.5rem;
+        font-family: var(--font-serif);
+        font-weight: 900;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        box-shadow: 0 10px 20px rgba(165, 28, 48, 0.2);
+    }
+
+    .officer-name {
+        font-family: var(--font-serif);
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 8px;
+    }
+
+    .officer-position {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--crimson);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .officer-batch {
+        font-size: 1rem;
+        color: var(--text-muted);
+        margin-bottom: 20px;
+    }
+
+    .officer-contact {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .term-badge {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 6px 16px;
+        background: var(--light-gray);
+        color: var(--black);
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+
+    @media (max-width: 992px) {
+        .mv-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .about-hero {
+            padding: 56px 0 36px;
+        }
+
+        .hero-title {
+            font-size: 2.35rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+        }
+
+        .mv-card {
+            padding: 40px;
+        }
+
+        .page-section-title {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<section class="about-hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">ALUMNI RELATIONS</h1>
+            <p class="hero-subtitle">Connecting generations of NORSU-BSC graduates through lifelong learning,
+                professional growth, and community impact</p>
+        </div>
+    </div>
+</section>
+
+<!-- About Content with Featured Image -->
+{% if about_data %}
+<section class="section-padding" style="background: var(--ivory); padding-bottom: 0;">
+    <div class="container">
+        <div class="about-intro-wrap">
+            {% if about_data.image %}
+            <div class="about-intro-image">
+                <img src="{{ about_data.image.url }}" alt="{{ about_data.title|default:'NORSU Alumni' }}">
+            </div>
+
+            {% endif %}
+            <span
+                style="color: var(--crimson); font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.85rem; display: block; margin-bottom: 16px;">Our
+                Community</span>
+            <h2
+                style="font-family: var(--font-serif); font-size: 2.4rem; font-weight: 900; color: var(--black); margin-bottom: 24px; line-height: 1.15;">
+                {{ about_data.title|default:"The NORSU-BSC Alumni Association" }}</h2>
+            <div class="about-text">
+                {% if about_data.content %}
+                {{ about_data.content|safe }}
+                {% else %}
+                We are a vibrant community of graduates dedicated to fostering lifelong relationships between Negros
+                Oriental State University and its alumni. Through networking, mentorship, and support, we empower our
+                members to achieve excellence in their respective fields.
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<style>
+    .about-intro-wrap::after {
+        content: '';
+        display: table;
+        clear: both;
+    }
+
+    .about-intro-image {
+        float: left;
+        width: 42%;
+        margin-right: 60px;
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    .about-intro-image img {
+        width: 100%;
+        display: block;
+        box-shadow: var(--shadow-md);
+    }
+
+    .about-intro-image::after {
+        content: '';
+        position: absolute;
+        top: 24px;
+        left: -24px;
+        width: 100%;
+        height: 100%;
+        border: 1px solid var(--crimson);
+        z-index: -1;
+    }
+
+    .about-intro-text {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        line-height: 1.8;
+    }
+
+    .about-intro-text p {
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .about-intro-image {
+            float: none;
+            width: 100%;
+            margin-right: 0;
+            margin-bottom: 32px;
+        }
+    }
+</style>
+
+<section class="section-padding">
+    <div class="container">
+        <div class="page-section-header">
+            <h2 class="page-section-title">Vision & Mission</h2>
+        </div>
+        <div class="mv-grid">
+            <div class="mv-card">
+                <span class="mv-icon">🎯</span>
+                <h3>Our Vision</h3>
+                <div class="mv-text">
+                    {% if about_data.vision %}
+                    {{ about_data.vision|safe }}
+                    {% else %}
+                    <p>A globally recognized state university.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mv-card">
+                <span class="mv-icon">🌟</span>
+                <h3>Our Mission</h3>
+                <div class="mv-text">
+                    {% if about_data.mission %}
+                    {{ about_data.mission|safe }}
+                    {% else %}
+                    <p>Negros Oriental State University delivers global excellence through advanced instruction,
+                        impactful research, and sustainable extension, with strategic partnerships and modern
+                        infrastructure shaping effective leaders to serve the Philippine society and the world.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log("Alumni Relations - About Page Loaded");
+    });
+</script>
+
+{% endblock %}

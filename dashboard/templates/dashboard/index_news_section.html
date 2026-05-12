@@ -1,0 +1,79 @@
+    <!-- NEWS GRID -->
+    <div class="uv-news-grid">
+
+        {% for post in posts %}
+        <!-- CARD {{ forloop.counter }} -->
+        <div class="uv-news-card">
+            {% if post.image %}
+            <img src="{{ post.image.url }}" alt="{{ post.title }}">
+            {% else %}
+            <img src="{% static 'dashboard/images/ac.jpg' %}" alt="{{ post.title }}">
+            {% endif %}
+            <div class="uv-card-content">
+                <div class="uv-date">{{ post.created_at|date:"F d, Y" }}</div>
+                <h3 class="uv-card-title">{{ post.title }}</h3>
+                <a href="/news/" class="uv-read-more">READ MORE</a>
+            </div>
+        </div>
+        {% empty %}
+        <!-- CARD 1 (Default if no posts) -->
+        <div class="uv-news-card">
+            <img src="{% static 'dashboard/images/ac.jpg' %}" alt="News1">
+            <div class="uv-card-content">
+                <div class="uv-date">November 23, 2026</div>
+                <h3 class="uv-card-title">Higalaay sa Norsu/ Acquintance Party 2025</h3>
+                <a href="/news1/#news1" class="uv-read-more">READ MORE</a>
+            </div>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="uv-news-card">
+            <img src="{% static 'dashboard/images/aw1.jpg' %}" alt="Norsu News 2">
+            <div class="uv-card-content">
+                <div class="uv-date">December 1, 2025</div>
+                <h3 class="uv-card-title">Grand convocation, awarding ceremonies highlight NORSU's 118th....</h3>
+                <a href="/news1/#news4" class="uv-read-more">READ MORE</a>
+            </div>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="uv-news-card">
+            <img src="{% static 'dashboard/images/intram.jpg' %}" alt="Norsu News 3">
+            <div class="uv-card-content">
+                <div class="uv-date">February 9, 2024</div>
+                <h3 class="uv-card-title">NORSU BSC INTRAMURALS CELEBRATION</h3>
+                <a href="/news1/#news3" class="uv-read-more">READ MORE</a>
+            </div>
+        </div>
+
+        <!-- CARD 4 -->
+        <div class="uv-news-card">
+            <img src="{% static 'dashboard/images/bb.jpg' %}" alt="Norsu News 4">
+            <div class="uv-card-content">
+                <div class="uv-date">December 1, 2025</div>
+                <h3 class="uv-card-title">Back-to-School Marks Start of Second Semester, AY 2025-2026</h3>
+                <a href="/news1/#news5" class="uv-read-more">READ MORE</a>
+            </div>
+        </div>
+
+        <!-- CARD 5 -->
+        <div class="uv-news-card">
+            <img src="{% static 'dashboard/images/test.jpg' %}" alt="Norsu News 5">
+            <div class="uv-card-content">
+                <div class="uv-date">February 16, 2025</div>
+                <h3 class="uv-card-title">NORSU BSC ADMISSION TEST (School Year 2026-2027)</h3>
+                <a href="/news1/#news6" class="uv-read-more">READ MORE</a>
+            </div>
+        </div>
+
+        <!-- CARD 6 -->
+        <div class="uv-news-card">
+            <img src="{% static 'dashboard/images/SS.jpg' %}" alt="Norsu News 6">
+            <div class="uv-card-content">
+                <div class="uv-date">February 5, 2026, 2025</div>
+                <h3 class="uv-card-title">Class Suspension and shift to asynchronous Learning</h3>
+                <a href="/news1/#news2" class="uv-read-more">READ MORE</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>

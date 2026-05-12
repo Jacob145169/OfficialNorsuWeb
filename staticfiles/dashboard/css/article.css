@@ -1,0 +1,323 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    background: #ffffff;
+}
+
+/* Floating NORSU Logo Design - HIDDEN */
+.floating-norsu-logo {
+    position: fixed;
+    top: 80px;
+    left: 20px;
+    z-index: 1001;
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: all 0.5s ease-in-out;
+    pointer-events: none;
+    display: none !important;
+}
+
+.floating-norsu-logo.visible {
+    opacity: 0;
+    transform: translateX(-100%);
+    pointer-events: none;
+    display: none !important;
+}
+
+.floating-logo-container {
+    display: none !important;
+    align-items: center;
+    gap: 15px;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 10px 15px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.floating-logo {
+    display: none !important;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #0066cc;
+}
+
+.floating-logo-text {
+    display: none !important;
+    flex-direction: column;
+    align-items: center;
+}
+
+.norsu-name {
+    display: none !important;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #000000;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.norsu-name span {
+    display: none !important;
+    color: #cc0000;
+}
+
+.norsu-country {
+    display: none !important;
+    font-size: 0.6rem;
+    color: #0066cc;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Hide any potential accreditation or logo elements */
+[class*="logo"],
+[class*="accredit"],
+[id*="logo"],
+[id*="accredit"] {
+    display: none !important;
+}
+
+/* Hide any elements containing NORSU logo text */
+*:contains("NORSU Logo"),
+*:contains("Accreditation Logo"),
+*:contains("Logo 2"),
+*:contains("Logo 3") {
+    display: none !important;
+}
+/* MAIN CONTAINER */
+.article-wrapper {
+    padding: 5px 45px 60px;    
+    max-width: 1600px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.article-wrapper::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+}
+
+/* HEADER */
+.article-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+    padding-bottom: 25px;
+    border-bottom: 2px solid rgba(31, 122, 63, 0.15);
+}
+
+.article-header h1 {
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1.3;
+    color: #0a2e1a;
+    text-transform: uppercase;
+    max-width: 80%;
+    position: relative;
+    padding-left: 20px;
+}
+
+.article-header h1::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 5px;
+    background: linear-gradient(180deg, #1f7a3f, #2d5f3f);
+    border-radius: 3px;
+}
+
+.article-date {
+    font-size: 16px;
+    font-weight: 400;
+    white-space: nowrap;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.article-date::before {
+    content: "📅";
+    font-size: 18px;
+}
+
+/* CONTENT LAYOUT */
+.article-content {
+    display: grid;
+    grid-template-columns: 450px 1fr;
+    gap: 50px;
+    align-items: start;
+}
+
+/* IMAGE COLUMN */
+.article-images {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.image-box {
+    border: 5px solid #1f7a3f;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(31, 122, 63, 0.2);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+
+.image-box::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(31, 122, 63, 0.1), rgba(45, 95, 63, 0.1));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-box:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(31, 122, 63, 0.3);
+    border-color: #2d5f3f;
+}
+
+.image-box:hover::before {
+    opacity: 1;
+}
+
+.image-box img {
+    width: 100%;
+    height: 280px;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.image-box:hover img {
+    transform: scale(1.05);
+}
+
+/* TEXT COLUMN */
+.article-text {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #1a1a1a;
+    text-align: justify;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 35px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    border: 1px solid rgba(31, 122, 63, 0.1);
+    position: relative;
+}
+
+.article-text::before {
+    content: "\"";
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    font-size: 80px;
+    color: rgba(31, 122, 63, 0.2);
+    font-family: Georgia, serif;
+}
+
+.article-text p {
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 1;
+}
+
+.article-text p:first-child::first-letter {
+    font-size: 48px;
+    font-weight: 700;
+    color: #1f7a3f;
+    float: left;
+    line-height: 1;
+    margin-right: 8px;
+    margin-top: -5px;
+    font-family: Georgia, serif;
+}
+
+.article-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .article-content {
+        grid-template-columns: 400px 1fr;
+        gap: 40px;
+    }
+    
+    .article-wrapper {
+        padding: 40px 35px 50px;
+    }
+}
+
+@media (max-width: 992px) {
+    .article-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .article-images {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+    
+    .image-box {
+        min-width: 300px;
+    }
+    
+    .article-header {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+    }
+    
+    .article-header h1 {
+        max-width: 100%;
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 600px) {
+    .article-wrapper {
+        padding: 30px 25px 40px;
+        margin: 20px 10px;
+    }
+    
+    .article-header h1 {
+        font-size: 24px;
+        padding-left: 15px;
+    }
+    
+    .article-text {
+        padding: 25px;
+        font-size: 16px;
+    }
+    
+    .image-box img {
+        height: 200px;
+    }
+}

@@ -1,0 +1,676 @@
+{% extends 'dashboard/alumni/base.html' %}
+
+{% block title %}Events - NORSU-BSC Alumni Network{% endblock %}
+
+{% block content %}
+
+<style>
+    .events-hero {
+        background: var(--black);
+        padding: 72px 0 44px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 4px solid var(--crimson);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .hero-title {
+        color: white;
+        font-family: var(--font-serif);
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 900;
+        margin-bottom: 0.85rem;
+        letter-spacing: -0.03em;
+    }
+
+    .hero-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.05rem;
+        font-weight: 400;
+        letter-spacing: 0.01em;
+    }
+
+    .events-container {
+        padding: 80px 0 120px;
+        background: white;
+        min-height: 80vh;
+    }
+
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 42px;
+    }
+
+    .event-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .event-card:hover,
+    .event-card:focus-visible {
+        transform: translateY(-10px);
+        border-color: rgba(165, 28, 48, 0.25);
+        box-shadow: 0 22px 40px rgba(15, 23, 42, 0.12);
+    }
+
+    .event-card:focus-visible {
+        outline: 3px solid rgba(165, 28, 48, 0.28);
+        outline-offset: 4px;
+    }
+
+    .event-media-preview {
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        overflow: hidden;
+        background: linear-gradient(135deg, #f6f6f6 0%, #ebe7df 100%);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .event-media-preview img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.45s ease;
+    }
+
+    .event-card:hover .event-media-preview img {
+        transform: scale(1.04);
+    }
+
+    .event-media-placeholder {
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-start;
+        padding: 24px;
+        background:
+            linear-gradient(180deg, rgba(26, 26, 26, 0.08) 0%, rgba(26, 26, 26, 0.3) 100%),
+            linear-gradient(135deg, #f4f4f4 0%, #e2ddd3 100%);
+    }
+
+    .event-media-placeholder-content {
+        color: var(--black);
+    }
+
+    .event-media-placeholder-content span {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--crimson);
+        margin-bottom: 8px;
+    }
+
+    .event-media-placeholder-content strong {
+        display: block;
+        font-family: var(--font-serif);
+        font-size: 2rem;
+        line-height: 1.1;
+    }
+
+    .event-card-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 26px 22px 24px;
+    }
+
+    .event-date-line {
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--crimson);
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        margin-bottom: 14px;
+    }
+
+    .event-badge {
+        display: inline-block;
+        color: var(--crimson);
+        font-size: 0.75rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+    }
+
+    .event-card h3 {
+        color: var(--black);
+        font-family: var(--font-serif);
+        font-size: 1.8rem;
+        margin-bottom: 16px;
+        line-height: 1.2;
+        font-weight: 900;
+    }
+
+    .event-summary {
+        color: var(--text-secondary);
+        line-height: 1.65;
+        margin-bottom: 18px;
+        font-size: 0.98rem;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    .event-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 22px;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        line-height: 1.5;
+    }
+
+    .event-actions {
+        margin-top: auto;
+        width: 100%;
+    }
+
+    .details-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 13px 18px;
+        background: white;
+        color: var(--black);
+        border: 2px solid var(--black);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.82rem;
+    }
+
+    .event-card:hover .details-btn,
+    .event-card:focus-visible .details-btn {
+        background: var(--black);
+        color: white;
+    }
+
+    .event-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background:
+            radial-gradient(circle at top, rgba(165, 28, 48, 0.2) 0%, rgba(165, 28, 48, 0) 34%),
+            rgba(15, 23, 42, 0.74);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 20px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+        z-index: 1500;
+    }
+
+    .event-modal-overlay.is-open {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    .event-modal {
+        width: min(980px, 100%);
+        max-height: min(90vh, 980px);
+        overflow-y: auto;
+        background: white;
+        border-radius: 28px;
+        box-shadow: 0 28px 60px rgba(15, 23, 42, 0.28);
+        position: relative;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .event-modal-header {
+        position: relative;
+        overflow: hidden;
+        padding: 34px 108px 30px 34px;
+        background:
+            radial-gradient(circle at top right, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0) 40%),
+            linear-gradient(135deg, #65101e 0%, #a51c30 55%, #1a1a1a 100%);
+        color: white;
+    }
+
+    .event-modal-header::before {
+        content: "";
+        position: absolute;
+        top: -108px;
+        right: -74px;
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.09);
+    }
+
+    .event-modal-header::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 0;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.08));
+    }
+
+    .event-modal-header > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .event-modal-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .event-modal-kicker-badge {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    .event-modal-date {
+        display: inline-flex;
+        align-items: center;
+        padding: 9px 14px;
+        border-radius: 999px;
+        background: rgba(10, 14, 22, 0.24);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #fff6e6;
+        font-size: 0.84rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        margin-bottom: 18px;
+    }
+
+    .event-modal-title {
+        margin: 0 0 20px;
+        color: white;
+        font-family: var(--font-serif);
+        font-size: clamp(2.35rem, 3vw, 3.7rem);
+        line-height: 1.03;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        text-wrap: balance;
+        max-width: 14ch;
+    }
+
+    .event-modal-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+    }
+
+    .event-modal-meta-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(14px);
+        min-width: 0;
+    }
+
+    .event-modal-meta-text {
+        min-width: 0;
+    }
+
+    .event-modal-meta-label {
+        display: block;
+        margin-bottom: 4px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .event-modal-meta-value {
+        display: block;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.45;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    .event-modal-body {
+        padding: 34px 36px 40px;
+        color: #243041;
+        background: linear-gradient(180deg, #ffffff 0%, #fcfaf6 100%);
+        font-size: clamp(1.08rem, 0.25vw + 1.02rem, 1.2rem);
+        line-height: 1.95;
+    }
+
+    .event-modal-body p,
+    .event-modal-body ul,
+    .event-modal-body ol,
+    .event-modal-body blockquote {
+        margin: 0 0 1.35rem;
+    }
+
+    .event-modal-body p:first-of-type {
+        font-size: 1.14em;
+        line-height: 1.88;
+        color: #18212f;
+    }
+
+    .event-modal-body h1,
+    .event-modal-body h2,
+    .event-modal-body h3,
+    .event-modal-body h4 {
+        color: var(--black);
+        font-family: var(--font-serif);
+        line-height: 1.2;
+        margin: 1.4rem 0 0.8rem;
+    }
+
+    .event-modal-body li + li {
+        margin-top: 0.5em;
+    }
+
+    .event-modal-body figure {
+        margin: 1.4rem 0;
+    }
+
+    .event-modal-body img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 1.5rem 0;
+        border-radius: 20px;
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.16);
+    }
+
+    .event-modal-body a {
+        color: var(--crimson);
+    }
+
+    .event-modal-body blockquote {
+        padding: 1.15rem 1.4rem;
+        border-left: 4px solid var(--crimson);
+        border-radius: 0 18px 18px 0;
+        background: #f8f1f2;
+        color: #61222d;
+    }
+
+    .event-modal-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        margin: 0;
+        width: 46px;
+        height: 46px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+        backdrop-filter: blur(12px);
+        color: white;
+        font-size: 1.6rem;
+        line-height: 1;
+        cursor: pointer;
+        z-index: 2;
+        transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .event-modal-close:hover {
+        background: rgba(255, 255, 255, 0.24);
+        transform: translateY(-1px);
+    }
+
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 100px 0;
+        border: 2px dashed var(--border-color);
+        border-radius: 18px;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 24px;
+        color: var(--light-gray);
+    }
+
+    @media (max-width: 1100px) {
+        .events-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .events-hero {
+            padding: 52px 0 34px;
+        }
+
+        .events-grid {
+            grid-template-columns: 1fr;
+            gap: 28px;
+        }
+
+        .event-card-body {
+            padding: 22px 18px 20px;
+        }
+
+        .event-modal-overlay {
+            padding: 18px 12px;
+        }
+
+        .event-modal {
+            border-radius: 24px;
+        }
+
+        .event-modal-header {
+            padding: 26px 74px 24px 22px;
+        }
+
+        .event-modal-kicker {
+            margin-bottom: 14px;
+            font-size: 0.72rem;
+        }
+
+        .event-modal-title {
+            max-width: none;
+            font-size: clamp(2rem, 8vw, 2.8rem);
+        }
+
+        .event-modal-meta {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .event-modal-body {
+            padding: 24px 22px 30px;
+            font-size: 1.08rem;
+            line-height: 1.85;
+        }
+
+        .event-modal-close {
+            top: 16px;
+            right: 16px;
+            width: 42px;
+            height: 42px;
+        }
+    }
+</style>
+
+<section class="events-hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">ALUMNI EVENTS</h1>
+            <p class="hero-subtitle">Connect, network, and grow with the NORSU-BSC Alumni Association</p>
+        </div>
+    </div>
+</section>
+
+<section class="events-container">
+    <div class="container">
+        <div class="events-grid">
+            {% for event in events %}
+            <div class="event-card"
+                role="button"
+                tabindex="0"
+                aria-label="Open details for {{ event.display_title }}"
+                aria-controls="event-modal-{{ event.id }}"
+                onclick="openEventModal('{{ event.id }}')"
+                onkeydown="handleEventCardKeydown(event, '{{ event.id }}')">
+                {% if event.display_image_url %}
+                <div class="event-media-preview">
+                    <img src="{{ event.display_image_url }}" alt="{{ event.display_title }}">
+                </div>
+                {% else %}
+                <div class="event-media-preview event-media-placeholder">
+                    <div class="event-media-placeholder-content">
+                        <span>Alumni Event</span>
+                        <strong>{{ event.display_date|date:"M d, Y" }}</strong>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="event-card-body">
+                    <div class="event-date-line">{{ event.display_date|date:"F j, Y" }}</div>
+                    <div class="event-badge">Alumni Event</div>
+                    <h3>{{ event.display_title }}</h3>
+                    <p class="event-summary">{{ event.summary_text|truncatewords:20 }}</p>
+
+                    <div class="event-meta">
+                        <div class="meta-item">Location: {{ event.location }}</div>
+                        <div class="meta-item">Time: {{ event.display_date|date:"h:i A" }}</div>
+                    </div>
+
+                    <div class="event-actions">
+                        <span class="details-btn" aria-hidden="true">
+                            <i class="fas fa-info-circle" style="margin-right: 8px; color: #87CEEB;"></i>Details
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-calendar-times"></i></div>
+                <h2 style="color: #1e3a5f; margin-bottom: 1rem;">No Upcoming Events</h2>
+                <p style="color: #4a5568;">Check back soon for exciting alumni events and gatherings!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% for event in events %}
+<div class="event-modal-overlay" id="event-modal-{{ event.id }}" aria-hidden="true">
+    <div class="event-modal" role="dialog" aria-modal="true" aria-labelledby="event-modal-title-{{ event.id }}">
+        <button type="button" class="event-modal-close" aria-label="Close event details" onclick="closeEventModal('{{ event.id }}')">&times;</button>
+        <div class="event-modal-header">
+            <div class="event-modal-kicker">
+                <span class="event-modal-kicker-badge">Alumni Event</span>
+                <span>Gather, reconnect, celebrate</span>
+            </div>
+            <div class="event-modal-date">{{ event.display_date|date:"F j, Y" }}</div>
+            <h2 class="event-modal-title" id="event-modal-title-{{ event.id }}">{{ event.display_title }}</h2>
+            <div class="event-modal-meta">
+                <div class="event-modal-meta-item">
+                    <div class="event-modal-meta-text">
+                        <span class="event-modal-meta-label">Location</span>
+                        <span class="event-modal-meta-value">{{ event.location }}</span>
+                    </div>
+                </div>
+                <div class="event-modal-meta-item">
+                    <div class="event-modal-meta-text">
+                        <span class="event-modal-meta-label">Time</span>
+                        <span class="event-modal-meta-value">{{ event.display_date|date:"h:i A" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="event-modal-body">
+            {% if event.description %}
+                {{ event.description|safe }}
+            {% else %}
+                <p>{{ event.summary_text }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+function openEventModal(eventId) {
+    const modal = document.getElementById(`event-modal-${eventId}`);
+    if (!modal) return;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEventModal(eventId) {
+    const modal = document.getElementById(`event-modal-${eventId}`);
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+}
+
+function handleEventCardKeydown(event, eventId) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    openEventModal(eventId);
+}
+
+document.querySelectorAll('.event-modal-overlay').forEach((overlay) => {
+    overlay.addEventListener('click', function (event) {
+        if (event.target === overlay) {
+            overlay.classList.remove('is-open');
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+    });
+});
+
+document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') return;
+    const openModal = document.querySelector('.event-modal-overlay.is-open');
+    if (!openModal) return;
+    openModal.classList.remove('is-open');
+    openModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+});
+</script>
+
+{% endblock %}

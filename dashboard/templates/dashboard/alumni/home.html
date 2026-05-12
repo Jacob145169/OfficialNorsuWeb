@@ -1,0 +1,753 @@
+{% extends 'dashboard/alumni/base.html' %}
+{% load static %}
+
+{% block title %}NORSU-BSC Alumni Network - Home{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Harvard Editorial Design System */
+
+    /* Hero Section */
+    .hero-minimal {
+        padding: clamp(92px, 14vw, 160px) 0 clamp(72px, 10vw, 120px);
+        min-height: clamp(420px, calc(100dvh - var(--alumni-navbar-height)), 720px);
+        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+        url("{% static 'dashboard/images/alumni.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        text-align: center;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero-content {
+        max-width: 900px;
+        margin: 0 auto;
+        color: white;
+        width: 100%;
+    }
+
+    .hero-title {
+        font-family: var(--font-serif);
+        font-size: clamp(2.8rem, 8vw, 5rem);
+        font-weight: 900;
+        margin-bottom: 24px;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        text-wrap: balance;
+    }
+
+    .hero-subtitle {
+        font-size: clamp(1.05rem, 2.8vw, 1.5rem);
+        margin: 0 auto;
+        max-width: 780px;
+        font-weight: 400;
+        opacity: 0.95;
+        letter-spacing: 0.01em;
+        text-wrap: balance;
+    }
+
+    /* Stats Section */
+    .stats-minimal {
+        padding: 50px 0;
+        background-color: var(--black);
+        color: white;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-card {
+        padding: 30px;
+        background: var(--black);
+        text-align: center;
+    }
+
+    .stat-number {
+        display: block;
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--crimson);
+        font-family: var(--font-serif);
+        margin-bottom: 8px;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-weight: 700;
+    }
+
+    /* Global Section Header */
+    .section-header {
+        margin-bottom: clamp(44px, 7vw, 80px);
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: clamp(20px, 4vw, 30px);
+    }
+
+    .section-title {
+        font-family: var(--font-serif);
+        font-size: clamp(2.2rem, 6vw, 3.5rem);
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+        text-wrap: balance;
+    }
+
+    .section-desc {
+        color: var(--text-muted);
+        font-size: clamp(0.98rem, 2vw, 1.1rem);
+        max-width: 700px;
+        margin: 0 auto;
+        overflow-wrap: anywhere;
+    }
+
+    /* About Section */
+    .about-minimal {
+        padding: clamp(76px, 11vw, 120px) 0;
+        background-color: var(--ivory);
+    }
+
+    /* clearfix so section expands to contain floated image */
+    .about-float-wrap::after {
+        content: '';
+        display: table;
+        clear: both;
+    }
+
+    .about-image {
+        float: left;
+        width: 45%;
+        margin-right: 70px;
+        margin-bottom: 30px;
+        position: relative;
+        max-width: 540px;
+    }
+
+    .about-image img {
+        width: 100%;
+        display: block;
+        box-shadow: var(--shadow-md);
+    }
+
+    .about-image::after {
+        content: '';
+        position: absolute;
+        top: 30px;
+        left: -30px;
+        width: 100%;
+        height: 100%;
+        border: 1px solid var(--crimson);
+        z-index: -1;
+    }
+
+    .about-tag {
+        color: var(--crimson);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 0.85rem;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .about-title {
+        font-family: var(--font-serif);
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 30px;
+        line-height: 1.1;
+        text-wrap: balance;
+    }
+
+    .about-text {
+        color: var(--text-secondary);
+        font-size: clamp(1rem, 2vw, 1.15rem);
+        margin-bottom: 40px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    .about-text :where(img, table, iframe) {
+        max-width: 100%;
+    }
+
+    .about-text table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .mission-box {
+        padding: 40px;
+        background: white;
+        border-left: 6px solid var(--crimson);
+        box-shadow: var(--shadow-sm);
+        overflow-wrap: anywhere;
+    }
+
+    .mission-title {
+        font-family: var(--font-serif);
+        font-size: clamp(1.3rem, 3vw, 1.5rem);
+        font-weight: 700;
+        color: var(--black);
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    /* News/Alumni Achievement Grid */
+    .news-minimal,
+    .featured-minimal {
+        padding: clamp(76px, 11vw, 120px) 0;
+        background-color: white;
+    }
+
+    .news-grid,
+    .alumni-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 40px;
+    }
+
+    .news-card,
+    .alumni-card {
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease;
+        min-width: 0;
+    }
+
+    .news-card:hover,
+    .alumni-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .news-image,
+    .alumni-photo-wrapper {
+        width: 100%;
+        height: clamp(250px, 34vw, 350px);
+        overflow: hidden;
+        margin-bottom: 25px;
+        background: var(--light-gray);
+    }
+
+    .news-image img,
+    .alumni-photo-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .news-card:hover img,
+    .alumni-card:hover img {
+        transform: scale(1.05);
+    }
+
+    .news-title,
+    .alumni-name {
+        font-family: var(--font-serif);
+        font-size: clamp(1.35rem, 3vw, 1.6rem);
+        font-weight: 900;
+        color: var(--black);
+        margin-bottom: 12px;
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+    }
+
+    .news-date,
+    .alumni-achievement {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--crimson);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .news-excerpt,
+    .alumni-bio {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    /* Events Section */
+    .events-minimal {
+        padding: clamp(76px, 11vw, 120px) 0;
+        background-color: var(--light-gray);
+    }
+
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 30px;
+    }
+
+    .event-card {
+        background: white;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        min-width: 0;
+    }
+
+    .event-card:hover {
+        border-color: var(--crimson);
+        box-shadow: var(--shadow-md);
+    }
+
+    .event-image {
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        overflow: hidden;
+        background: linear-gradient(135deg, #f6f6f6 0%, #ebe7df 100%);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .event-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.5s ease;
+    }
+
+    .event-card:hover .event-image img {
+        transform: scale(1.04);
+    }
+
+    .event-image-placeholder {
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-start;
+        height: 100%;
+        padding: 24px;
+        background:
+            linear-gradient(180deg, rgba(26, 26, 26, 0.08) 0%, rgba(26, 26, 26, 0.3) 100%),
+            linear-gradient(135deg, #f4f4f4 0%, #e2ddd3 100%);
+    }
+
+    .event-image-placeholder-content span {
+        display: block;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--crimson);
+        margin-bottom: 8px;
+    }
+
+    .event-image-placeholder-content strong {
+        display: block;
+        font-family: var(--font-serif);
+        font-size: 1.9rem;
+        line-height: 1.1;
+        color: var(--black);
+    }
+
+    .event-date-large {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 22px;
+        padding: 34px 34px 0;
+    }
+
+    .event-day {
+        font-family: var(--font-serif);
+        font-size: 4rem;
+        font-weight: 900;
+        color: var(--crimson);
+        line-height: 1;
+    }
+
+    .event-month {
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+        color: var(--black);
+    }
+
+    .event-title {
+        font-family: var(--font-serif);
+        font-size: clamp(1.45rem, 3vw, 1.8rem);
+        font-weight: 900;
+        margin-bottom: 20px;
+        padding: 0 34px;
+        color: var(--black);
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+    }
+
+    .event-meta {
+        margin-bottom: 28px;
+        padding: 0 34px;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        overflow-wrap: anywhere;
+    }
+
+    .event-meta div {
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-outline {
+        display: inline-block;
+        padding: 14px 36px;
+        border: 2px solid var(--crimson);
+        color: var(--crimson);
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline:hover {
+        background: var(--crimson);
+        color: white;
+    }
+
+    .section-btn-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+    }
+
+    .btn-join-event {
+        width: auto;
+        margin: auto 34px 36px;
+        padding: 12px;
+        background: var(--black);
+        color: white;
+        text-align: center;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.8rem;
+        text-decoration: none;
+        transition: background 0.3s ease;
+    }
+
+    .btn-join-event:hover {
+        background: var(--crimson);
+    }
+
+    @media (max-width: 1024px) {
+        .about-image {
+            width: 48%;
+            margin-right: 40px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+        }
+
+        .news-grid,
+        .alumni-grid,
+        .events-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .about-image {
+            float: none;
+            width: 100%;
+            margin-right: 0;
+            margin-bottom: 40px;
+            max-width: none;
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+        }
+
+        .hero-minimal {
+            min-height: 0;
+        }
+
+        .news-grid,
+        .alumni-grid,
+        .events-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .news-image,
+        .alumni-photo-wrapper {
+            height: min(72vw, 340px);
+        }
+
+        .event-date-large {
+            padding: 24px 24px 0;
+        }
+
+        .event-title,
+        .event-meta {
+            padding: 0 24px;
+        }
+
+        .btn-join-event {
+            margin: auto 24px 24px;
+        }
+    }
+
+    @media (max-width: 560px) {
+        .hero-title {
+            font-size: 2.35rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+        }
+
+        .about-image::after {
+            top: 14px;
+            left: -14px;
+        }
+
+        .mission-box {
+            padding: 26px 22px;
+        }
+
+        .event-day {
+            font-size: 3rem;
+        }
+
+        .event-month {
+            font-size: 0.95rem;
+            letter-spacing: 0.18em;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .hero-minimal {
+            padding-top: 84px;
+            padding-bottom: 64px;
+        }
+
+        .hero-title {
+            font-size: 2.05rem;
+        }
+
+        .section-title,
+        .about-title {
+            font-size: 1.85rem;
+        }
+
+        .news-image,
+        .alumni-photo-wrapper {
+            height: 240px;
+        }
+
+        .btn-outline,
+        .btn-join-event {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-minimal">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Connecting NORSUnians Everywhere</h1>
+            <p class="hero-subtitle">The official gateway for Negros Oriental State University alumni to network, grow,
+                and give back.</p>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- About Section -->
+<section class="about-minimal">
+    <div class="container">
+        <div class="about-float-wrap">
+            <div class="about-image">
+                {% if about_data.image %}
+                <img src="{{ about_data.image.url }}" alt="NORSU Alumni">
+                {% else %}
+                <img src="{% static 'dashboard/images/alumni.jpg' %}" alt="NORSU Alumni">
+                {% endif %}
+            </div>
+            <!-- content flows around and below the floated image -->
+            <span class="about-tag">Our Community</span>
+            <h2 class="about-title">{{ about_data.title|default:"The NORSU-BSC Alumni Association" }}</h2>
+            <div class="about-text">
+                {% if about_data.content %}
+                {{ about_data.content|safe }}
+                {% else %}
+                We are a vibrant community of graduates dedicated to fostering lifelong relationships between Negros
+                Oriental State University and its alumni. Through networking, mentorship, and support, we empower our
+                members to achieve excellence in their respective fields.
+                {% endif %}
+            </div>
+            <div class="mission-box">
+                <span class="mission-title">Our Mission</span>
+                <div class="about-text" style="margin-bottom: 0;">
+                    {% if about_data.mission %}
+                    {{ about_data.mission|safe }}
+                    {% else %}
+                    To build a strong, supportive network that champions the success of NORSUnians and contributes to
+                    the institution's enduring legacy of academic excellence.
+                    {% endif %}
+                </div>
+            </div>
+            <div style="margin-top: 40px;">
+                <a href="{% url 'alumni_about' %}" class="btn-outline">Learn More About Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- News Section -->
+<section class="news-minimal">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Latest News & Announcements</h2>
+            <p class="section-desc">Stay informed about the latest developments and stories from our alumni network.</p>
+        </div>
+
+        <div class="news-carousel-wrapper">
+            <div class="news-grid" id="news-slider">
+                {% for post in latest_news %}
+                <a href="{% url 'news_alumni' %}?id={{ post.id }}" class="news-card">
+                    <div class="news-image">
+                        {% if post.display_image_url %}
+                        <img src="{{ post.display_image_url }}" alt="{{ post.title }}">
+                        {% else %}
+                        <img src="{% static 'dashboard/images/default-news.jpg' %}" alt="{{ post.title }}">
+                        {% endif %}
+                    </div>
+                    <div class="news-content">
+                        <h3 class="news-title">{{ post.title }}</h3>
+                        <span class="news-date">{{ post.created_at|date:"F d, Y" }}</span>
+                        <p class="news-excerpt">{{ post.content|striptags|truncatewords:20 }}</p>
+                    </div>
+                </a>
+                {% empty %}
+                <p class="section-desc" style="width: 100%; text-align: center;">No news posts available at the moment.
+                </p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Alumni - only shown when there are success stories -->
+{% if featured_achievements %}
+<section class="featured-minimal">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Featured Success Stories</h2>
+            <p class="section-desc">Meet the NORSUnians making an impact across the globe.</p>
+        </div>
+        <div class="alumni-grid">
+            {% for achievement in featured_achievements %}
+            <div class="alumni-card">
+                <div class="alumni-photo-wrapper">
+                    {% if achievement.display_image_url %}
+                    <img src="{{ achievement.display_image_url }}" alt="{{ achievement.alumni_name }}">
+                    {% else %}
+                    <div
+                        style="width:100%; height:100%; background:var(--light-gray); display:flex; align-items:center; justify-content:center; color:var(--crimson); font-size:3rem; font-weight:800; font-family:var(--font-serif);">
+                        {{ achievement.alumni_name|first }}</div>
+                    {% endif %}
+                </div>
+                <div class="alumni-card-body">
+                    <h3 class="alumni-name">{{ achievement.alumni_name }}</h3>
+                    <span class="alumni-achievement">{{ achievement.achievement }}</span>
+                    <p class="alumni-bio">"{{ achievement.description|striptags|truncatewords:25 }}"</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="section-btn-wrapper">
+            <a href="{% url 'achievements' %}" class="btn-outline">Meet More Topnotchers</a>
+        </div>
+    </div>
+</section>
+
+<!-- Events Section -->
+<section class="events-minimal">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Upcoming Events</h2>
+            <p class="section-desc">Join us for upcoming reunions, workshops, and networking gatherings.</p>
+        </div>
+
+        <div class="events-grid">
+            {% for event in upcoming_events %}
+            <div class="event-card">
+                <div class="event-image">
+                    {% if event.display_image_url %}
+                    <img src="{{ event.display_image_url }}" alt="{{ event.display_title }}">
+                    {% else %}
+                    <div class="event-image-placeholder">
+                        <div class="event-image-placeholder-content">
+                            <span>Alumni Event</span>
+                            <strong>{{ event.display_date|date:"F Y" }}</strong>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="event-date-large">
+                    <span class="event-day">{{ event.display_date|date:"d" }}</span>
+                    <span class="event-month">{{ event.display_date|date:"F" }}</span>
+                </div>
+                <h3 class="event-title">{{ event.display_title }}</h3>
+                <div class="event-meta">
+                    <div>📍 {{ event.location }}</div>
+                    <div>⏰ {{ event.display_date|date:"h:i A" }}</div>
+                </div>
+                <a href="{% url 'events' %}" class="btn-join-event">View Details</a>
+            </div>
+            {% empty %}
+            <p class="section-desc" style="grid-column: 1/-1; text-align: center;">No upcoming events scheduled yet.</p>
+            {% endfor %}
+        </div>
+
+        <div class="section-btn-wrapper">
+            <a href="{% url 'events' %}" class="btn-outline">Browse All Events</a>
+        </div>
+    </div>
+</section>
+
+{% endif %}
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // News slider logic removed as navigation arrows were removed
+    });
+</script>
+
+{% endblock %}

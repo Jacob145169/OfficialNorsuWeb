@@ -1,0 +1,7458 @@
+        // Simple JavaScript test
+        console.log('JavaScript is working!');
+
+        // Calendar Management Global State - Initialize at the top to prevent initialization errors
+        let selectedFiles = [];
+        let existingImages = [];
+
+        // Test function to verify JS is loaded
+        window.testJS = function () {
+            console.log('JavaScript test function called successfully!');
+            showNotification('JavaScript is working!', 'success');
+        };
+
+        // Initialize alumni functionality
+        function initializeAlumniFunctionality() {
+            console.log('Initializing alumni functionality...');
+
+            // Check if alumni form exists
+            const alumniForm = document.getElementById('alumniForm');
+            if (alumniForm) {
+                console.log('Alumni form found, attaching event listener...');
+
+                // Remove existing listeners to prevent duplicates
+                alumniForm.removeEventListener('submit', handleAlumniSubmit);
+
+                // Add submit event listener
+                alumniForm.addEventListener('submit', handleAlumniSubmit);
+                console.log('Alumni form event listener attached');
+            } else {
+                console.error('Alumni form not found!');
+            }
+
+            // Check if alumni modal exists
+            const alumniModal = document.getElementById('alumniModal');
+            if (alumniModal) {
+                console.log('Alumni modal found');
+            } else {
+                console.error('Alumni modal not found!');
+            }
+        }
+
+        // Real alumni submit handler
+        async function handleAlumniSubmit(e) {
+            e.preventDefault();
+            console.log('Alumni form submitted to API!');
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            submitBtn.disabled = true;
+
+            try {
+                const formData = new FormData();
+                const editingId = e.target.dataset.editingId;
+
+                if (editingId) {
+                    formData.append('id', editingId);
+                }
+
+                formData.append('name', document.getElementById('alumniName').value);
+                formData.append('latin_honors', document.getElementById('alumniLatinHonors').value);
+                formData.append('batch', document.getElementById('alumniBatch').value);
+                formData.append('course', document.getElementById('alumniCourse').value);
+                formData.append('position', '');
+                formData.append('company', '');
+                formData.append('bio', '');
+
+                const imageFile = document.getElementById('alumniImage').files[0];
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                }
+
+                const response = await fetch('/api/alumni/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification(data.message || 'Alumni saved successfully!', 'success');
+                    addNotification('alumni', editingId ? 'Alumni Profile Updated' : 'New Alumni Added', `Profile for ${document.getElementById('alumniName').value} has been ${editingId ? 'updated' : 'created'}.`, 'People', { name: document.getElementById('alumniName').value });
+
+
+                    // Reset form and close modal
+                    e.target.reset();
+                    delete e.target.dataset.editingId;
+                    removeImage('alumni');
+                    closeModal('alumniModal');
+
+                    // Refresh table
+                    loadAlumni();
+                } else {
+                    showNotification('Error: ' + data.error, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error saving alumni:', error);
+                showNotification('Error saving alumni to server', 'error');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOM loaded, initializing everything...');
+
+            // Initialize alumni functionality
+            initializeAlumniFunctionality();
+
+            // Load alumni data
+            setTimeout(() => {
+                loadAlumni();
+                console.log('Alumni data loaded');
+            }, 500);
+        });
+
+        // Also initialize after a delay to ensure everything is loaded
+        setTimeout(() => {
+            console.log('Delayed initialization...');
+            initializeAlumniFunctionality();
+        }, 1000);
+
+        // Test function for alumni functionality
+        window.testAlumniComplete = function () {
+            console.log('=== Complete Alumni Test ===');
+
+            // Test 1: Check if JavaScript is working
+            console.log('1. JavaScript working:', typeof testJS === 'function');
+
+            // Test 2: Check if alumni form exists
+            const alumniForm = document.getElementById('alumniForm');
+            console.log('2. Alumni form exists:', !!alumniForm);
+
+            // Test 3: Check if alumni modal exists
+            const alumniModal = document.getElementById('alumniModal');
+            console.log('3. Alumni modal exists:', !!alumniModal);
+
+            // Test 4: Check if alumni table exists
+            const alumniTable = document.getElementById('alumniTable');
+            console.log('4. Alumni table exists:', !!alumniTable);
+
+            // Test 5: Check form fields
+            const fields = {
+                alumniName: document.getElementById('alumniName'),
+                alumniEmail: document.getElementById('alumniEmail'),
+                alumniBatch: document.getElementById('alumniBatch'),
+                alumniCourse: document.getElementById('alumniCourse'),
+            };
+
+            console.log('5. Form fields:');
+            Object.keys(fields).forEach(fieldName => {
+                console.log(`   ${fieldName}:`, !!fields[fieldName]);
+            });
+
+            // Test 6: Check event listeners
+            if (alumniForm) {
+                console.log('6. Event listeners attached:', alumniForm.onsubmit !== null || alumniForm.addEventListener);
+            }
+
+            // Test 7: Check localStorage
+            const alumniData = JSON.parse(localStorage.getItem('superAdminAlumni') || '[]');
+            console.log('7. Current alumni count:', alumniData.length);
+
+            // Test 8: Try to open modal
+            if (alumniModal) {
+                console.log('8. Testing modal open...');
+                try {
+                    openAlumniModal();
+                    console.log('   ✅ Modal opened successfully');
+
+                    setTimeout(() => {
+                        closeModal('alumniModal');
+                        console.log('   ✅ Modal closed successfully');
+                    }, 1000);
+                } catch (error) {
+                    console.error('   ❌ Error opening modal:', error);
+                }
+            }
+
+            // Test 9: Test notification system
+            console.log('9. Testing notification system...');
+            try {
+                showNotification('Test notification - Alumni system is working!', 'success');
+                console.log('   ✅ Notification system working');
+            } catch (error) {
+                console.error('   ❌ Notification system error:', error);
+            }
+
+            console.log('=== Alumni Test Complete ===');
+            console.log('If you see this message, JavaScript is working!');
+            console.log('Check the console for any red error messages.');
+        };
+
+        // Test image upload functionality specifically
+        window.testImageUpload = function () {
+            console.log('=== Testing Image Upload Function ===');
+
+            // Test 1: Check if image input exists
+            const alumniImageInput = document.getElementById('alumniImage');
+            if (!alumniImageInput) {
+                console.error('❌ Alumni image input not found!');
+                return;
+            }
+            console.log('✅ Alumni image input found');
+
+            // Test 2: Check if preview elements exist
+            const previewContainer = document.getElementById('alumniImagePreview');
+            const previewImg = document.getElementById('alumniPreviewImg');
+
+            console.log('Preview elements check:');
+            console.log('   Preview container:', !!previewContainer ? '✅' : '❌');
+            console.log('   Preview image:', !!previewImg ? '✅' : '❌');
+
+            if (!previewContainer || !previewImg) {
+                console.error('❌ Preview elements not found!');
+                return;
+            }
+
+            // Test 3: Check if upload area exists
+            const uploadArea = document.getElementById('alumniFileUploadArea');
+            console.log('Upload area:', !!uploadArea ? '✅' : '❌');
+
+            // Test 4: Check event listeners
+            console.log('Event listeners:');
+            console.log('   Input has change listener:', alumniImageInput.onchange !== null || !!alumniImageInput.addEventListener);
+
+            // Test 5: Test getImageData function
+            console.log('Testing getImageData function...');
+            const imageData = getImageData('alumni');
+            console.log('   Current image data:', imageData ? 'present' : 'none');
+
+            // Test 6: Create a test image event
+            console.log('Testing image preview function...');
+            try {
+                // Test with a sample base64 image
+                const testImageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+                previewImage('alumni', testImageData);
+                console.log('✅ Image preview function works');
+
+                // Test getImageData after setting image
+                setTimeout(() => {
+                    const newImageData = getImageData('alumni');
+                    console.log('   Image data after test:', newImageData ? 'present' : 'none');
+                }, 500);
+
+            } catch (error) {
+                console.error('❌ Error testing image preview:', error);
+            }
+
+            // Test 7: Check if modal is open
+            const alumniModal = document.getElementById('alumniModal');
+            const isModalOpen = alumniModal && alumniModal.style.display !== 'none';
+            console.log('Modal is open:', isModalOpen ? '✅' : '❌');
+
+            if (!isModalOpen) {
+                console.log('Opening modal for testing...');
+                openAlumniModal();
+                setTimeout(() => {
+                    console.log('Modal opened. You can now test image upload manually.');
+                    showNotification('Modal opened. Try uploading an image to test the functionality.', 'info');
+                }, 500);
+            } else {
+                showNotification('Image upload test complete. Check console for details.', 'info');
+            }
+
+            console.log('=== Image Upload Test Complete ===');
+        };
+
+        // Test form reset functionality
+        window.testFormReset = function () {
+            console.log('=== Testing Form Reset Functionality ===');
+
+            // Test 1: Check if alumni form exists
+            const alumniForm = document.getElementById('alumniForm');
+            if (!alumniForm) {
+                console.error('❌ Alumni form not found!');
+                return;
+            }
+            console.log('✅ Alumni form found');
+
+            // Test 2: Simulate editing an alumni
+            console.log('Step 1: Simulating edit mode...');
+            alumniForm.dataset.editingId = 'test-edit-id';
+            document.getElementById('alumniModalTitle').innerHTML = '<i class="fas fa-user-graduate" style="margin-right: 10px; color: #0078d4;"></i>Edit Alumni';
+            const submitBtn = alumniForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-save" style="margin-right: 5px;"></i>Update Alumni';
+            }
+
+            // Fill some test data
+            document.getElementById('alumniName').value = 'Test Alumni Name';
+            document.getElementById('alumniEmail').value = 'test@example.com';
+            document.getElementById('alumniBatch').value = '2023';
+
+            console.log('Edit mode simulated:');
+            console.log('   Editing ID:', alumniForm.dataset.editingId);
+            console.log('   Modal title:', document.getElementById('alumniModalTitle').innerText);
+            console.log('   Button text:', submitBtn ? submitBtn.innerText : 'not found');
+            console.log('   Form data filled');
+
+            // Test 3: Test openAlumniModal reset
+            console.log('Step 2: Testing openAlumniModal reset...');
+            try {
+                openAlumniModal();
+
+                setTimeout(() => {
+                    console.log('After openAlumniModal:');
+                    console.log('   Editing ID:', alumniForm.dataset.editingId || 'cleared');
+                    console.log('   Modal title:', document.getElementById('alumniModalTitle').innerText);
+                    console.log('   Button text:', submitBtn ? submitBtn.innerText : 'not found');
+                    console.log('   Form fields cleared:',
+                        document.getElementById('alumniName').value === '' ? '✅' : '❌',
+                        document.getElementById('alumniEmail').value === '' ? '✅' : '❌'
+                    );
+
+                    // Test results
+                    const isResetComplete = (
+                        !alumniForm.dataset.editingId &&
+                        document.getElementById('alumniModalTitle').innerText.includes('Add Alumni') &&
+                        submitBtn && submitBtn.innerText.includes('Add Alumni') &&
+                        document.getElementById('alumniName').value === '' &&
+                        document.getElementById('alumniEmail').value === ''
+                    );
+
+                    if (isResetComplete) {
+                        console.log('✅ Form reset test PASSED');
+                        showNotification('Form reset test passed! You can now add new alumni without errors.', 'success');
+                    } else {
+                        console.error('❌ Form reset test FAILED');
+                        showNotification('Form reset test failed. Check console for details.', 'error');
+                    }
+
+                }, 200);
+
+            } catch (error) {
+                console.error('❌ Error testing form reset:', error);
+                showNotification('Error testing form reset', 'error');
+            }
+
+            console.log('=== Form Reset Test Started ===');
+        };
+
+        // Test add alumni functionality
+        window.testAddAlumni = function () {
+            console.log('=== Testing Add Alumni Function ===');
+
+            // Test 1: Check if alumni form exists
+            const alumniForm = document.getElementById('alumniForm');
+            if (!alumniForm) {
+                console.error('❌ Alumni form not found!');
+                return;
+            }
+            console.log('✅ Alumni form found');
+
+            // Test 2: Check if all form fields exist
+            const fields = {
+                alumniName: document.getElementById('alumniName'),
+                alumniEmail: document.getElementById('alumniEmail'),
+                alumniBatch: document.getElementById('alumniBatch'),
+                alumniCourse: document.getElementById('alumniCourse'),
+            };
+
+            // Test 3: Check if modal exists
+            const alumniModal = document.getElementById('alumniModal');
+            if (!alumniModal) {
+                console.error('❌ Alumni modal not found!');
+                return;
+            }
+            console.log('✅ Alumni modal found');
+
+            // Test 4: Check if submit button exists
+            const submitBtn = alumniForm.querySelector('button[type="submit"]');
+            if (!submitBtn) {
+                console.error('❌ Submit button not found!');
+                return;
+            }
+            console.log('✅ Submit button found');
+
+            // Test 5: Check if event listener is attached
+            console.log('Event listener check:');
+            console.log('   Form has submit listener:', alumniForm.onsubmit !== null || !!alumniForm.addEventListener);
+
+            // Test 6: Try to open modal
+            console.log('Testing modal open...');
+            try {
+                openAlumniModal();
+                console.log('✅ Modal opened successfully');
+
+                // Fill test data
+                document.getElementById('alumniName').value = 'Test Alumni';
+                document.getElementById('alumniEmail').value = 'test@example.com';
+                document.getElementById('alumniBatch').value = '2023';
+                document.getElementById('alumniCourse').value = 'BSIT';
+
+                console.log('✅ Test data filled in form');
+                showNotification('Test data filled. Click "Add Alumni" to test submission.', 'info');
+
+            } catch (error) {
+                console.error('❌ Error testing modal:', error);
+                showNotification('Error testing alumni modal', 'error');
+            }
+        };
+
+        // Test edit functionality
+        window.testEditFunction = function () {
+            console.log('=== Testing Edit Function ===');
+
+            // Get first alumni from localStorage
+            const alumni = JSON.parse(localStorage.getItem('superAdminAlumni') || '[]');
+            console.log('Available alumni:', alumni.length);
+
+            if (alumni.length > 0) {
+                const firstAlumni = alumni[0];
+                console.log('Testing with first alumni:', firstAlumni);
+                console.log('Calling editAlumniById with ID:', firstAlumni.id);
+                editAlumniById(firstAlumni.id);
+            } else {
+                console.log('No alumni found. Please add an alumni first.');
+                showNotification('No alumni found. Please add an alumni first.', 'warning');
+            }
+        };
+
+        // Alumni Management Functions
+        async function deleteSelectedAlumni() {
+            const selectedRows = document.querySelectorAll('#alumniTable input[type="checkbox"]:checked');
+
+            if (selectedRows.length === 0) {
+                showNotification('Please select alumni to delete', 'warning');
+                return;
+            }
+
+            const _confirmed = await showCustomConfirm({ title: 'Delete Alumni Records', message: `Are you sure you want to delete ${selectedRows.length} alumni record(s)?`, confirmLabel: 'Yes, Delete All', confirmIcon: 'fa-user-times' });
+            if (_confirmed) {
+                selectedRows.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    const alumniId = row.dataset.alumniId;
+
+                    // Remove from localStorage
+                    const alumni = JSON.parse(localStorage.getItem('superAdminAlumni') || '[]');
+                    const updatedAlumni = alumni.filter(a => a.id !== alumniId);
+                    localStorage.setItem('superAdminAlumni', JSON.stringify(updatedAlumni));
+
+                    // Remove row from table
+                    row.remove();
+                });
+
+                showNotification(`${selectedRows.length} alumni record(s) deleted successfully`, 'success');
+
+                // Uncheck all checkboxes
+                document.querySelectorAll('#alumniTable input[type="checkbox"]').forEach(cb => cb.checked = false);
+            }
+        }
+
+        function refreshAlumniTable() {
+            console.log('Refreshing alumni table...');
+
+            // Show loading state
+            const alumniTable = document.getElementById('alumniTable');
+            if (alumniTable) {
+                alumniTable.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Refreshing...</td></tr>';
+            }
+
+            // Reload alumni data
+            setTimeout(() => {
+                loadAlumni();
+                showNotification('Alumni table refreshed successfully', 'success');
+            }, 500);
+        }
+
+        function selectAllAlumni(checkbox) {
+            const checkboxes = document.querySelectorAll('#alumniTable input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+        }
+
+        function editSelectedAlumni() {
+            const selectedRows = document.querySelectorAll('#alumniTable input[type="checkbox"]:checked');
+
+            if (selectedRows.length === 0) {
+                showNotification('Please select an alumni to edit', 'warning');
+                return;
+            }
+
+            if (selectedRows.length > 1) {
+                showNotification('Please select only one alumni to edit', 'warning');
+                return;
+            }
+
+            const row = selectedRows[0].closest('tr');
+            const alumniId = row.dataset.alumniId;
+
+            editAlumniById(alumniId);
+        }
+
+        // Real edit alumni function
+        async function editAlumniById(alumniId) {
+            console.log('editAlumniById called with ID:', alumniId);
+
+            try {
+                const response = await fetch(`/api/alumni/${alumniId}/`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const alumniToEdit = data.alumni;
+
+                    // Fill form with alumni data
+                    document.getElementById('alumniName').value = alumniToEdit.full_name || alumniToEdit.name || '';
+                    document.getElementById('alumniLatinHonors').value = alumniToEdit.latin_honors || '';
+                    document.getElementById('alumniBatch').value = alumniToEdit.graduation_year || alumniToEdit.batch || '';
+                    document.getElementById('alumniCourse').value = alumniToEdit.course || '';
+
+                    // Show existing image if available
+                    const imageSrc = alumniToEdit.profile_image || alumniToEdit.image;
+                    if (imageSrc) {
+                        const previewImg = document.getElementById('alumniPreviewImg');
+                        const previewContainer = document.getElementById('alumniImagePreview');
+                        if (previewImg && previewContainer) {
+                            previewImg.src = imageSrc;
+                            previewContainer.style.display = 'block';
+                        }
+                    } else {
+                        const previewContainer = document.getElementById('alumniImagePreview');
+                        if (previewContainer) previewContainer.style.display = 'none';
+                    }
+
+                    // Change modal title to Edit
+                    document.getElementById('alumniModalTitle').innerHTML = '<i class="fas fa-user-graduate" style="margin-right: 10px; color: #0078d4;"></i>Edit Alumni';
+
+                    // Change submit button text
+                    const submitBtn = document.querySelector('#alumniForm button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="fas fa-save" style="margin-right: 5px;"></i>Update Alumni';
+                    }
+
+                    // Store editing ID
+                    document.getElementById('alumniForm').dataset.editingId = alumniId;
+
+                    // Open modal
+                    const modal = document.getElementById('alumniModal');
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        modal.classList.add('show');
+                    }
+
+                    showNotification('Editing alumni: ' + alumniToEdit.full_name, 'info');
+                } else {
+                    showNotification('Error fetching alumni: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching alumni:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+        async function deleteAlumniById(alumniId) {
+            const _confirmed = await showCustomConfirm({ title: 'Delete Alumni', message: 'Are you sure you want to delete this alumni record?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-user-times' });
+            if (_confirmed) {
+                try {
+                    const response = await fetch(`/api/alumni/${alumniId}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        showNotification('Alumni record deleted successfully', 'success');
+                        loadAlumni();
+                    } else {
+                        showNotification('Error deleting alumni: ' + data.error, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting alumni:', error);
+                    showNotification('Error connecting to server', 'error');
+                }
+            }
+        }
+        // ============================================================
+        //  Session Timer
+        // ============================================================
+
+
+
+        // ============================================================
+        //  Refresh Charts Handler
+        // ============================================================
+        async function handleRefreshCharts(btn) {
+            if (btn.disabled) return;
+            btn.disabled = true;
+            btn.classList.add('spinning');
+
+            const span = btn.querySelector('span');
+            const original = span ? span.textContent : 'Refresh Charts';
+            if (span) span.textContent = 'Refreshing...';
+
+            try {
+                window.location.href = `${window.location.pathname}?tab=dashboard&refresh=${Date.now()}`;
+            } catch (error) {
+                console.error('Error refreshing system analytics view:', error);
+                showNotification('Unable to refresh analytics view.', 'error');
+            } finally {
+                if (span) span.textContent = original;
+                btn.classList.remove('spinning');
+                btn.disabled = false;
+            }
+        }
+
+        // ============================================================
+        //  Clear Activity Log
+        // ============================================================
+        async function clearActivityLog() {
+            const _confirmed = await showCustomConfirm({ title: 'Clear Activity Log', message: 'Are you sure you want to clear all recent activity?', icon: 'fa-history', iconColor: '#fb923c', iconBg: 'rgba(251,146,60,0.15)', iconBorder: 'rgba(251,146,60,0.25)', confirmLabel: 'Yes, Clear', confirmIcon: 'fa-history', confirmGradient: 'linear-gradient(135deg,#f97316 0%,#ea580c 100%)', confirmShadow: '0 4px 15px rgba(249,115,22,0.35)', showUndone: false });
+            if (!_confirmed) return;
+            localStorage.removeItem('systemActivities');
+            const feed = document.getElementById('activityFeed');
+            if (feed) {
+                feed.innerHTML = `<div class="empty-state" style="padding: 40px;">
+                    <i class="fas fa-history"></i>
+                    <p>Activity log cleared</p>
+                </div>`;
+            }
+            showNotification('Activity log cleared', 'success');
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function () {
+            loadDashboardData();
+            loadColleges();
+            loadPresidentInfo();
+            loadHistoryInfo();
+            loadPosts();
+            loadAnnouncements();
+            loadNews();
+            loadAlumni();
+            loadAchievements();
+            loadAlumniNews();
+            loadAlumniEvents();
+            loadSuccessStories();
+
+
+
+
+            // College form handler
+            document.getElementById('collegeForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                await saveCollegeData();
+            });
+
+
+            // NORSU Information form handler
+            setTimeout(() => {
+                const infoForm = document.getElementById('infoForm');
+                console.log('Info form found:', infoForm);
+                if (!infoForm) {
+                    console.error('Info form not found!');
+                } else if (!infoForm.dataset.bound) {
+                    infoForm.dataset.bound = 'true';
+                    infoForm.addEventListener('submit', function (e) {
+                        handleNORSUInfoSubmit(e);
+                    });
+                }
+            }, 100);
+
+            // University President form handler
+            const presidentForm = document.getElementById('presidentForm');
+            console.log('President form found:', presidentForm);
+            if (presidentForm) {
+                presidentForm.addEventListener('submit', function (e) {
+                    console.log('President form submitted');
+                    e.preventDefault();
+                    savePresidentSimple();
+                });
+            } else {
+                console.log('President form NOT found!');
+            }
+
+            // NORSU History form handler
+            setTimeout(() => {
+                const historyForm = document.getElementById('historyForm');
+                console.log('History form found:', historyForm);
+                if (historyForm) {
+                    historyForm.addEventListener('submit', function (e) {
+                        console.log('History form submitted');
+                        e.preventDefault();
+                        handleHistorySubmit(e);
+                        return;
+
+                        // Force immediate update
+                        setTimeout(() => {
+                            loadHistoryInfo();
+                            console.log('History display reloaded after save');
+                        }, 50);
+
+                        addNotification('norsu_history', 'NORSU history updated', 'The NORSU history section has been updated.', 'content', payload);
+                        logActivity('norsu_history_updated', 'NORSU history updated', 'content');
+                        closeModal('historyModal');
+                        showNotification('NORSU history saved successfully!', 'success');
+                    });
+                } else {
+                    console.error('History form not found!');
+                }
+            }, 100);
+
+            // Helper function to save college
+            function saveCollege(colleges, collegeData, editingId) {
+                try {
+                    if (editingId) {
+                        // Update existing college
+                        const index = colleges.findIndex(c => c.id === editingId);
+                        if (index !== -1) {
+                            colleges[index] = { ...colleges[index], ...collegeData };
+                        }
+                    } else {
+                        // Add new college
+                        collegeData.id = Date.now().toString();
+                        collegeData.createdAt = new Date().toISOString();
+                        colleges.push(collegeData);
+                    }
+
+                    localStorage.setItem('superAdminColleges', JSON.stringify(colleges));
+
+                    // Clear form fields and reset
+                    const form = document.getElementById('collegeForm');
+                    form.reset();
+                    removeCollegeImage();
+
+                    closeModal('collegeModal');
+                    loadColleges();
+                    loadDashboardData();
+
+                    showNotification(editingId ? 'College updated successfully!' : 'College added successfully!', 'success');
+                } catch (error) {
+                    console.error('Error saving college:', error);
+                    if (error.name === 'QuotaExceededError') {
+                        showNotification('Storage limit reached! Try using a smaller image.', 'error');
+                    } else {
+                        showNotification('Error saving college. Please try again.', 'error');
+                    }
+                }
+            }
+        });
+
+        // Notification System
+        let notifications = [];
+        let notificationCount = 0;
+
+        // Initialize notification system
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeNotifications();
+            loadNotifications();
+            updateNotificationBadge();
+        });
+
+        function initializeNotifications() {
+            // Load existing notifications from localStorage
+            const savedNotifications = localStorage.getItem('superAdminNotifications');
+            if (savedNotifications) {
+                notifications = JSON.parse(savedNotifications);
+            } else {
+                // Create initial welcome notification
+                addNotification('system', 'Welcome to Super Admin Dashboard', 'You can now manage posts, announcements, news, and alumni profiles.', 'system');
+            }
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('show');
+
+            // Mark notifications as read when opened
+            if (dropdown.classList.contains('show')) {
+                markAllAsRead();
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', closeNotificationsOnClickOutside);
+        }
+
+        function closeNotificationsOnClickOutside(event) {
+            const container = document.querySelector('.notification-container');
+            if (!container.contains(event.target)) {
+                document.getElementById('notificationDropdown').classList.remove('show');
+                document.removeEventListener('click', closeNotificationsOnClickOutside);
+            }
+        }
+
+        function saveNotifications() {
+            try {
+                localStorage.setItem('superAdminNotifications', JSON.stringify(notifications));
+            } catch (e) {
+                console.error('Storage quota exceeded for notifications. Purging old records...', e);
+                // Emergency purge: Keep only the 5 most recent notifications
+                notifications = notifications.slice(0, 5);
+                try {
+                    localStorage.setItem('superAdminNotifications', JSON.stringify(notifications));
+                    showNotification('Storage full: Old notifications purged', 'info');
+                } catch (retryError) {
+                    // Critical failure: Clear all notifications if still failing
+                    localStorage.removeItem('superAdminNotifications');
+                    notifications = [];
+                }
+            }
+        }
+
+        function addNotification(type, title, message, category, data = null) {
+            // Quota protection: strip large data payloads if they exceed 10KB
+            let safeData = data;
+            if (data && JSON.stringify(data).length > 10000) {
+                console.warn('Notification data too large, stripping for storage safety');
+                safeData = { note: 'Detailed data omitted to save storage space' };
+            }
+
+            const notification = {
+                id: Date.now().toString(),
+                type: type,
+                title: title,
+                message: message,
+                category: category,
+                data: safeData,
+                timestamp: new Date().toISOString(),
+                read: false
+            };
+
+            notifications.unshift(notification);
+
+            // Keep only last 30 notifications for performance and storage
+            if (notifications.length > 30) {
+                notifications = notifications.slice(0, 30);
+            }
+
+            // Save to localStorage using centralized helper
+            saveNotifications();
+
+            // Update UI
+            updateNotificationBadge();
+            renderNotifications();
+
+            // Show browser notification if permission granted
+            if (Notification.permission === 'granted') {
+                showBrowserNotification(title, message);
+            }
+        }
+
+        function updateNotificationBadge() {
+            const unreadCount = notifications.filter(n => !n.read).length;
+            const badge = document.getElementById('notificationBadge');
+
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+
+            notificationCount = unreadCount;
+        }
+
+        function renderNotifications() {
+            const notificationList = document.getElementById('notificationList');
+
+            if (notifications.length === 0) {
+                notificationList.innerHTML = `
+                    <div class="empty-notifications">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>No notifications yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const notificationsHTML = notifications.map(notification => {
+                const iconClass = getNotificationIcon(notification.type);
+                const timeAgo = getTimeAgo(new Date(notification.timestamp));
+                const unreadClass = notification.read ? '' : 'unread';
+
+                return `
+                    <div class="notification-item ${unreadClass}" onclick="handleNotificationClick('${notification.id}')">
+                        <div class="notification-content">
+                            <div class="notification-icon ${notification.type}">
+                                <i class="fas ${iconClass}"></i>
+                            </div>
+                            <div class="notification-text">
+                                <div class="notification-title">${notification.title}</div>
+                                <div class="notification-message">${notification.message}</div>
+                                <div class="notification-time">${timeAgo}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            notificationList.innerHTML = notificationsHTML;
+        }
+
+        function getNotificationIcon(type) {
+            const icons = {
+                'post': 'fa-newspaper',
+                'announcement': 'fa-bullhorn',
+                'news': 'fa-globe',
+                'alumni': 'fa-user-graduate',
+                'system': 'fa-cog',
+                'export': 'fa-download',
+                'health': 'fa-heartbeat',
+                'sync': 'fa-sync',
+                'message': 'fa-envelope',
+                'college': 'fa-university',
+                'calendar': 'fa-calendar-alt',
+                'achievement': 'fa-trophy',
+                'archive': 'fa-archive',
+                'inquiry': 'fa-envelope'
+            };
+            return icons[type] || 'fa-bell';
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' minutes ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
+            if (seconds < 604800) return Math.floor(seconds / 86400) + ' days ago';
+
+            return date.toLocaleDateString();
+        }
+
+        function handleNotificationClick(notificationId) {
+            const notification = notifications.find(n => n.id === notificationId);
+            if (notification) {
+                // Mark as read
+                notification.read = true;
+                saveNotifications();
+                updateNotificationBadge();
+                renderNotifications();
+
+                // Handle notification action
+                handleNotificationAction(notification);
+            }
+        }
+
+        function handleNotificationAction(notification) {
+            switch (notification.type) {
+                case 'post':
+                    showTab('posts');
+                    break;
+                case 'announcement':
+                    showTab('posts'); // Assuming announcements are in posts tab
+                    break;
+                case 'news':
+                    showTab('alumni-news');
+                    break;
+                case 'message':
+                case 'inquiry':
+                    showTab('inquiries');
+                    if (notification.data && notification.data.id) {
+                        viewInquiryDetail(notification.data.id);
+                    }
+                    break;
+                case 'alumni':
+                    showTab('alumni');
+                    break;
+                case 'college':
+                    showTab('colleges');
+                    break;
+                case 'calendar':
+                    showTab('calendar');
+                    break;
+                case 'achievement':
+                    showTab('achievements');
+                    break;
+                case 'archive':
+                    showTab('archive');
+                    break;
+                case 'system':
+                    // System notifications - no specific action
+                    break;
+                case 'export':
+                    // Export notification - no specific action
+                    break;
+                case 'health':
+                    quickSystemHealth();
+                    break;
+                case 'sync':
+                    // Sync notification - no specific action
+                    break;
+            }
+
+            // Close notification dropdown
+            document.getElementById('notificationDropdown').classList.remove('show');
+        }
+
+        function markAllAsRead() {
+            notifications.forEach(notification => {
+                notification.read = true;
+            });
+
+            saveNotifications();
+            updateNotificationBadge();
+            renderNotifications();
+        }
+
+        async function clearAllNotifications() {
+            const _confirmed = await showCustomConfirm({ 
+                title: 'Clear All Notifications', 
+                message: 'Are you sure you want to clear all notifications? This cannot be undone.', 
+                icon: 'fa-bell-slash', 
+                confirmLabel: 'Yes, Clear All'
+            });
+            
+            if (_confirmed) {
+                notifications = [];
+                saveNotifications();
+                updateNotificationBadge();
+                renderNotifications();
+                showNotification('All notifications cleared', 'success');
+            }
+        }
+
+        function loadNotifications() {
+            renderNotifications();
+        }
+
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        function showBrowserNotification(title, message) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, {
+                    body: message,
+                    icon: '/static/dashboard/images/favicon.ico',
+                    badge: '/static/dashboard/images/favicon.ico'
+                });
+            }
+        }
+
+        // Form submission handlers are defined later in the script
+
+        document.getElementById('announcementForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            console.log('Announcement form submission started');
+
+            try {
+                // Get form elements
+                const titleElement = document.getElementById('announcementTitle');
+                const contentElement = document.getElementById('announcementContent');
+                const priorityElement = document.getElementById('announcementPriority');
+                const targetElement = document.getElementById('announcementTarget');
+
+                console.log('Form elements found:', {
+                    titleElement: titleElement,
+                    contentElement: contentElement,
+                    priorityElement: priorityElement,
+                    targetElement: targetElement
+                });
+
+                // Validate elements exist
+                if (!titleElement || !contentElement || !priorityElement || !targetElement) {
+                    throw new Error('One or more form elements not found');
+                }
+
+                // Get values
+                const title = titleElement.value.trim();
+                const content = contentElement.value.trim();
+                const priority = priorityElement.value;
+                const target = targetElement.value;
+
+                console.log('Form values:', { title, content, priority, target });
+
+                // Validate required fields
+                if (!title) {
+                    showNotification('Please enter an announcement title', 'error');
+                    titleElement.focus();
+                    return;
+                }
+
+                if (!content) {
+                    showNotification('Please enter announcement content', 'error');
+                    contentElement.focus();
+                    return;
+                }
+
+                // Get image data
+                let imageData = null;
+                try {
+                    imageData = getImageData('announcement');
+                    console.log('Image data retrieved:', imageData ? 'success' : 'none');
+                } catch (imageError) {
+                    console.warn('Image processing error:', imageError);
+                    // Continue without image
+                }
+
+                // Create announcement object
+                const formData = {
+                    id: Date.now().toString(),
+                    title: title,
+                    content: content,
+                    priority: priority,
+                    target: target,
+                    image: imageData,
+                    date: new Date().toISOString(),
+                    status: 'active'
+                };
+
+                console.log('Announcement data created:', formData);
+
+                // Save to localStorage with comprehensive error handling
+                try {
+                    const announcements = JSON.parse(localStorage.getItem('superAdminAnnouncements') || '[]');
+
+                    // Check available storage space
+                    const storageUsage = JSON.stringify(announcements).length;
+                    const storageQuota = 5 * 1024 * 1024; // 5MB limit
+                    const availableSpace = localStorage.getItem('storageAvailable') || 'unknown';
+
+                    console.log('Storage usage:', storageUsage, 'bytes');
+                    console.log('Available space:', availableSpace);
+
+                    // Keep only the latest 30 announcements to prevent quota issues
+                    const maxAnnouncements = 30;
+                    const updatedAnnouncements = [...announcements, formData];
+
+                    // If we have more than max, remove oldest
+                    if (updatedAnnouncements.length > maxAnnouncements) {
+                        const announcementsToKeep = updatedAnnouncements.slice(-maxAnnouncements);
+                        localStorage.setItem('superAdminAnnouncements', JSON.stringify(announcementsToKeep));
+                        console.log(`Storage cleaned: Kept latest ${maxAnnouncements} announcements, removed ${updatedAnnouncements.length - maxAnnouncements} old ones`);
+
+                        // Show warning to user
+                        showNotification('Storage Management', `Storage optimized: Keeping latest ${maxAnnouncements} announcements. Old items have been removed to prevent quota issues.`, 'warning');
+                    } else {
+                        localStorage.setItem('superAdminAnnouncements', JSON.stringify(updatedAnnouncements));
+                        console.log('Announcement saved to localStorage');
+                    }
+                } catch (storageError) {
+                    console.error('Storage error:', storageError);
+
+                    // Try different storage strategies
+                    try {
+                        // Try sessionStorage as fallback
+                        sessionStorage.setItem('tempAnnouncement', JSON.stringify(formData));
+                        showNotification('Storage Issue', 'localStorage quota exceeded. Using temporary storage for this announcement.', 'warning');
+
+                        // Try to clear some space
+                        setTimeout(() => {
+                            try {
+                                // Clear old notifications to free space
+                                const oldNotifications = localStorage.getItem('superAdminNotifications');
+                                if (oldNotifications) {
+                                    localStorage.removeItem('superAdminNotifications');
+                                    console.log('Cleared old notifications to free storage space');
+                                }
+
+                                // Try saving again
+                                setTimeout(() => {
+                                    try {
+                                        const announcements = JSON.parse(localStorage.getItem('superAdminAnnouncements') || '[]');
+                                        const updatedAnnouncements = [...announcements, formData];
+                                        localStorage.setItem('superAdminAnnouncements', JSON.stringify(updatedAnnouncements));
+                                        showNotification('Success', 'Announcement saved successfully after cleanup!', 'success');
+
+                                        // Clear temporary storage
+                                        sessionStorage.removeItem('tempAnnouncement');
+                                    } catch (retryError) {
+                                        console.error('Retry failed:', retryError);
+                                        showNotification('Storage Error', 'Unable to save announcement. Please clear browser storage and try again.', 'error');
+                                    }
+                                }, 1000);
+                            } catch (clearError) {
+                                console.error('Storage cleanup failed:', clearError);
+                            }
+                        }, 500);
+                    } catch (sessionError) {
+                        console.error('SessionStorage error:', sessionError);
+                        showNotification('Storage Error', 'Both localStorage and sessionStorage are unavailable. Please refresh the page.', 'error');
+                    }
+                }
+
+                // Add notification
+                addNotification('announcement', 'New Announcement Created', `"${formData.title}" has been created successfully.`, 'announcement', formData);
+
+                // Log activity
+                logActivity('announcement_created', `Announcement "${formData.title}" created`, 'content');
+
+                // Reset form
+                this.reset();
+
+                // Remove image safely
+                try {
+                    removeImage('announcement');
+                } catch (removeError) {
+                    console.warn('Error removing image:', removeError);
+                }
+
+                // Close modal
+                closeModal('announcementModal');
+
+                // Refresh announcements table
+                loadAnnouncements();
+
+                // Show success message
+                showNotification('Announcement created successfully!', 'success');
+
+                console.log('Announcement form submission completed successfully');
+
+            } catch (error) {
+                console.error('Error saving announcement:', error);
+                showNotification('Error saving announcement: ' + error.message, 'error');
+            }
+        });
+
+        document.getElementById('newsForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            try {
+                const formData = {
+                    id: Date.now().toString(),
+                    title: document.getElementById('newsTitle').value,
+                    content: document.getElementById('newsContent').value,
+                    category: document.getElementById('newsCategory').value,
+                    image: getImageData('news'),
+                    date: new Date().toISOString(),
+                    status: 'published'
+                };
+
+                const news = JSON.parse(localStorage.getItem('superAdminNews') || '[]');
+                news.push(formData);
+                localStorage.setItem('superAdminNews', JSON.stringify(news));
+
+                // Add notification
+                addNotification('news', 'New News Article Created', `"${formData.title}" has been created successfully.`, 'news', formData);
+
+                // Log activity
+                logActivity('news_created', `News "${formData.title}" created`, 'content');
+
+                // Reset form
+                this.reset();
+                removeImage('news');
+                closeModal('newsModal');
+
+                // Refresh news table
+                loadNews();
+
+                // Show success message
+                showNotification('News article created successfully!', 'success');
+
+            } catch (error) {
+                console.error('Error saving news:', error);
+                showNotification('Error saving news. Please try again.', 'error');
+            }
+        });
+
+        document.getElementById('alumniForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            submitBtn.disabled = true;
+
+            try {
+                // Get form values
+                const name = document.getElementById('alumniName').value;
+                const email = document.getElementById('alumniEmail').value;
+                const batch = document.getElementById('alumniBatch').value;
+                const course = document.getElementById('alumniCourse').value;
+                const position = '';
+                const company = '';
+                const bio = '';
+                const image = getImageData('alumni');
+
+                // Validate required fields
+                if (!name || !email) {
+                    showNotification('Please fill in Name and Email', 'error');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+
+                // Create alumni object
+                const alumni = {
+                    id: Date.now().toString(),
+                    full_name: name,
+                    email: email,
+                    graduation_year: batch,
+                    course: course,
+                    position: position,
+                    company: company,
+                    bio: bio,
+                    profile_image: image,
+                    approval_status: 'approved',
+                    created_at: new Date().toISOString()
+                };
+
+                console.log('Saving alumni:', alumni);
+
+                // Save to localStorage directly
+                const existingAlumni = JSON.parse(localStorage.getItem('superAdminAlumni') || '[]');
+                existingAlumni.push(alumni);
+                localStorage.setItem('superAdminAlumni', JSON.stringify(existingAlumni));
+
+                // Sync to dashboards
+                syncAlumniToDashboards(alumni);
+
+                // Reset form
+                this.reset();
+                removeImage('alumni');
+                closeModal('alumniModal');
+
+                // Refresh table
+                setTimeout(() => loadAlumni(), 100);
+
+                // Show success
+                showNotification('Alumni added successfully!', 'success');
+
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Error saving alumni', 'error');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Test function to check alumni image visibility
+        window.testAlumniImages = function () {
+            console.log('=== Testing Alumni Image Visibility ===');
+
+            const alumni = JSON.parse(localStorage.getItem('superAdminAlumni') || '[]');
+            console.log('Total alumni:', alumni.length);
+
+            alumni.forEach((alumnus, index) => {
+                console.log(`Alumni ${index + 1}:`, {
+                    id: alumnus.id,
+                    name: alumnus.full_name,
+                    hasImage: !!alumnus.profile_image,
+                    imageLength: alumnus.profile_image ? alumnus.profile_image.length : 0,
+                    imageType: alumnus.profile_image ? alumnus.profile_image.substring(0, 50) + '...' : 'none',
+                    isValidBase64: alumnus.profile_image ? alumnus.profile_image.startsWith('data:image/') : false
+                });
+
+                if (alumnus.profile_image) {
+                    // Test if image can be loaded
+                    const testImg = new Image();
+                    testImg.onload = function () {
+                        console.log(`✅ Image for ${alumnus.full_name} loads successfully`);
+                    };
+                    testImg.onerror = function () {
+                        console.log(`❌ Image for ${alumnus.full_name} failed to load`);
+                    };
+                    testImg.src = alumnus.profile_image;
+                }
+            });
+
+            // Refresh alumni table to ensure images are displayed
+            loadAlumni();
+        };
+
+        // Test function to verify alumni functionality
+        window.testAlumniFunctionality = function () {
+            console.log('=== Testing Alumni Functionality ===');
+
+            // Test 1: Check if modal exists
+            const modal = document.getElementById('alumniModal');
+            console.log('1. Modal exists:', !!modal);
+
+            // Test 2: Check if form exists
+            const form = document.getElementById('alumniForm');
+            console.log('2. Form exists:', !!form);
+
+            // Test 3: Check if all form fields exist
+            const fields = {
+                alumniName: document.getElementById('alumniName'),
+                alumniEmail: document.getElementById('alumniEmail'),
+                alumniBatch: document.getElementById('alumniBatch'),
+                alumniCourse: document.getElementById('alumniCourse'),
+                alumniImage: document.getElementById('alumniImage')
+            };
+
+            console.log('3. Form fields:');
+            Object.keys(fields).forEach(fieldName => {
+                console.log(`   ${fieldName}:`, !!fields[fieldName]);
+            });
+
+            // Test 4: Check if submit button exists
+            const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+            console.log('4. Submit button exists:', !!submitBtn);
+
+            // Test 5: Check if event listeners are attached
+            console.log('5. Event listeners:');
+            console.log('   Form submit listener:', !!form && form.onsubmit || form && form.addEventListener);
+            console.log('   Submit button onclick:', !!submitBtn && submitBtn.onclick);
+
+            // Test 6: Try to open modal
+            console.log('6. Testing modal open...');
+            try {
+                openAlumniModal();
+                console.log('   ✅ Modal opened successfully');
+
+                // Close after 2 seconds
+                setTimeout(() => {
+                    closeModal('alumniModal');
+                    console.log('   ✅ Modal closed successfully');
+                }, 2000);
+            } catch (error) {
+                console.error('   ❌ Error opening modal:', error);
+            }
+
+            // Test 7: Check localStorage
+            const alumniData = JSON.parse(localStorage.getItem('superAdminAlumni') || '[]');
+            console.log('7. Current alumni count:', alumniData.length);
+
+            console.log('=== Alumni Functionality Test Complete ===');
+        };
+
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Enhanced quick actions with notifications
+        function quickExportData() {
+            exportData();
+            addNotification('export', 'Data Exported', 'System data has been exported successfully.', 'export');
+        }
+
+        function quickSystemHealth() {
+            showSystemHealth();
+            addNotification('health', 'System Health Check', 'System health check has been performed.', 'health');
+        }
+
+
+
+        function toggleQuickActions() {
+            const card = document.getElementById('quickActionsCard');
+            const icon = document.getElementById('quickActionsToggleIcon');
+            card.classList.toggle('collapsed');
+
+            // Save state to localStorage
+            localStorage.setItem('quickActionsCollapsed', card.classList.contains('collapsed'));
+        }
+
+        // Initialize state on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const isCollapsed = localStorage.getItem('quickActionsCollapsed') === 'true';
+            if (isCollapsed) {
+                document.getElementById('quickActionsCard').classList.add('collapsed');
+            }
+
+            // Initial load of dashboard stats and activity
+            try {
+                loadDashboardData();
+            } catch (e) {
+                console.error('Error in loadDashboardData:', e);
+            }
+
+            try {
+                loadCollegeActivity();
+            } catch (e) {
+                console.error('Error in loadCollegeActivity:', e);
+            }
+
+            try {
+                loadCalendar();
+            } catch (e) {
+                console.error('Error in loadCalendar:', e);
+            }
+        });
+
+        async function loadCollegeActivity() {
+            const tableBody = document.getElementById('collegeActivityTable');
+            if (!tableBody) return;
+
+            try {
+                // Fetch all posts to extract college-specific activity
+                const response = await fetch('/api/posts/get/');
+                const result = await response.json();
+
+                let posts = result.success ? result.posts : [];
+
+                // FILTER: Strictly exclude activity from Super Admin (including empty authors that default to Super Admin)
+                posts = posts.filter(post => {
+                    if (!post.author) return false;
+                    const author = post.author.toLowerCase();
+                    return author !== 'super admin' && author !== 'superadmin';
+                });
+
+                // Sort by date (newest first)
+                posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                // Update Stat Cards for College Activity
+                const collegeActivityCountEl = document.getElementById('collegeAdminActivityCount');
+                const todayCollegeActivityCountEl = document.getElementById('todayCollegeActivityCount');
+
+                if (collegeActivityCountEl) collegeActivityCountEl.textContent = posts.length;
+
+                if (todayCollegeActivityCountEl) {
+                    const today = new Date().toDateString();
+                    const todayCount = posts.filter(post => new Date(post.created_at).toDateString() === today).length;
+                    todayCollegeActivityCountEl.textContent = todayCount;
+                }
+
+                if (posts.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                                <i class="fas fa-info-circle" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                                No recent college activity from other admins found.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                posts.forEach(post => {
+                    const collegeRaw = (post.college || 'all').toLowerCase();
+                    const isAll = collegeRaw === 'all';
+                    const collegeDisplay = isAll ? 'General' : post.college;
+                    const collegeClass = isAll ? 'all' : collegeRaw;
+
+                    html += `
+                        <tr>
+                            <td><span class="college-badge college-${collegeClass}">${collegeDisplay}</span></td>
+                            <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500;">${post.title}</td>
+                            <td><span style="display: flex; align-items: center; gap: 6px;"><i class="fas fa-user-shield" style="font-size: 12px; color: #64748b;"></i> ${post.author || 'Admin'}</span></td>
+                            <td style="color: #64748b; font-size: 0.85rem;">
+                                ${new Date(post.created_at).toLocaleDateString()} 
+                                <span style="opacity: 0.7;">${new Date(post.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons" style="display: flex; gap: 8px;">
+                                    <button class="btn-action btn-view" onclick="viewPostDetails(${post.id})" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-action btn-edit" onclick="editPost(${post.id})" title="Edit Post">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-action btn-delete" onclick="deletePost(${post.id})" title="Delete Post">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tableBody.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading college activity:', error);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #e74c3c;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                            Failed to load college activity.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function viewCollegeActivity(college) {
+            showNotification(`Viewing details for ${college} activity`, 'info');
+            // Implement view logic here
+        }
+
+        function editCollegeActivity(college) {
+            showNotification(`Editing ${college} activity`, 'warning');
+            // Implement edit logic here
+        }
+
+        async function deleteCollegeActivity(college) {
+            const confirmed = await showCustomConfirm({
+                title: 'Delete Activity',
+                message: `Are you sure you want to delete this activity from ${college}?`,
+                icon: 'fa-trash-alt',
+                confirmLabel: 'Delete',
+                confirmGradient: 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)'
+            });
+
+            if (confirmed) {
+                showNotification(`Activity from ${college} deleted`, 'success');
+                // Implement actual delete logic here
+                loadCollegeActivity();
+            }
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-pane').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all nav items and dropdown items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-dropdown-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected tab
+            const targetTab = tabName === 'dashboard' ? 'dashboardTab' : tabName + '-tab';
+            const selectedPane = document.getElementById(targetTab);
+            if (selectedPane) {
+                selectedPane.classList.add('active');
+            }
+
+            // Handle dropdown items specifically
+            const dropdownItem = document.querySelector(`.nav-dropdown-item[onclick*="'${tabName}'"]`);
+            if (dropdownItem) {
+                dropdownItem.classList.add('active');
+                // Also highlight the parent dropdown trigger
+                dropdownItem.closest('.nav-dropdown').previousElementSibling.classList.add('active');
+            } else {
+                const navItem = document.querySelector(`.nav-item[onclick*="'${tabName}'"]`);
+                if (navItem) navItem.classList.add('active');
+            }
+
+            // Load data for specific tabs
+            if (tabName === 'colleges') {
+                loadColleges();
+            } else if (tabName === 'posts') {
+                loadPosts();
+            } else if (tabName === 'announcements') {
+                loadAnnouncements();
+            } else if (tabName === 'news') {
+                loadNews();
+            } else if (tabName === 'alumni') {
+                loadAlumni();
+            } else if (tabName === 'media-uploads') {
+                loadMediaUploads();
+            } else if (tabName === 'achievements') {
+                loadAchievements();
+            } else if (tabName === 'calendar') {
+                loadCalendar();
+            } else if (tabName === 'alumni-about') {
+                loadAlumniAbout();
+            } else if (tabName === 'alumni-news') {
+                loadAlumniNews();
+            } else if (tabName === 'alumni-events') {
+                loadAlumniEvents();
+            } else if (tabName === 'alumni-success') {
+                loadSuccessStories();
+            } else if (tabName === 'inquiries') {
+                loadInquiries();
+            } else if (tabName === 'archive') {
+                loadArchiveData();
+            } else if (tabName === 'contacts') {
+                loadSiteContactInfo();
+            }
+
+            // Close sidebar on mobile after clicking a link
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar) sidebar.classList.remove('show');
+            }
+        }
+
+        const initialDashboardTabElement = document.getElementById('initial-dashboard-tab');
+        const initialDashboardTab = initialDashboardTabElement ? JSON.parse(initialDashboardTabElement.textContent) : 'dashboard';
+        if (initialDashboardTab && initialDashboardTab !== 'dashboard') {
+            showTab(initialDashboardTab);
+        }
+
+        // Dropdown Toggle
+        function toggleAlumniDropdown(element) {
+            const dropdown = document.getElementById('alumniDropdown');
+            dropdown.classList.toggle('show');
+            element.classList.toggle('dropdown-open');
+        }
+
+        // Alumni About Functions
+        function loadAlumniAbout() {
+            fetch('/api/alumni/about/')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Database table might not exist yet. Please run migrations.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('alumniAboutTitle').value = data.about.title || '';
+
+                        document.getElementById('alumniAboutContent').value = data.about.content || '';
+                        document.getElementById('alumniAboutVision').value = data.about.vision || '';
+                        document.getElementById('alumniAboutMission').value = data.about.mission || '';
+
+                        if (window['_alumniEditor_alumniAboutContent']) window['_alumniEditor_alumniAboutContent'].setData(data.about.content || '');
+                        if (window['_alumniEditor_alumniAboutVision']) window['_alumniEditor_alumniAboutVision'].setData(data.about.vision || '');
+                        if (window['_alumniEditor_alumniAboutMission']) window['_alumniEditor_alumniAboutMission'].setData(data.about.mission || '');
+
+                        if (data.about.image) {
+                            document.getElementById('alumniAboutPreview').src = data.about.image;
+                            document.getElementById('alumniAboutPreviewWrapper').style.display = 'block';
+                            document.getElementById('alumniAboutPreviewEmpty').style.display = 'none';
+                        } else {
+                            document.getElementById('alumniAboutPreviewWrapper').style.display = 'none';
+                            document.getElementById('alumniAboutPreviewEmpty').style.display = 'flex';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification(error.message, 'error');
+                });
+        }
+
+        function previewAlumniAboutImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('alumniAboutPreview').src = e.target.result;
+                    document.getElementById('alumniAboutPreview').style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function saveAlumniAbout() {
+            const formData = new FormData();
+            formData.append('title', document.getElementById('alumniAboutTitle').value);
+            formData.append('content', document.getElementById('alumniAboutContent').value);
+            formData.append('vision', document.getElementById('alumniAboutVision').value);
+            formData.append('mission', document.getElementById('alumniAboutMission').value);
+
+            const imageFile = document.getElementById('alumniAboutImage').files[0];
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            fetch('/api/alumni/about/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Alumni About information updated successfully!', 'success');
+                    } else {
+                        showNotification('Error: ' + data.error, 'error');
+                    }
+                });
+        }
+
+        // Load Alumni News
+        function loadAlumniNews() {
+            fetch('/api/alumni/news/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const tbody = document.getElementById('alumniNewsTable');
+                        tbody.innerHTML = '';
+                        data.news.forEach(post => {
+                            let thumbImage = post.image;
+                            if (!thumbImage && post.content) {
+                                const imgMatch = post.content.match(/<img[^>]+src="([^">]+)"/);
+                                if (imgMatch && imgMatch[1]) {
+                                    thumbImage = imgMatch[1];
+                                }
+                            }
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            ${thumbImage ? `<img src="${thumbImage}" style="width: 30px; height: 30px; border-radius: 4px; object-fit: cover;">` : ''}
+                                            <span>${post.title}</span>
+                                        </div>
+                                    </td>
+                                    <td>${new Date(post.created_at).toLocaleDateString()}</td>
+                                    <td><span class="status-badge status-${post.status}">${post.status.charAt(0).toUpperCase() + post.status.slice(1)}</span></td>
+                                    <td style="font-size:0.82rem; color:#555;">
+                                        ${post.scheduled_at ? '<i class="fas fa-play-circle" style="color:#28a745;"></i> ' + new Date(post.scheduled_at).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '<span style="color:#aaa;">—</span>'}
+                                    </td>
+                                    <td style="font-size:0.82rem; color:#555;">
+                                        ${post.expires_at ? '<i class="fas fa-stop-circle" style="color:#dc3545;"></i> ' + new Date(post.expires_at).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '<span style="color:#aaa;">—</span>'}
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-info" onclick="editAlumniNews(${post.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger" onclick="deleteAlumniNews(${post.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                });
+        }
+
+        // Load Alumni Events
+        function loadAlumniEvents() {
+            fetch('/api/alumni/events/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const tbody = document.getElementById('alumniEventsTable');
+                        tbody.innerHTML = '';
+                        data.events.forEach(event => {
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            ${event.image ? `<img src="${event.image}" style="width: 30px; height: 30px; border-radius: 4px; object-fit: cover;">` : ''}
+                                            <span>${event.title}</span>
+                                        </div>
+                                    </td>
+                                    <td>${new Date(event.date).toLocaleDateString()}</td>
+                                    <td style="font-size:0.82rem; color:#555;">
+                                        ${event.scheduled_at ? '<i class="fas fa-play-circle" style="color:#28a745;"></i> ' + new Date(event.scheduled_at).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '<span style="color:#aaa;">—</span>'}
+                                    </td>
+                                    <td style="font-size:0.82rem; color:#555;">
+                                        ${event.expires_at ? '<i class="fas fa-stop-circle" style="color:#dc3545;"></i> ' + new Date(event.expires_at).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '<span style="color:#aaa;">—</span>'}
+                                    </td>
+                                    <td>${event.location}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-info" onclick="editAlumniEvent(${event.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-danger" onclick="deleteAlumniEvent(${event.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                });
+        }
+
+        // Alumni Success Stories Tab
+        // Alumni News CRUD
+        function openAlumniNewsModal() {
+            document.getElementById('alumniNewsForm').reset();
+            document.getElementById('alumniNewsId').value = '';
+            document.getElementById('alumniNewsScheduledAt').value = '';
+            document.getElementById('alumniNewsExpiresAt').value = '';
+
+            // Clear CKEditor explicitly for newly created news
+            if (window._alumniNewsEditor) {
+                window._alumniNewsEditor.setData('');
+            }
+
+
+            if (document.getElementById('alumniNewsModalTitle')) document.getElementById('alumniNewsModalTitle').textContent = 'Add Alumni News';
+            document.getElementById('alumniNewsModal').classList.add('show');
+        }
+
+        function editAlumniNews(id) {
+            fetch('/api/alumni/news/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const item = data.news.find(n => n.id == id);
+                        if (item) {
+                            document.getElementById('alumniNewsId').value = item.id;
+                            document.getElementById('alumniNewsTitle').value = item.title;
+                            document.getElementById('alumniNewsContent').value = item.content;
+                            document.getElementById('alumniNewsStatus').value = item.status;
+
+                            // Helper function to format UTC ISO string back to local datetime-local input format
+                            function formatToLocalInput(isoString) {
+                                if (!isoString) return '';
+                                const date = new Date(isoString);
+                                date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                                return date.toISOString().slice(0, 16);
+                            }
+
+                            // Populate schedule fields in local timezone
+                            document.getElementById('alumniNewsScheduledAt').value = formatToLocalInput(item.scheduled_at);
+                            document.getElementById('alumniNewsExpiresAt').value = formatToLocalInput(item.expires_at);
+
+                            // Sync with CKEditor explicitly when editing
+                            if (window._alumniNewsEditor) {
+                                window._alumniNewsEditor.setData(item.content || '');
+                            }
+
+
+
+                            if (document.getElementById('alumniNewsModalTitle')) document.getElementById('alumniNewsModalTitle').textContent = 'Edit Alumni News';
+                            document.getElementById('alumniNewsModal').classList.add('show');
+                        }
+                    }
+                });
+        }
+
+        function saveAlumniNews(event) {
+            event.preventDefault();
+
+            // Read from CKEditor instance if available, else fall back to hidden textarea
+            if (window._alumniNewsEditor) {
+                document.getElementById('alumniNewsContent').value = window._alumniNewsEditor.getData();
+            }
+
+            const formData = new FormData();
+            const id = document.getElementById('alumniNewsId').value;
+            if (id) formData.append('id', id);
+            formData.append('title', document.getElementById('alumniNewsTitle').value);
+            formData.append('content', document.getElementById('alumniNewsContent').value);
+            formData.append('status', document.getElementById('alumniNewsStatus').value);
+
+            // Schedule fields — convert local datetime to UTC ISO string before submitting
+            const scheduledAt = document.getElementById('alumniNewsScheduledAt').value;
+            const expiresAt = document.getElementById('alumniNewsExpiresAt').value;
+
+            if (scheduledAt) {
+                formData.append('scheduled_at', new Date(scheduledAt).toISOString());
+            } else {
+                formData.append('scheduled_at', '');
+            }
+
+            if (expiresAt) {
+                formData.append('expires_at', new Date(expiresAt).toISOString());
+            } else {
+                formData.append('expires_at', '');
+            }
+
+            const alumniNewsContent = document.getElementById('alumniNewsContent').value || '';
+            const imgMatch = alumniNewsContent.match(/<img[^>]+src="data:image\/([^;]+);base64,([^"]+)"/);
+            if (imgMatch) {
+                try {
+                    const imgFormat = imgMatch[1];
+                    const base64Data = imgMatch[2];
+                    const byteCharacters = atob(base64Data);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const fileBlob = new Blob([byteArray], { type: 'image/' + imgFormat });
+                    formData.append('image', fileBlob, 'alumni-news-thumbnail.' + imgFormat);
+                } catch (e) {
+                    console.error('Error extracting alumni news thumbnail', e);
+                }
+            } else {
+                formData.append('clear_image', '1');
+            }
+
+            fetch('/api/alumni/news/', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Alumni news saved!', 'success');
+                        addNotification('news', 'Alumni News Saved', `News item "${formData.get('title')}" has been saved.`, 'Alumni Management', { title: formData.get('title') });
+
+                        closeModal('alumniNewsModal');
+                        loadAlumniNews();
+                    }
+                });
+        }
+
+
+
+        async function deleteAlumniNews(id) {
+            const _confirmed = await showCustomConfirm({ title: 'Delete News Item', message: 'Are you sure you want to delete this alumni news item?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-trash-alt' });
+            if (_confirmed) {
+                try {
+                    const listResponse = await fetch('/api/alumni/news/');
+                    const listData = await listResponse.json();
+                    const itemToArchive = (listData.news || []).find(item => String(item.id) === String(id));
+                    if (itemToArchive) {
+                        addToArchive('alumni_news', itemToArchive);
+                    }
+
+                    const response = await fetch(`/api/alumni/news/${id}/delete/`, {
+                        method: 'POST',
+                        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showNotification('News deleted and moved to archive!', 'success');
+                        loadAlumniNews();
+                        loadDashboardData();
+                    } else {
+                        showNotification(data.error || 'Error deleting alumni news', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting alumni news:', error);
+                    showNotification('Error deleting alumni news', 'error');
+                }
+            }
+        }
+
+        // Alumni Event CRUD
+        function openAlumniEventModal() {
+            document.getElementById('alumniEventForm').reset();
+            document.getElementById('alumniEventId').value = '';
+            if (document.getElementById('alumniEventModalTitle'))
+                document.getElementById('alumniEventModalTitle').textContent = 'Add Alumni Event';
+            // Reset CKEditor
+            if (window.alumniEventEditor) {
+                window.alumniEventEditor.setData('');
+            }
+            document.getElementById('alumniEventScheduledAt').value = '';
+            document.getElementById('alumniEventExpiresAt').value = '';
+            document.getElementById('alumniEventModal').classList.add('show');
+        }
+
+        function editAlumniEvent(id) {
+            fetch('/api/alumni/events/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const item = data.events.find(e => e.id == id);
+                        if (item) {
+                            document.getElementById('alumniEventId').value = item.id;
+                            document.getElementById('alumniEventTitle').value = item.title;
+                            // Populate CKEditor
+                            if (window.alumniEventEditor) {
+                                window.alumniEventEditor.setData(item.description || '');
+                            } else {
+                                document.getElementById('alumniEventDescription').value = item.description || '';
+                            }
+                            document.getElementById('alumniEventDate').value = item.date.substring(0, 16);
+                            document.getElementById('alumniEventLocation').value = item.location;
+                            document.getElementById('alumniEventScheduledAt').value = item.scheduled_at ? item.scheduled_at.substring(0, 16) : '';
+                            document.getElementById('alumniEventExpiresAt').value = item.expires_at ? item.expires_at.substring(0, 16) : '';
+                            if (document.getElementById('alumniEventModalTitle'))
+                                document.getElementById('alumniEventModalTitle').textContent = 'Edit Alumni Event';
+                            document.getElementById('alumniEventModal').classList.add('show');
+                        }
+                    }
+                });
+        }
+
+        function saveAlumniEvent(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            const id = document.getElementById('alumniEventId').value;
+            if (id) formData.append('id', id);
+            formData.append('title', document.getElementById('alumniEventTitle').value);
+            // Sync CKEditor content to hidden textarea
+            const desc = window.alumniEventEditor
+                ? window.alumniEventEditor.getData()
+                : document.getElementById('alumniEventDescription').value;
+            formData.append('description', desc);
+            formData.append('date', document.getElementById('alumniEventDate').value);
+            formData.append('location', document.getElementById('alumniEventLocation').value);
+            const sa = document.getElementById('alumniEventScheduledAt').value;
+            if (sa) formData.append('scheduled_at', sa);
+            const ea = document.getElementById('alumniEventExpiresAt').value;
+            if (ea) formData.append('expires_at', ea);
+
+            fetch('/api/alumni/events/', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Alumni event saved!', 'success');
+                        closeModal('alumniEventModal');
+                        loadAlumniEvents();
+                    }
+                });
+        }
+
+        async function deleteAlumniEvent(id) {
+            const _confirmed = await showCustomConfirm({ title: 'Delete Event', message: 'Are you sure you want to delete this alumni event?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-calendar-times' });
+            if (_confirmed) {
+                try {
+                    const listResponse = await fetch('/api/alumni/events/');
+                    const listData = await listResponse.json();
+                    const itemToArchive = (listData.events || []).find(item => String(item.id) === String(id));
+                    if (itemToArchive) {
+                        addToArchive('alumni_event', itemToArchive);
+                    }
+
+                    const response = await fetch(`/api/alumni/events/${id}/delete/`, {
+                        method: 'POST',
+                        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showNotification('Event deleted and moved to archive!', 'success');
+                        loadAlumniEvents();
+                        loadDashboardData();
+                    } else {
+                        showNotification(data.error || 'Error deleting alumni event', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting alumni event:', error);
+                    showNotification('Error deleting alumni event', 'error');
+                }
+            }
+        }
+
+        // Quick Actions Functions
+        function quickCreatePost() {
+            showTab('posts');
+            setTimeout(() => openPostModal(), 100);
+        }
+
+        function quickCreateAchievement() {
+            showTab('achievements');
+            setTimeout(() => openAchievementModal(), 100);
+        }
+
+        function quickCreateNews() {
+            showTab('news');
+            setTimeout(() => openNewsModal(), 100);
+        }
+
+        function quickCreateAlumni() {
+            showTab('alumni');
+            setTimeout(() => openAlumniModal(), 100);
+        }
+
+        function quickExportData() {
+            exportData();
+        }
+
+        function quickSystemHealth() {
+            showSystemHealth();
+        }
+
+        // Enhanced export data functionality
+        function exportData() {
+            const data = {
+                posts: JSON.parse(localStorage.getItem('superAdminPosts') || '[]'),
+                announcements: JSON.parse(localStorage.getItem('superAdminAnnouncements') || '[]'),
+                news: JSON.parse(localStorage.getItem('superAdminNews') || '[]'),
+                alumni: JSON.parse(localStorage.getItem('superAdminAlumni') || '[]'),
+                exportDate: new Date().toISOString(),
+                exportVersion: '1.0',
+                statistics: {
+                    totalPosts: JSON.parse(localStorage.getItem('superAdminPosts') || '[]').length,
+                    totalAnnouncements: JSON.parse(localStorage.getItem('superAdminAnnouncements') || '[]').length,
+                    totalNews: JSON.parse(localStorage.getItem('superAdminNews') || '[]').length,
+                    totalAlumni: JSON.parse(localStorage.getItem('superAdminAlumni') || '[]').length
+                }
+            };
+
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `norsu-superadmin-data-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+
+            URL.revokeObjectURL(url);
+
+            // Show success notification
+            showNotification('Data exported successfully! Check your downloads folder.', 'success');
+
+            // Log export activity
+            logActivity('data_export', 'System data exported', 'system');
+        }
+
+        // Enhanced system health check
+        function showSystemHealth() {
+            const health = {
+                storage: checkStorageHealth(),
+                performance: checkPerformanceHealth(),
+                data: checkDataHealth(),
+                browser: checkBrowserHealth(),
+                features: checkFeatureSupport()
+            };
+
+            const healthModal = document.createElement('div');
+            healthModal.className = 'modal show';
+            healthModal.innerHTML = `
+                <div class="modal-content" style="max-width: 700px;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">
+                            <i class="fas fa-heartbeat"></i>
+                            System Health Check
+                        </h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div style="margin-bottom: 20px;">
+                                <h4 style="color: #2c3e50; margin-bottom: 10px;">
+                                    <i class="fas fa-database"></i> Storage Status
+                                </h4>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 12px; height: 12px; border-radius: 50%; background: ${health.storage.color};"></div>
+                                    <span>${health.storage.message}</span>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <h4 style="color: #2c3e50; margin-bottom: 10px;">
+                                    <i class="fas fa-tachometer-alt"></i> Performance
+                                </h4>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 12px; height: 12px; border-radius: 50%; background: ${health.performance.color};"></div>
+                                    <span>${health.performance.message}</span>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <h4 style="color: #2c3e50; margin-bottom: 10px;">
+                                    <i class="fas fa-shield-alt"></i> Data Integrity
+                                </h4>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 12px; height: 12px; border-radius: 50%; background: ${health.data.color};"></div>
+                                    <span>${health.data.message}</span>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <h4 style="color: #2c3e50; margin-bottom: 10px;">
+                                    <i class="fas fa-globe"></i> Browser Support
+                                </h4>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 12px; height: 12px; border-radius: 50%; background: ${health.browser.color};"></div>
+                                    <span>${health.browser.message}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ecf0f1;">
+                            <h4 style="color: #2c3e50; margin-bottom: 10px;">
+                                <i class="fas fa-cogs"></i> Feature Support
+                            </h4>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                                ${health.features.map(feature => `
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <div style="width: 8px; height: 8px; border-radius: 50%; background: ${feature.supported ? '#27ae60' : '#e74c3c'};"></div>
+                                        <span style="font-size: 14px;">${feature.name}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; text-align: center;">
+                            <button class="btn btn-primary" onclick="this.closest('.modal').remove()">
+                                <i class="fas fa-check"></i> Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(healthModal);
+
+            // Log health check activity
+            logActivity('health_check', 'System health check performed', 'system');
+        }
+
+        function checkBrowserHealth() {
+            const userAgent = navigator.userAgent;
+            const isChrome = /Chrome/.test(userAgent) && /Google Inc/.test(navigator.vendor);
+            const isFirefox = /Firefox/.test(userAgent);
+            const isSafari = /Safari/.test(userAgent) && /Apple Computer/.test(navigator.vendor);
+            const isEdge = /Edg/.test(userAgent);
+
+            if (isChrome || isFirefox || isEdge) {
+                return { color: '#27ae60', message: 'Modern browser detected' };
+            } else if (isSafari) {
+                return { color: '#f39c12', message: 'Safari detected (some features may be limited)' };
+            } else {
+                return { color: '#e74c3c', message: 'Unsupported browser detected' };
+            }
+        }
+
+        function checkFeatureSupport() {
+            return [
+                { name: 'Local Storage', supported: typeof (Storage) !== "undefined" },
+                { name: 'File API', supported: typeof FileReader !== "undefined" },
+                { name: 'Canvas API', supported: typeof HTMLCanvasElement !== "undefined" },
+                { name: 'JSON Support', supported: typeof JSON !== "undefined" },
+                { name: 'Console API', supported: typeof console !== "undefined" },
+                { name: 'Performance API', supported: typeof performance !== "undefined" }
+            ];
+        }
+
+        // Activity logging
+        function logActivity(type, description, category) {
+            let activities = [];
+            try {
+                activities = JSON.parse(localStorage.getItem('systemActivities') || '[]');
+            } catch (e) {
+                activities = [];
+            }
+            activities.unshift({
+                id: Date.now().toString(),
+                type: type,
+                description: description ? String(description).substring(0, 500) : '',
+                category: category,
+                timestamp: new Date().toISOString(),
+                user: 'superadmin'
+            });
+
+            // Keep only last 200 activities
+            if (activities.length > 200) {
+                activities.splice(200);
+            }
+
+            try {
+                localStorage.setItem('systemActivities', JSON.stringify(activities));
+            } catch (error) {
+                console.warn('Activity log quota exceeded, trimming older entries...', error);
+                if (activities.length > 20) {
+                    activities.splice(20);
+                    try {
+                        localStorage.setItem('systemActivities', JSON.stringify(activities));
+                    } catch (e2) {
+                        console.error('Still exceeding quota. Clearing log entirely.');
+                        localStorage.removeItem('systemActivities');
+                    }
+                } else {
+                    localStorage.removeItem('systemActivities');
+                }
+            }
+        }
+
+        // Modal functions
+        function openPostModal() {
+            document.getElementById('postModal').classList.add('show');
+        }
+
+        function openAnnouncementModal() {
+            document.getElementById('announcementModal').classList.add('show');
+        }
+
+        function openNewsModal() {
+            document.getElementById('newsModal').classList.add('show');
+        }
+
+        function openAlumniModal() {
+            console.log('Opening alumni modal...');
+            const modal = document.getElementById('alumniModal');
+            console.log('Modal element:', modal);
+
+            if (modal) {
+                // Reset form completely
+                const form = document.getElementById('alumniForm');
+                if (form) {
+                    form.reset();
+                    delete form.dataset.editingId; // Clear editing state
+                    removeImage('alumni');
+                    console.log('Form reset completed');
+
+                    // Reset modal title and button for new alumni
+                    document.getElementById('alumniModalTitle').innerHTML = '<i class="fas fa-user-graduate" style="margin-right: 10px; color: #0078d4;"></i>Add Alumni';
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="fas fa-plus" style="margin-right: 5px;"></i>Add Alumni';
+                        submitBtn.disabled = false;
+                    }
+                    console.log('Modal title and button reset for new alumni');
+                }
+
+                // Show modal
+                modal.style.display = 'flex';
+                modal.classList.add('show');
+                console.log('Modal displayed');
+
+                // Focus on first input
+                setTimeout(() => {
+                    const firstInput = document.getElementById('alumniName');
+                    if (firstInput) {
+                        firstInput.focus();
+                        console.log('Focused on first input');
+                    }
+                }, 100);
+            } else {
+                console.error('Alumni modal not found!');
+                showNotification('Error: Alumni modal not found', 'error');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('show');
+                // Ensure display: none is set after transition if needed, 
+                // but for now let's just use classes to avoid specificity issues.
+                // Reset inline style if it was set by mistake
+                modal.style.display = '';
+            }
+        }
+
+        // Load dashboard data with enhanced features
+        function loadDashboardData() {
+            // Check for expired items and move them to archive
+            try {
+                if (typeof checkAndArchiveExpired === 'function') {
+                    checkAndArchiveExpired();
+                }
+            } catch (error) {
+                console.error('Error checking expired content:', error);
+            }
+
+            // Update statistics
+            // Fetch total posts from API (includes all 6 colleges)
+            fetch('/api/posts/get/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && document.getElementById('totalPosts')) {
+                        document.getElementById('totalPosts').textContent = data.posts.length;
+                    }
+                })
+                .catch(err => console.error('Error fetching posts count:', err));
+
+            // Load activity feed
+            try {
+                loadActivityFeed();
+            } catch (error) {
+                console.error('Error loading activity feed:', error);
+            }
+            loadCollegeActivity().catch(err => console.error('Error loading college activity:', err));
+
+            // Fetch and update total inquiries from API
+            fetch('/api/contact-messages/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && document.getElementById('totalInquiries')) {
+                        document.getElementById('totalInquiries').textContent = data.messages.length;
+                    }
+                })
+                .catch(err => console.error('Error fetching inquiries count:', err));
+        }
+
+        // Enhanced activity feed
+        function loadActivityFeed() {
+            const activityContainer = document.getElementById('activityFeed');
+            if (!activityContainer) return;
+
+            const allActivities = [
+                ...getStoredArray('superAdminPosts').map(p => ({
+                    type: 'post',
+                    title: 'New Post Created',
+                    description: `"${p.title}" was published`,
+                    time: p.date,
+                    icon: 'fa-file-alt',
+                    color: '#667eea'
+                })),
+                ...getStoredArray('superAdminAnnouncements').map(a => ({
+                    type: 'announcement',
+                    title: 'New Announcement',
+                    description: `"${a.title}" was sent to ${a.target}`,
+                    time: a.date,
+                    icon: 'fa-bullhorn',
+                    color: '#f093fb'
+                })),
+                ...getStoredArray('superAdminNews').map(n => ({
+                    type: 'news',
+                    title: 'News Article Published',
+                    description: `"${n.title}" in ${n.category}`,
+                    time: n.date,
+                    icon: 'fa-newspaper',
+                    color: '#4facfe'
+                })),
+                ...getStoredArray('superAdminAlumni').map(al => ({
+                    type: 'alumni',
+                    title: 'New Alumni Added',
+                    description: `${al.name} from ${al.course} Class of ${al.batch}`,
+                    time: al.date,
+                    icon: 'fa-user-graduate',
+                    color: '#43e97b'
+                })),
+                ...getStoredArray('superAdminColleges').map(c => ({
+                    type: 'college',
+                    title: 'College Added',
+                    description: `${c.name} (${c.abbreviation}) with ${c.programs} programs`,
+                    time: c.createdDate,
+                    icon: 'fa-university',
+                    color: '#0078d4'
+                }))
+            ];
+
+            // Sort by date (newest first) and take latest 10
+            const recentActivities = allActivities
+                .sort((a, b) => new Date(b.time) - new Date(a.time))
+                .slice(0, 10);
+
+            if (recentActivities.length === 0) {
+                activityContainer.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <i class="fas fa-stream" style="font-size: 48px; margin-bottom: 10px; display: block;"></i>
+                        <p>No recent activity</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const activityHTML = recentActivities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: ${activity.color};">
+                        <i class="fas ${activity.icon}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-description">${activity.description}</div>
+                        <div class="activity-time">${formatTimeAgo(activity.time)}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            activityContainer.innerHTML = activityHTML;
+        }
+
+        // Format time ago
+        function formatTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+            if (seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`;
+            return date.toLocaleDateString();
+        }
+
+        function getStoredArray(key) {
+            try {
+                const rawValue = localStorage.getItem(key);
+                if (!rawValue) {
+                    return [];
+                }
+
+                const parsedValue = JSON.parse(rawValue);
+                return Array.isArray(parsedValue) ? parsedValue : [];
+            } catch (error) {
+                console.warn(`Unable to read local storage array for ${key}:`, error);
+                return [];
+            }
+        }
+
+        // Export data functionality
+        function exportData() {
+            const data = {
+                posts: JSON.parse(localStorage.getItem('superAdminPosts') || '[]'),
+                announcements: JSON.parse(localStorage.getItem('superAdminAnnouncements') || '[]'),
+                news: JSON.parse(localStorage.getItem('superAdminNews') || '[]'),
+                alumni: JSON.parse(localStorage.getItem('superAdminAlumni') || '[]'),
+                exportDate: new Date().toISOString()
+            };
+
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `norsu-superadmin-data-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+
+            URL.revokeObjectURL(url);
+            showNotification('Data exported successfully!', 'success');
+        }
+
+        // System health check
+        function showSystemHealth() {
+            const health = {
+                storage: checkStorageHealth(),
+                performance: checkPerformanceHealth(),
+                data: checkDataHealth()
+            };
+
+            const healthModal = document.createElement('div');
+            healthModal.className = 'modal show';
+            healthModal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">System Health Check</h3>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #2c3e50; margin-bottom: 10px;">Storage Status</h4>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: ${health.storage.color};"></div>
+                                <span>${health.storage.message}</span>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #2c3e50; margin-bottom: 10px;">Performance</h4>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: ${health.performance.color};"></div>
+                                <span>${health.performance.message}</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 style="color: #2c3e50; margin-bottom: 10px;">Data Integrity</h4>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: ${health.data.color};"></div>
+                                <span>${health.data.message}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(healthModal);
+        }
+
+        function checkStorageHealth() {
+            const storage = JSON.stringify(localStorage);
+            const size = new Blob([storage]).size / 1024; // KB
+
+            if (size < 100) {
+                return { color: '#27ae60', message: `Storage usage: ${size.toFixed(2)} KB (Good)` };
+            } else if (size < 500) {
+                return { color: '#f39c12', message: `Storage usage: ${size.toFixed(2)} KB (Moderate)` };
+            } else {
+                return { color: '#e74c3c', message: `Storage usage: ${size.toFixed(2)} KB (High)` };
+            }
+        }
+
+        function checkPerformanceHealth() {
+            const startTime = performance.now();
+            const testData = { test: 'performance' };
+            localStorage.setItem('perfTest', JSON.stringify(testData));
+            JSON.parse(localStorage.getItem('perfTest'));
+            localStorage.removeItem('perfTest');
+            const endTime = performance.now();
+
+            const duration = endTime - startTime;
+            if (duration < 5) {
+                return { color: '#27ae60', message: `Response time: ${duration.toFixed(2)}ms (Excellent)` };
+            } else if (duration < 20) {
+                return { color: '#f39c12', message: `Response time: ${duration.toFixed(2)}ms (Good)` };
+            } else {
+                return { color: '#e74c3c', message: `Response time: ${duration.toFixed(2)}ms (Slow)` };
+            }
+        }
+
+        function checkDataHealth() {
+            try {
+                const posts = JSON.parse(localStorage.getItem('superAdminPosts') || '[]');
+                const announcements = JSON.parse(localStorage.getItem('superAdminAnnouncements') || '[]');
+                const news = JSON.parse(localStorage.getItem('superAdminNews') || '[]');
+                const alumni = JSON.parse(localStorage.getItem('superAdminAlumni') || '[]');
+
+                const totalItems = posts.length + announcements.length + news.length + alumni.length;
+                const validItems = posts.filter(p => p.id && p.title).length +
+                    announcements.filter(a => a.id && a.title).length +
+                    news.filter(n => n.id && n.title).length +
+                    alumni.filter(al => al.id && al.name).length;
+
+                if (validItems === totalItems) {
+                    return { color: '#27ae60', message: `All ${totalItems} data items are valid` };
+                } else {
+                    return { color: '#f39c12', message: `${validItems}/${totalItems} data items are valid` };
+                }
+            } catch (error) {
+                return { color: '#e74c3c', message: 'Data integrity check failed' };
+            }
+        }
+
+        // Load recent activity
+        function loadRecentActivity() {
+            const activityContainer = document.getElementById('recentActivity');
+            const activities = [
+                { type: 'post', title: 'New post published', time: '2 hours ago', icon: 'fa-newspaper', color: 'primary' },
+                { type: 'announcement', title: 'System maintenance announced', time: '4 hours ago', icon: 'fa-bullhorn', color: 'success' },
+                { type: 'alumni', title: 'New alumni registered', time: '6 hours ago', icon: 'fa-user-graduate', color: 'warning' },
+                { type: 'news', title: 'University news updated', time: '1 day ago', icon: 'fa-globe', color: 'danger' }
+            ];
+
+            let activityHTML = '';
+            activities.forEach(activity => {
+                activityHTML += `
+                    <div class="activity-item" style="display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #ecf0f1;">
+                        <div class="activity-icon" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; margin-right: 15px;">
+                            <i class="fas ${activity.icon}"></i>
+                        </div>
+                        <div class="activity-content" style="flex: 1;">
+                            <div style="font-weight: 600; color: #2c3e50;">${activity.title}</div>
+                            <div style="color: #7f8c8d; font-size: 14px;">${activity.time}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            activityContainer.innerHTML = activityHTML || '<p style="text-align: center; color: #7f8c8d;">No recent activity</p>';
+        }
+
+        function normalizePostCategory(category) {
+            const normalized = String(category || '').trim().toLowerCase();
+            const mergedCategories = ['general', 'announcement', 'news', 'notice', 'academic'];
+
+            if (mergedCategories.includes(normalized)) {
+                return 'announcement';
+            }
+
+            return normalized || 'announcement';
+        }
+
+        function getPostCategoryLabel(category) {
+            const normalized = normalizePostCategory(category);
+            const labels = {
+                announcement: 'News & Announcements',
+                event: 'Event',
+                updates: 'Updates',
+                advisory: 'Advisory',
+                academic: 'Academic',
+                sports: 'Sports',
+            };
+
+            return labels[normalized] || 'News & Announcements';
+        }
+
+        // Load posts
+        async function loadPosts() {
+            try {
+                // Fetch all posts, but we will filter them on the client side
+                const response = await fetch('/api/posts/get/');
+                const result = await response.json();
+
+                let posts = result.success ? result.posts : [];
+
+                // FILTER: Only show "General" posts (college='all') in the Superadmin Dashboard
+                // This excludes college-specific posts (like CAF) from this global list
+                posts = posts.filter(post => (post.college || 'all').toLowerCase() === 'all');
+
+                try {
+                    localStorage.setItem('superAdminPosts', JSON.stringify(posts));
+                } catch (e) {
+                    console.warn('Unable to persist superAdminPosts to localStorage:', e);
+                }
+
+                loadDashboardData();
+
+                const postsTable = document.getElementById('postsTable');
+
+                if (posts.length === 0) {
+                    postsTable.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                                <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 10px; display: block;"></i>
+                                No posts found. Create your first News & Announcements post!
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                const postsHTML = posts.map(post => `
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                ${post.image ?
+                        `<img src="${post.image}" alt="${post.title}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;">` :
+                        `<div style="width: 40px; height: 40px; background: #ecf0f1; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #bdc3c7;">
+                                        <i class="fas fa-image"></i>
+                                    </div>`
+                    }
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="font-weight: 600;">${post.title}</span>
+                                    <span style="font-size: 11px; color: #7f8c8d;">${post.author || 'Admin'}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="college-badge college-${(post.college || 'all').toLowerCase()}" style="text-transform: uppercase;">${post.college || 'all'}</span></td>
+                        <td><span class="category-badge category-${normalizePostCategory(post.category)}">${getPostCategoryLabel(post.category)}</span></td>
+                        <td><span class="target-badge target-${post.target_audience}">${post.target_audience}</span></td>
+                        <td>${new Date(post.created_at).toLocaleDateString()}</td>
+                        <td><span class="status-badge status-${post.status}">${post.status.charAt(0).toUpperCase() + post.status.slice(1)}</span></td>
+                        <td style="font-size:0.82rem; color:#555;">
+                            ${post.scheduled_at ? '<i class="fas fa-play-circle" style="color:#28a745;"></i> ' + new Date(post.scheduled_at).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '<span style="color:#aaa;">—</span>'}
+                        </td>
+                        <td style="font-size:0.82rem; color:#555;">
+                            ${post.expires_at ? '<i class="fas fa-stop-circle" style="color:#dc3545;"></i> ' + new Date(post.expires_at).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '<span style="color:#aaa;">—</span>'}
+                        </td>
+                        <td>
+                            <div class="action-buttons" style="display: flex; gap: 6px;">
+                                <button class="btn btn-sm btn-info" onclick="editPost(${post.id})" title="Edit" style="cursor: pointer;">
+                                    <i class="fas fa-edit" style="pointer-events: none;"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deletePost(${post.id})" title="Delete" style="cursor: pointer;">
+                                    <i class="fas fa-trash" style="pointer-events: none;"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+
+                postsTable.innerHTML = postsHTML;
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                const postsTable = document.getElementById('postsTable');
+                postsTable.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #e74c3c;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 10px; display: block;"></i>
+                            Error loading posts. Please refresh the page.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        async function savePostData(status = 'published') {
+            console.log('savePostData() function called with status:', status);
+
+            const postForm = document.getElementById('postForm');
+            const postTitle = document.getElementById('postTitle').value;
+            // Read from CKEditor instance if available, else fall back to hidden textarea
+            const postContent = window._postEditor
+                ? window._postEditor.getData()
+                : document.getElementById('postContent').value;
+            const postCategory = normalizePostCategory(document.getElementById('postCategory').value);
+            const postTargetCollege = 'all'; // Target field removed; default to all
+            const postImageFile = null; // Removed standalone image block
+
+            console.log('Form values:', { postTitle, postContent, postCategory, postTargetCollege, hasImage: !!postImageFile });
+
+            if (!postTitle) {
+                alert('Please enter a post title!');
+                return;
+            }
+
+            const strippedContent = postContent.replace(/<[^>]*>/g, '').trim();
+            if (!strippedContent) {
+                alert('Please enter post content!');
+                return;
+            }
+
+            const postFormData = new FormData();
+            // Add editing ID if it exists
+            if (postForm.dataset.editingId) {
+                postFormData.append('id', postForm.dataset.editingId);
+                console.log('Adding editing ID:', postForm.dataset.editingId);
+            }
+
+            postFormData.append('title', postTitle);
+            postFormData.append('content', postContent);
+            postFormData.append('category', postCategory);
+            postFormData.append('college', postTargetCollege);
+            postFormData.append('status', status);
+
+            // Schedule fields — convert local datetime to UTC ISO before sending
+            const postScheduledAt = document.getElementById('postScheduledAt').value;
+            const postExpiresAt = document.getElementById('postExpiresAt').value;
+            if (postScheduledAt) {
+                postFormData.append('scheduled_at', new Date(postScheduledAt).toISOString());
+            } else {
+                postFormData.append('scheduled_at', '');
+            }
+            if (postExpiresAt) {
+                postFormData.append('expires_at', new Date(postExpiresAt).toISOString());
+            } else {
+                postFormData.append('expires_at', '');
+            }
+
+            // Extract the first inline image to act as the post thumbnail
+            const imgMatch = postContent.match(/<img[^>]+src="data:image\/([^;]+);base64,([^"]+)"/);
+            if (imgMatch) {
+                try {
+                    const imgFormat = imgMatch[1];
+                    const base64Data = imgMatch[2];
+                    const byteCharacters = atob(base64Data);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const fileBlob = new Blob([byteArray], { type: 'image/' + imgFormat });
+                    postFormData.append('image', fileBlob, 'thumbnail.' + imgFormat);
+                    console.log('Extracted inline image for thumbnail.');
+                } catch (e) { console.error('Error extracting thumbnail', e); }
+            } else if (postImageFile) {
+                postFormData.append('image', postImageFile);
+                console.log('Adding image file:', postImageFile.name);
+            }
+
+            const postCsrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            try {
+                console.log('Sending request to /api/posts/create/...');
+                const response = await fetch('/api/posts/create/', {
+                    method: 'POST',
+                    body: postFormData,
+                    headers: {
+                        'X-CSRFToken': postCsrfToken
+                    }
+                });
+
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (data.success) {
+                    postForm.reset();
+                    const isEditing = !!postForm.dataset.editingId;
+                    delete postForm.dataset.editingId;
+                    removeImage('post');
+                    closeModal('postModal');
+                    await loadPosts();
+                    showNotification(isEditing ? 'Post updated successfully!' : 'Post created successfully!', 'success');
+                    addNotification('post', isEditing ? 'Post Updated' : 'New Post Created', `Post "${postTitle}" has been ${isEditing ? 'updated' : 'created'}.`, 'Content', { title: postTitle });
+
+                } else {
+                    alert('ERROR: ' + (data.error || 'Unknown error occurred'));
+                    showNotification('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                alert('FATAL ERROR: ' + error.message);
+                showNotification('Error saving post', 'error');
+            }
+        }
+
+        // Load announcements
+        function loadAnnouncements() {
+            let announcements = [];
+
+            // Try localStorage first
+            try {
+                announcements = JSON.parse(localStorage.getItem('superAdminAnnouncements') || '[]');
+            } catch (error) {
+                console.warn('localStorage error, trying fallback:', error);
+            }
+
+            // If localStorage is empty or has quota issues, try sessionStorage
+            if (announcements.length === 0) {
+                try {
+                    const tempAnnouncement = sessionStorage.getItem('tempAnnouncement');
+                    if (tempAnnouncement) {
+                        announcements = [JSON.parse(tempAnnouncement)];
+                        console.log('Loaded announcement from sessionStorage fallback');
+                        sessionStorage.removeItem('tempAnnouncement');
+                    }
+                } catch (sessionError) {
+                    console.warn('SessionStorage error:', sessionError);
+                }
+            }
+
+            const announcementsTable = document.getElementById('announcementsTable');
+
+            if (announcements.length === 0) {
+                announcementsTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">No announcements found</td></tr>';
+                return;
+            }
+
+            let announcementsHTML = '';
+            announcements.forEach(announcement => {
+                announcementsHTML += `
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                ${announcement.image ?
+                        `<img src="${announcement.image}" alt="${announcement.title}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;">` :
+                        `<div style="width: 40px; height: 40px; background: #ecf0f1; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #bdc3c7;">
+                                        <i class="fas fa-bullhorn"></i>
+                                    </div>`
+                    }
+                                <span>${announcement.title}</span>
+                            </div>
+                        </td>
+                        <td><span class="badge" style="background: ${getPriorityColor(announcement.priority)}; color: white; padding: 4px 8px; border-radius: 4px;">${announcement.priority}</span></td>
+                        <td>${new Date(announcement.date).toLocaleDateString()}</td>
+                        <td><span class="badge" style="background: ${announcement.status === 'active' ? '#27ae60' : '#f39c12'}; color: white; padding: 4px 8px; border-radius: 4px;">${announcement.status}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-info" onclick="editAnnouncement('${announcement.id}')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteAnnouncement('${announcement.id}')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            announcementsTable.innerHTML = announcementsHTML;
+        }
+
+        // Load news
+        function loadNews() {
+            const news = JSON.parse(localStorage.getItem('superAdminNews') || '[]');
+            const newsTable = document.getElementById('newsTable');
+
+            if (news.length === 0) {
+                newsTable.innerHTML = '<tr><td colspan="5" style="text-align: center;">No news found</td></tr>';
+                return;
+            }
+
+            let newsHTML = '';
+            news.forEach(item => {
+                newsHTML += `
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                ${item.image ?
+                        `<img src="${item.image}" alt="${item.title}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;">` :
+                        `<div style="width: 40px; height: 40px; background: #ecf0f1; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #bdc3c7;">
+                                        <i class="fas fa-newspaper"></i>
+                                    </div>`
+                    }
+                                <span>${item.title}</span>
+                            </div>
+                        </td>
+                        <td><span class="badge" style="background: #667eea; color: white; padding: 4px 8px; border-radius: 4px;">${item.category}</span></td>
+                        <td>${new Date(item.date).toLocaleDateString()}</td>
+                        <td><span class="badge" style="background: ${item.status === 'published' ? '#27ae60' : '#f39c12'}; color: white; padding: 4px 8px; border-radius: 4px;">${item.status}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-info" onclick="editNews('${item.id}')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteNews('${item.id}')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            newsTable.innerHTML = newsHTML;
+        }
+
+        var currentAlumniDirectoryData = [];
+
+        function buildAlumniExportUrl() {
+            const year = document.getElementById('filterAlumniYear')?.value || '';
+            const course = document.getElementById('filterAlumniCourse')?.value || '';
+
+            let url = '/api/alumni/?';
+            if (year) url += `year=${encodeURIComponent(year)}&`;
+            if (course) url += `course=${encodeURIComponent(course)}&`;
+            return url;
+        }
+
+        function formatAlumniExportCollege(college) {
+            const key = String(college || '').trim().toLowerCase();
+            const collegeMap = {
+                all: 'All Colleges',
+                cas: 'College of Arts and Sciences',
+                cit: 'College of Industrial Technology',
+                cted: 'College of Teacher Education',
+                ccje: 'College of Criminal Justice Education',
+                cba: 'College of Business Administration',
+                caf: 'College of Agriculture and Forestry'
+            };
+
+            return collegeMap[key] || String(college || 'All Colleges');
+        }
+
+        function inferAlumniExportCollegeKey(courseName) {
+            const course = String(courseName || '').trim().toLowerCase();
+            if (!course) {
+                return '';
+            }
+
+            if (course.includes('industrial technology') || course.includes('automotive') || course.includes('electrical') || course.includes('computer technology')) {
+                return 'cit';
+            }
+
+            if (course.includes('information technology') || course.includes('computer science')) {
+                return 'cas';
+            }
+
+            if (course.includes('elementary education') || course.includes('secondary education') || course.includes('teacher education') || course.includes('education')) {
+                return 'cted';
+            }
+
+            if (course.includes('criminology') || course.includes('criminal justice')) {
+                return 'ccje';
+            }
+
+            if (course.includes('hospitality management') || course.includes('business administration') || course.includes('office administration') || course.includes('accountancy') || course.includes('business')) {
+                return 'cba';
+            }
+
+            if (course.includes('agriculture') || course.includes('forestry')) {
+                return 'caf';
+            }
+
+            return '';
+        }
+
+        function resolveAlumniExportCollege(college, courseName) {
+            const normalizedCollege = String(college || '').trim().toLowerCase();
+            if (normalizedCollege && normalizedCollege !== 'all') {
+                return formatAlumniExportCollege(normalizedCollege);
+            }
+
+            const inferredCollegeKey = inferAlumniExportCollegeKey(courseName);
+            if (inferredCollegeKey) {
+                return formatAlumniExportCollege(inferredCollegeKey);
+            }
+
+            return formatAlumniExportCollege(normalizedCollege || 'all');
+        }
+
+        function getAlumniExportDepartment(alumni) {
+            const uniqueColleges = [...new Set(
+                alumni
+                    .map((alumnus) => resolveAlumniExportCollege(alumnus.college, alumnus.course))
+                    .filter((value) => value && value !== 'All Colleges')
+            )];
+
+            if (uniqueColleges.length === 1) {
+                return uniqueColleges[0];
+            }
+
+            if (!uniqueColleges.length) {
+                return 'All Colleges';
+            }
+
+            return 'Multiple Colleges';
+        }
+
+        function getAlumniExportBatchSummary(alumni, selectedYearLabel) {
+            if (selectedYearLabel && selectedYearLabel !== 'All Years') {
+                return selectedYearLabel;
+            }
+
+            const uniqueBatches = [...new Set(
+                alumni
+                    .map((alumnus) => String(alumnus.batch || '').trim())
+                    .filter((value) => value && value.toLowerCase() !== 'n/a')
+            )].sort((left, right) => {
+                const leftIsNumber = /^\d+$/.test(left);
+                const rightIsNumber = /^\d+$/.test(right);
+
+                if (leftIsNumber && rightIsNumber) {
+                    return Number(right) - Number(left);
+                }
+
+                return String(left).localeCompare(String(right));
+            });
+
+            if (!uniqueBatches.length) {
+                return 'Not specified';
+            }
+
+            if (uniqueBatches.length === 1) {
+                return uniqueBatches[0];
+            }
+
+            if (uniqueBatches.length <= 4) {
+                return uniqueBatches.join(', ');
+            }
+
+            const numericBatches = uniqueBatches.filter((value) => /^\d+$/.test(value)).map(Number).sort((left, right) => left - right);
+            if (numericBatches.length === uniqueBatches.length) {
+                return `${numericBatches[0]}-${numericBatches[numericBatches.length - 1]}`;
+            }
+
+            return `${uniqueBatches.slice(0, 3).join(', ')}...`;
+        }
+
+        function groupAlumniByCourse(alumni) {
+            const grouped = new Map();
+
+            alumni.forEach((alumnus) => {
+                const course = alumnus.course || 'Unassigned Course';
+                if (!grouped.has(course)) {
+                    grouped.set(course, []);
+                }
+                grouped.get(course).push(alumnus);
+            });
+
+            return Array.from(grouped.entries()).map(([course, items]) => ({ course, items }));
+        }
+
+        async function getAlumniExportImage(imageUrl) {
+            const source = String(imageUrl || '').trim();
+            if (!source) {
+                return null;
+            }
+
+            try {
+                const waitWithTimeout = (promise, timeoutMs, timeoutMessage) => Promise.race([
+                    promise,
+                    new Promise((_, reject) => {
+                        setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs);
+                    })
+                ]);
+
+                const dataUrl = source.startsWith('data:image/')
+                    ? source
+                    : await waitWithTimeout(
+                        fetch(new URL(source, window.location.origin).href, { credentials: 'same-origin' })
+                            .then((response) => {
+                                if (!response.ok) {
+                                    throw new Error(`Image request failed with status ${response.status}`);
+                                }
+                                return response.blob();
+                            })
+                            .then((blob) => new Promise((resolve, reject) => {
+                                const reader = new FileReader();
+                                reader.onload = () => resolve(reader.result);
+                                reader.onerror = () => reject(new Error('Unable to read image data.'));
+                                reader.readAsDataURL(blob);
+                            })),
+                        2500,
+                        'Image loading timed out.'
+                    );
+
+                return await waitWithTimeout(
+                    new Promise((resolve, reject) => {
+                        const image = new Image();
+                        image.onload = () => {
+                            const maxEdge = 160;
+                            const scale = Math.min(1, maxEdge / Math.max(image.width || 1, image.height || 1));
+                            const canvas = document.createElement('canvas');
+                            canvas.width = Math.max(1, Math.round((image.width || 1) * scale));
+                            canvas.height = Math.max(1, Math.round((image.height || 1) * scale));
+
+                            const context = canvas.getContext('2d');
+                            context.fillStyle = '#ffffff';
+                            context.fillRect(0, 0, canvas.width, canvas.height);
+                            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                            resolve({
+                                dataUrl: canvas.toDataURL('image/jpeg', 0.8),
+                                format: 'JPEG'
+                            });
+                        };
+                        image.onerror = () => reject(new Error('Unable to load image.'));
+                        image.src = dataUrl;
+                    }),
+                    2000,
+                    'Image rendering timed out.'
+                );
+            } catch (error) {
+                console.warn('Unable to prepare alumni export image:', imageUrl, error);
+                return null;
+            }
+        }
+
+        async function exportAlumniDirectory(triggerBtn = null) {
+            const exportBtn = triggerBtn || document.querySelector('button[onclick*="exportAlumniDirectory"]');
+            const originalBtnHtml = exportBtn ? exportBtn.innerHTML : '';
+
+            try {
+                if (exportBtn) {
+                    exportBtn.disabled = true;
+                    exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing PDF...';
+                }
+
+                let alumni = Array.isArray(currentAlumniDirectoryData) ? [...currentAlumniDirectoryData] : [];
+
+                if (!alumni.length) {
+                    const response = await fetch(buildAlumniExportUrl());
+                    const data = await response.json();
+
+                    if (!data.success) {
+                        throw new Error(data.error || 'Failed to load alumni data for export.');
+                    }
+
+                    alumni = data.alumni || [];
+                }
+
+                if (!alumni.length) {
+                    showNotification('No alumni records found for the current filters.', 'warning');
+                    return;
+                }
+
+                if (!window.jspdf || typeof window.jspdf.jsPDF !== 'function') {
+                    throw new Error('PDF library failed to load.');
+                }
+
+                const { jsPDF } = window.jspdf;
+                const pageWidth = 215.9;
+                const pageHeight = 330.2;
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: [pageWidth, pageHeight]
+                });
+
+                const year = document.getElementById('filterAlumniYear')?.value || 'all-years';
+                const courseValue = document.getElementById('filterAlumniCourse')?.value || 'all-courses';
+                const safeCourse = courseValue.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'all-courses';
+                const displayYear = document.getElementById('filterAlumniYear')?.value || 'All Years';
+                const displayCourse = document.getElementById('filterAlumniCourse')?.selectedOptions?.[0]?.textContent?.trim() || 'All Courses';
+                const generatedAt = new Date();
+                const generatedLabel = generatedAt.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                const normalizedAlumni = alumni
+                    .map((alumnus) => ({
+                        name: alumnus.full_name || alumnus.name || 'Unnamed Alumni',
+                        course: alumnus.course || 'Unassigned Course',
+                        batch: alumnus.graduation_year || alumnus.batch || 'N/A',
+                        honors: alumnus.latin_honors || '',
+                        college: alumnus.college || '',
+                        resolvedCollege: resolveAlumniExportCollege(alumnus.college || '', alumnus.course || ''),
+                        imageUrl: alumnus.profile_image || alumnus.image || ''
+                    }))
+                    .sort((left, right) => (
+                        String(left.course).localeCompare(String(right.course))
+                        || String(left.name).localeCompare(String(right.name))
+                        || String(left.batch).localeCompare(String(right.batch))
+                    ));
+
+                const alumniWithImages = await Promise.all(
+                    normalizedAlumni.map(async (alumnus) => ({
+                        ...alumnus,
+                        exportImage: await getAlumniExportImage(alumnus.imageUrl)
+                    }))
+                );
+
+                const groupedCourses = groupAlumniByCourse(alumniWithImages).map((group) => ({
+                    ...group,
+                    departmentLabel: getAlumniExportDepartment(group.items),
+                    batchSummary: getAlumniExportBatchSummary(group.items, displayYear)
+                }));
+                const overallDepartmentLabel = getAlumniExportDepartment(alumniWithImages);
+                const overallBatchSummary = getAlumniExportBatchSummary(alumniWithImages, displayYear);
+                const leftMargin = 15;
+                const rightMargin = 15;
+                const topContentY = 56;
+                const footerY = pageHeight - 8;
+                const bottomLimit = pageHeight - 18;
+                const photoSize = 16;
+                const pageEntryLimit = 20;
+                const contentWidth = pageWidth - leftMargin - rightMargin;
+                const textOffsetX = photoSize + 5;
+                let currentY = topContentY;
+                let entriesOnCurrentPage = 0;
+                let currentHeaderContext = {
+                    departmentLabel: overallDepartmentLabel,
+                    batchSummary: overallBatchSummary
+                };
+
+                const drawHeader = (headerContext = currentHeaderContext) => {
+                    currentHeaderContext = headerContext;
+
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(15, 15, 15);
+                    doc.setFontSize(17);
+                    doc.text('Alumni Report', pageWidth / 2, 18, { align: 'center' });
+
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(10.5);
+                    doc.setTextColor(45, 45, 45);
+                    doc.text(`Department: ${headerContext.departmentLabel}`, pageWidth / 2, 25, { align: 'center' });
+                    doc.text(`Batch Year: ${headerContext.batchSummary}`, pageWidth / 2, 31, { align: 'center' });
+                    doc.text(`Records Included: ${alumniWithImages.length}`, pageWidth / 2, 37, { align: 'center' });
+
+                    if (displayCourse !== 'All Courses') {
+                        doc.text(`Filtered Course: ${displayCourse}`, pageWidth / 2, 43, { align: 'center' });
+                    } else {
+                        doc.text(`Generated: ${generatedLabel}`, pageWidth / 2, 43, { align: 'center' });
+                    }
+                };
+
+                const drawFooter = (pageNumber, totalPages) => {
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(120, 120, 120);
+                    doc.text(`Page ${pageNumber} of ${totalPages}`, pageWidth / 2, footerY, { align: 'center' });
+                    doc.text('Long Bond Paper 8.5 x 13 in', pageWidth - rightMargin, footerY, { align: 'right' });
+                };
+
+                const drawImagePlaceholder = (x, y, size, name) => {
+                    const initials = String(name || 'A')
+                        .split(/\s+/)
+                        .filter(Boolean)
+                        .slice(0, 2)
+                        .map((part) => part.charAt(0).toUpperCase())
+                        .join('') || 'A';
+
+                    doc.setFillColor(245, 245, 245);
+                    doc.rect(x, y, size, size, 'F');
+                    doc.setDrawColor(210, 210, 210);
+                    doc.rect(x, y, size, size);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(8);
+                    doc.setTextColor(125, 125, 125);
+                    doc.text(initials, x + (size / 2), y + (size / 2) + 1.5, { align: 'center' });
+                };
+
+                const startNewPage = (headerContext = currentHeaderContext) => {
+                    doc.addPage();
+                    drawHeader(headerContext);
+                    currentY = topContentY;
+                    entriesOnCurrentPage = 0;
+                };
+
+                const drawCourseHeading = (title) => {
+                    const groupCourseLines = doc.splitTextToSize(title, contentWidth);
+                    const headingHeight = (groupCourseLines.length * 6) + 2;
+
+                    if (currentY + headingHeight > bottomLimit) {
+                        startNewPage();
+                    }
+
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(12.5);
+                    doc.setTextColor(15, 15, 15);
+                    doc.text(groupCourseLines, leftMargin, currentY);
+                    currentY += headingHeight + 1;
+                };
+
+                if (groupedCourses.length) {
+                    drawHeader({
+                        departmentLabel: groupedCourses[0].departmentLabel,
+                        batchSummary: groupedCourses[0].batchSummary
+                    });
+                } else {
+                    drawHeader();
+                }
+
+                groupedCourses.forEach((group, groupIndex) => {
+                    if (groupIndex > 0) {
+                        startNewPage({
+                            departmentLabel: group.departmentLabel,
+                            batchSummary: group.batchSummary
+                        });
+                    }
+
+                    drawCourseHeading(group.course);
+
+                    group.items.forEach((alumnus, index) => {
+                        const nameLines = doc.splitTextToSize(`${index + 1}. ${alumnus.name}`, contentWidth - textOffsetX);
+                        const lineHeight = 5;
+                        const textHeight = (nameLines.length * lineHeight) + 3;
+                        const entryHeight = Math.max(photoSize + 3, textHeight);
+
+                        if (entriesOnCurrentPage >= pageEntryLimit || currentY + entryHeight > bottomLimit) {
+                            startNewPage({
+                                departmentLabel: group.departmentLabel,
+                                batchSummary: group.batchSummary
+                            });
+                            drawCourseHeading(`${group.course} (continued)`);
+                        }
+
+                        const photoX = leftMargin;
+                        const photoY = currentY;
+                        const textX = leftMargin + textOffsetX;
+
+                        if (alumnus.exportImage?.dataUrl) {
+                            doc.addImage(alumnus.exportImage.dataUrl, alumnus.exportImage.format || 'JPEG', photoX, photoY, photoSize, photoSize);
+                            doc.setDrawColor(210, 210, 210);
+                            doc.rect(photoX, photoY, photoSize, photoSize);
+                        } else {
+                            drawImagePlaceholder(photoX, photoY, photoSize, alumnus.name);
+                        }
+
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(10.5);
+                        doc.setTextColor(20, 20, 20);
+                        const nameBlockHeight = nameLines.length * lineHeight;
+                        const centeredNameY = currentY + Math.max(4.5, ((photoSize - nameBlockHeight) / 2) + 4.5);
+                        doc.text(nameLines, textX, centeredNameY);
+
+                        const dividerY = currentY + entryHeight + 1;
+                        doc.setDrawColor(232, 232, 232);
+                        doc.setLineWidth(0.2);
+                        doc.line(leftMargin, dividerY, pageWidth - rightMargin, dividerY);
+
+                        currentY += entryHeight + 4;
+                        entriesOnCurrentPage += 1;
+                    });
+                });
+
+                const totalPages = doc.getNumberOfPages();
+                for (let pageNumber = 1; pageNumber <= totalPages; pageNumber += 1) {
+                    doc.setPage(pageNumber);
+                    drawFooter(pageNumber, totalPages);
+                }
+
+                if (exportBtn) {
+                    exportBtn.innerHTML = '<i class="fas fa-download"></i> Downloading...';
+                }
+
+                doc.save(`alumni-directory-${year}-${safeCourse}-${new Date().toISOString().split('T')[0]}.pdf`);
+
+                showNotification(`Exported ${alumni.length} alumni record(s).`, 'success');
+            } catch (error) {
+                console.error('Error exporting alumni directory:', error);
+                showNotification(`Error exporting alumni directory: ${error.message}`, 'error');
+            } finally {
+                if (exportBtn) {
+                    exportBtn.disabled = false;
+                    exportBtn.innerHTML = originalBtnHtml;
+                }
+            }
+        }
+
+        // Load alumni
+        async function loadAlumni() {
+            const alumniTable = document.getElementById('alumniTable');
+            alumniTable.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading alumni data...</td></tr>';
+
+            try {
+                // Get filter values
+                const year = document.getElementById('filterAlumniYear').value;
+                const course = document.getElementById('filterAlumniCourse').value;
+
+                const url = buildAlumniExportUrl();
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    const alumni = Array.isArray(data.alumni) ? data.alumni : [];
+                    currentAlumniDirectoryData = alumni;
+
+                    if (alumni.length === 0) {
+                        currentAlumniDirectoryData = [];
+                        alumniTable.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">No alumni found. Click "Create" to add your first alumni profile!</td></tr>';
+                        return;
+                    }
+
+                    let alumniHTML = '';
+                    alumni.forEach((alumnus, index) => {
+                        alumniHTML += `
+                            <tr style="animation: fadeIn 0.5s ease ${index * 0.1}s both;" data-alumni-id="${alumnus.id}">
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        ${alumnus.profile_image ?
+                                `<img src="${alumnus.profile_image}" alt="${alumnus.full_name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px; border: 2px solid #e9ecef; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">` :
+                                `<div style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                <i class="fas fa-user-graduate"></i>
+                                            </div>`
+                            }
+                                        <span style="font-weight: 600; color: #1a1a1a;">${alumnus.full_name}</span>
+                                    </div>
+                                </td>
+                                <td style="color: #495057; font-weight: 500;">${alumnus.course || 'N/A'}</td>
+                                <td style="color: #495057; font-weight: 500;">${alumnus.graduation_year || 'N/A'}</td>
+                                <td style="color: #495057;">
+                                    <span style="font-size: 0.9rem;">${alumnus.latin_honors || 'None'}</span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-sm btn-info" onclick="editAlumniById('${alumnus.id}')" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteAlumniById('${alumnus.id}')" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    alumniTable.innerHTML = alumniHTML;
+
+                    // Update dashboard counter
+                    const totalAlumniElement = document.getElementById('totalAlumni');
+                    if (totalAlumniElement) {
+                        totalAlumniElement.textContent = alumni.length;
+                    }
+                } else {
+                    currentAlumniDirectoryData = [];
+                    alumniTable.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red; padding: 20px;">${data.error || 'Failed to load alumni data.'}</td></tr>`;
+                }
+            } catch (error) {
+                console.error('Error loading alumni:', error);
+                currentAlumniDirectoryData = [];
+                alumniTable.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red; padding: 20px;">Error connecting to database.</td></tr>';
+            }
+        }
+
+        // Load colleges
+        async function loadColleges() {
+            const collegesTable = document.getElementById('collegesTable');
+            try {
+                const response = await fetch('/api/colleges/');
+                const data = await response.json();
+
+                if (data.success) {
+                    const colleges = Array.isArray(data.colleges) ? data.colleges : [];
+
+                    try {
+                        localStorage.setItem('superAdminColleges', JSON.stringify(colleges));
+                    } catch (e) {
+                        console.warn('Unable to persist superAdminColleges to localStorage:', e);
+                    }
+
+                    loadDashboardData();
+
+                    // Update NORSU Management Statistics
+                    updateNORSUStatistics(colleges);
+
+                    if (colleges.length === 0) {
+                        collegesTable.innerHTML = `
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                                    <i class="fas fa-university" style="font-size: 48px; margin-bottom: 10px; display: block;"></i>
+                                    No colleges found. Add your first college to get started!
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    const collegesHTML = colleges.map(college => {
+                        // Handle image display
+                        let imageHtml;
+                        if (college.image) {
+                            imageHtml = `<img src="${college.image}" alt="${college.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 2px solid #ddd;">`;
+                        } else {
+                            imageHtml = `<div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">
+                                ${college.abbreviation.substring(0, 2).toUpperCase()}
+                            </div>`;
+                        }
+
+                        return `
+                        <tr>
+                            <td>${imageHtml}</td>
+                            <td><strong>${college.name || 'Unnamed College'}</strong></td>
+                            <td><span class="badge" style="background: #3498db; color: white; padding: 4px 8px; border-radius: 4px;">${college.abbreviation || 'N/A'}</span></td>
+                            <td>${college.dean || 'TBD'}</td>
+                            <td>${parseInt(college.programs) || 0}</td>
+                            <td>${(parseInt(college.instructors) || 0).toLocaleString()}</td>
+                            <td><span class="badge-status ${college.status === 'active' ? 'active' : 'inactive'}">${college.status === 'active' ? 'Active' : 'Inactive'}</span></td>
+                            <td>
+                                <div class="action-buttons" style="display: flex; flex-direction: row; align-items: center; gap: 6px; flex-wrap: nowrap;">
+                                    <button class="btn btn-sm btn-info" onclick="editCollege('${college.id}')" title="Edit" style="cursor: pointer; position: relative; z-index: 5;">
+                                        <i class="fas fa-edit" style="pointer-events: none;"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" onclick="downloadCollegePDF('${college.id}')" title="Download PDF Report" style="cursor: pointer; position: relative; z-index: 5;">
+                                        <i class="fas fa-file-pdf" style="pointer-events: none;"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteCollege('${college.id}')" title="Delete" style="cursor: pointer; position: relative; z-index: 5;">
+                                        <i class="fas fa-trash" style="pointer-events: none;"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    }).join('');
+
+                    collegesTable.innerHTML = collegesHTML;
+                }
+            } catch (error) {
+                console.error('Error loading colleges:', error);
+                collegesTable.innerHTML = '<tr><td colspan="8" style="text-align: center; color: red; padding: 20px;">Error loading colleges.</td></tr>';
+            }
+        }
+
+        async function saveCollegeData() {
+            console.log('saveCollegeData() function called');
+
+            const collegeForm = document.getElementById('collegeForm');
+            const collegeName = document.getElementById('collegeName').value;
+            const collegeAbbreviation = document.getElementById('collegeAbbreviation').value;
+            const collegeDean = document.getElementById('collegeDean').value;
+            const collegeTotalStudents = collegeForm.dataset.students || '0';
+            const collegeProgramsOffered = collegeForm.dataset.programs || '0';
+            const collegeQualifiedInstructor = collegeForm.dataset.instructors || '0';
+            const collegeStatus = collegeForm.dataset.status || 'active';
+            const collegeColleges = document.getElementById('collegeColleges').value;
+            const collegeThemeColor = document.getElementById('collegeThemeColor').value;
+            const collegeImageInput = document.getElementById('collegeImage');
+            const collegeImageFile = collegeImageInput.files[0];
+
+            console.log('Form values:', {
+                collegeName,
+                collegeAbbreviation,
+                collegeDean,
+                collegeTotalStudents,
+                collegeProgramsOffered,
+                collegeQualifiedInstructor,
+                collegeStatus,
+                collegeColleges,
+                hasImage: !!collegeImageFile
+            });
+
+            if (!collegeName) {
+                alert('Please enter a college name!');
+                return;
+            }
+
+            if (!collegeAbbreviation) {
+                alert('Please enter an abbreviation!');
+                return;
+            }
+
+            const collegeFormData = new FormData();
+            // Add editing ID if it exists
+            if (collegeForm.dataset.editingId) {
+                collegeFormData.append('id', collegeForm.dataset.editingId);
+                console.log('Adding editing ID:', collegeForm.dataset.editingId);
+            }
+
+            collegeFormData.append('name', collegeName);
+            collegeFormData.append('abbreviation', collegeAbbreviation);
+            collegeFormData.append('dean', collegeDean);
+            collegeFormData.append('students', collegeTotalStudents);
+            collegeFormData.append('programs', collegeProgramsOffered);
+            collegeFormData.append('instructors', collegeQualifiedInstructor);
+            collegeFormData.append('status', collegeStatus);
+            collegeFormData.append('description', collegeColleges);
+            collegeFormData.append('theme_color', collegeThemeColor);
+
+            if (collegeImageFile) {
+                collegeFormData.append('image', collegeImageFile);
+                console.log('Adding image file:', collegeImageFile.name);
+            }
+
+            const collegeCsrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            try {
+                console.log('Sending request to /api/colleges/...');
+                const response = await fetch('/api/colleges/', {
+                    method: 'POST',
+                    body: collegeFormData,
+                    headers: {
+                        'X-CSRFToken': collegeCsrfToken
+                    }
+                });
+
+                console.log('Response status:', response.status);
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (data.success) {
+                    collegeForm.reset();
+                    delete collegeForm.dataset.editingId; // Clear editing ID
+                    collegeForm.dataset.students = '0';
+                    collegeForm.dataset.programs = '0';
+                    collegeForm.dataset.instructors = '0';
+                    collegeForm.dataset.status = 'active';
+                    removeCollegeImage();
+                    closeModal('collegeModal');
+
+                    console.log('Calling loadColleges()...');
+                    await loadColleges();
+
+                    showNotification('College saved successfully!', 'success');
+                    addNotification('college', 'College Updated', `College ${collegeName} has been saved/updated.`, 'College Management', { name: collegeName });
+
+                } else {
+                    console.error('Save failed:', data.error);
+                    alert('ERROR: ' + (data.error || 'Unknown error occurred'));
+                    showNotification('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error saving college:', error);
+                alert('An error occurred while saving the college. Please check console for details.');
+                showNotification('Error saving college', 'error');
+            }
+        }
+
+        // Download College Summary Report PDF
+        async function downloadCollegePDF(id) {
+            try {
+                const response = await fetch(`/api/colleges/${id}/`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const college = data.college;
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+
+                    // Add Title
+                    doc.setFontSize(22);
+                    doc.setTextColor(30, 45, 109); // NORSU Blue
+                    doc.text("Negros Oriental State University", 105, 20, { align: "center" });
+
+                    doc.setFontSize(16);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text("College Summary Report", 105, 30, { align: "center" });
+
+                    // Add Date
+                    doc.setFontSize(10);
+                    doc.setTextColor(100);
+                    const date = new Date().toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+                    doc.text(`Generated on: ${date}`, 105, 38, { align: "center" });
+
+                    // Horizontal Line
+                    doc.setDrawColor(200);
+                    doc.line(20, 45, 190, 45);
+
+                    // College Details Table
+                    doc.autoTable({
+                        startY: 55,
+                        head: [['Field', 'Information']],
+                        body: [
+                            ['College Name', college.name],
+                            ['Abbreviation', college.abbreviation],
+                            ['Dean', college.dean],
+                            ['Status', college.status.toUpperCase()],
+                            ['Total Programs', college.programs],
+                            ['Qualified Instructors', college.instructors.toLocaleString()]
+                        ],
+                        theme: 'grid',
+                        headStyles: { fillColor: [30, 45, 109], textColor: [255, 255, 255] },
+                        columnStyles: {
+                            0: { fontStyle: 'bold', cellWidth: 50 },
+                            1: { cellWidth: 'auto' }
+                        },
+                        styles: { fontSize: 12, cellPadding: 8 }
+                    });
+
+                    // Footer
+                    const pageCount = doc.internal.getNumberOfPages();
+                    for (let i = 1; i <= pageCount; i++) {
+                        doc.setPage(i);
+                        doc.setFontSize(10);
+                        doc.setTextColor(150);
+                        doc.text(`Page ${i} of ${pageCount}`, 105, 285, { align: "center" });
+                        doc.text("NORSU Management Information System", 105, 290, { align: "center" });
+                    }
+
+                    // Save the PDF
+                    doc.save(`${college.abbreviation}_College_Report.pdf`);
+                    showNotification('PDF report downloaded successfully!', 'success');
+                } else {
+                    showNotification('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showNotification('Error generating PDF report', 'error');
+            }
+        }
+
+        function readNORSUInfoStorage() {
+            try {
+                const raw = JSON.parse(localStorage.getItem('superAdminNORSUInfo') || '[]');
+                return Array.isArray(raw) ? raw : (raw ? [raw] : []);
+            } catch (error) {
+                console.warn('Unable to read NORSU information from localStorage:', error);
+                return [];
+            }
+        }
+
+        function syncNORSUInfoStorage(infoData) {
+            const normalized = Array.isArray(infoData) ? infoData : [];
+            localStorage.setItem('superAdminNORSUInfo', JSON.stringify(normalized));
+            if (document.getElementById('totalNORSUInfo')) {
+                document.getElementById('totalNORSUInfo').textContent = normalized.length;
+            }
+        }
+
+        async function fetchNORSUInfoData() {
+            try {
+                const response = await fetch('/api/university-info/');
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Unable to load university information');
+                }
+
+                const infoData = Array.isArray(data.info) ? data.info : [];
+                syncNORSUInfoStorage(infoData);
+                return infoData;
+            } catch (error) {
+                console.error('Error fetching university information from API:', error);
+                return readNORSUInfoStorage();
+            }
+        }
+
+        function isDatabaseRecordId(id) {
+            return /^\d+$/.test(String(id || ''));
+        }
+
+        function getNORSUInfoPayload() {
+            return {
+                generalMandate: window._infoGeneralMandateEditor ? window._infoGeneralMandateEditor.getData() : document.getElementById('infoGeneralMandate').value,
+                vision: window._infoVisionEditor ? window._infoVisionEditor.getData() : document.getElementById('infoVision').value,
+                mission: window._infoMissionEditor ? window._infoMissionEditor.getData() : document.getElementById('infoMission').value,
+                strategicGoals: window._infoStrategicGoalsEditor ? window._infoStrategicGoalsEditor.getData() : document.getElementById('infoStrategicGoals').value,
+                coreValues: window._infoCoreValuesEditor ? window._infoCoreValuesEditor.getData() : document.getElementById('infoCoreValues').value,
+                qualityPolicy: window._infoQualityPolicyEditor ? window._infoQualityPolicyEditor.getData() : document.getElementById('infoQualityPolicy').value
+            };
+        }
+
+        function clearNORSUInfoEditors() {
+            if (window._infoGeneralMandateEditor) window._infoGeneralMandateEditor.setData('');
+            if (window._infoVisionEditor) window._infoVisionEditor.setData('');
+            if (window._infoMissionEditor) window._infoMissionEditor.setData('');
+            if (window._infoStrategicGoalsEditor) window._infoStrategicGoalsEditor.setData('');
+            if (window._infoCoreValuesEditor) window._infoCoreValuesEditor.setData('');
+            if (window._infoQualityPolicyEditor) window._infoQualityPolicyEditor.setData('');
+        }
+
+        // Load NORSU Information
+        async function loadNORSUInfo() {
+            const infoData = await fetchNORSUInfoData();
+            const infoTable = document.getElementById('norsuInfoTable');
+            if (!infoTable) return;
+
+            console.log('Loading NORSU Info with data:', infoData);
+
+            if (infoData.length === 0) {
+                infoTable.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                            <i class="fas fa-info-circle" style="font-size: 48px; margin-bottom: 10px; display: block;"></i>
+                            No NORSU information found. Add your first information to get started!
+                        </td>
+                    </tr>
+                `;
+                loadActivityFeed();
+                return;
+            }
+
+            const infoHTML = infoData.map(info => {
+                // Truncate long text for display
+                const truncateText = (text, maxLength = 100) => {
+                    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+                };
+
+                return `
+                <tr>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${info.generalMandate || ''}">${truncateText(info.generalMandate || '')}</td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${info.vision || ''}">${truncateText(info.vision || '')}</td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${info.mission || ''}">${truncateText(info.mission || '')}</td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${info.strategicGoals || ''}">${truncateText(info.strategicGoals || '')}</td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${info.coreValues || ''}">${truncateText(info.coreValues || '')}</td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${info.qualityPolicy || ''}">${truncateText(info.qualityPolicy || '')}</td>
+                </tr>
+            `;
+            }).join('');
+
+            infoTable.innerHTML = infoHTML;
+            console.log('NORSU Info table updated with', infoData.length, 'items');
+            loadActivityFeed();
+        }
+
+        // Handle NORSU Info Submit
+        async function handleNORSUInfoSubmit(event) {
+            console.log('handleNORSUInfoSubmit called');
+            if (event) event.preventDefault();
+
+            const infoForm = document.getElementById('infoForm');
+            if (!infoForm || infoForm.dataset.submitting === 'true') {
+                return false;
+            }
+
+            infoForm.dataset.submitting = 'true';
+            const editingId = infoForm.dataset.editingId;
+            const payload = getNORSUInfoPayload();
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+            const formData = new FormData();
+            Object.entries(payload).forEach(([key, value]) => formData.append(key, value || ''));
+
+            try {
+                const isUpdate = editingId && isDatabaseRecordId(editingId);
+                const endpoint = isUpdate ? `/api/university-info/${editingId}/` : '/api/university-info/';
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    }
+                });
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Unable to save university information');
+                }
+
+                await loadNORSUInfo();
+
+                addNotification(
+                    'norsu_info',
+                    isUpdate ? 'NORSU Information Updated' : 'NORSU Information Saved',
+                    isUpdate
+                        ? 'Institutional information has been successfully updated.'
+                        : 'Institutional information has been successfully saved.',
+                    'info',
+                    data.info || payload
+                );
+
+                logActivity(
+                    isUpdate ? 'norsu_info_updated' : 'norsu_info_saved',
+                    isUpdate ? 'NORSU information updated' : 'NORSU information saved',
+                    'content'
+                );
+
+                infoForm.reset();
+                delete infoForm.dataset.editingId;
+                clearNORSUInfoEditors();
+                closeModal('infoModal');
+
+                showNotification(
+                    isUpdate ? 'NORSU information updated successfully!' : 'NORSU information saved successfully!',
+                    'success'
+                );
+            } catch (error) {
+                console.error('Error saving NORSU information:', error);
+                showNotification(`Error saving NORSU information: ${error.message}`, 'error');
+            } finally {
+                delete infoForm.dataset.submitting;
+            }
+
+            return false;
+        }
+
+        // Listen for storage changes for real-time updates
+        window.addEventListener('storage', function (e) {
+            if (e.key === 'superAdminNORSUInfo') {
+                console.log('Storage changed, reloading NORSU Info table');
+                setTimeout(() => {
+                    loadNORSUInfo();
+                }, 100);
+            }
+        });
+
+        // Create new NORSU Information
+        function createNORSUInfo() {
+            if (document.getElementById('infoModalTitle')) document.getElementById('infoModalTitle').textContent = 'Add Information';
+            document.getElementById('infoForm').reset();
+            delete document.getElementById('infoForm').dataset.editingId;
+            clearNORSUInfoEditors();
+            const modal = document.getElementById('infoModal');
+            if (modal) {
+                modal.style.display = 'block';
+            }
+        }
+
+        // Edit selected NORSU Information (with selection)
+        async function editSelectedNORSUInfo() {
+            const infoData = await fetchNORSUInfoData();
+            if (infoData.length === 0) {
+                showNotification('No NORSU information found to edit!', 'warning');
+                return;
+            }
+
+            const latestInfo = infoData.slice().sort((a, b) => {
+                const timeA = Date.parse(a.updatedAt || a.createdDate || a.id || 0) || Number(a.id) || 0;
+                const timeB = Date.parse(b.updatedAt || b.createdDate || b.id || 0) || Number(b.id) || 0;
+                return timeB - timeA;
+            })[0];
+
+            // If only one item, edit it directly
+            if (infoData.length === 1) {
+                editNORSUInfo(latestInfo.id);
+                return;
+            }
+
+            // If multiple items, default to the most recently updated entry
+            editNORSUInfo(latestInfo.id);
+        }
+
+        // Delete selected NORSU Information (with selection)
+        async function deleteSelectedNORSUInfo() {
+            const infoData = await fetchNORSUInfoData();
+            if (infoData.length === 0) {
+                showNotification('No NORSU information found to delete!', 'warning');
+                return;
+            }
+
+            const latestInfo = infoData.slice().sort((a, b) => {
+                const timeA = Date.parse(a.updatedAt || a.createdDate || a.id || 0) || Number(a.id) || 0;
+                const timeB = Date.parse(b.updatedAt || b.createdDate || b.id || 0) || Number(b.id) || 0;
+                return timeB - timeA;
+            })[0];
+
+            // If only one item, delete it directly
+            if (infoData.length === 1) {
+                deleteNORSUInfo(latestInfo.id);
+                return;
+            }
+
+            // If multiple items, default to the most recently updated entry
+            deleteNORSUInfo(latestInfo.id);
+        }
+
+        // Open NORSU Information modal
+        function openInfoModal() {
+            if (document.getElementById('infoModalTitle')) document.getElementById('infoModalTitle').textContent = 'Add Information';
+            document.getElementById('infoForm').reset();
+            delete document.getElementById('infoForm').dataset.editingId;
+
+            clearNORSUInfoEditors();
+
+            const modal = document.getElementById('infoModal');
+            if (modal) {
+                modal.style.display = 'block';
+            }
+        }
+
+        // Edit NORSU Information
+        async function editNORSUInfo(id) {
+            const infoData = await fetchNORSUInfoData();
+            const info = infoData.find(item => String(item.id) === String(id));
+
+            if (info) {
+                if (document.getElementById('infoModalTitle')) document.getElementById('infoModalTitle').textContent = 'Edit Information';
+                document.getElementById('infoGeneralMandate').value = info.generalMandate || '';
+                document.getElementById('infoVision').value = info.vision || '';
+                document.getElementById('infoMission').value = info.mission || '';
+                document.getElementById('infoStrategicGoals').value = info.strategicGoals || '';
+                document.getElementById('infoCoreValues').value = info.coreValues || '';
+                document.getElementById('infoQualityPolicy').value = info.qualityPolicy || '';
+
+                // Update CKEditor instances if they exist
+                if (window._infoGeneralMandateEditor) window._infoGeneralMandateEditor.setData(info.generalMandate || '');
+                if (window._infoVisionEditor) window._infoVisionEditor.setData(info.vision || '');
+                if (window._infoMissionEditor) window._infoMissionEditor.setData(info.mission || '');
+                if (window._infoStrategicGoalsEditor) window._infoStrategicGoalsEditor.setData(info.strategicGoals || '');
+                if (window._infoCoreValuesEditor) window._infoCoreValuesEditor.setData(info.coreValues || '');
+                if (window._infoQualityPolicyEditor) window._infoQualityPolicyEditor.setData(info.qualityPolicy || '');
+
+                // Store editing ID
+                document.getElementById('infoForm').dataset.editingId = id;
+
+                const modal = document.getElementById('infoModal');
+                if (modal) {
+                    modal.style.display = 'block';
+                }
+            }
+        }
+
+        // Delete NORSU Information
+        async function deleteNORSUInfo(id) {
+            const _confirmed = await showCustomConfirm({ title: 'Delete NORSU Information', message: 'Are you sure you want to delete this NORSU information?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-building' });
+            if (_confirmed) {
+                try {
+                    const infoData = await fetchNORSUInfoData();
+                    const itemToArchive = infoData.find(item => String(item.id) === String(id));
+                    if (itemToArchive) {
+                        addToArchive('norsu_info', itemToArchive);
+                    }
+
+                    if (isDatabaseRecordId(id)) {
+                        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+                        const response = await fetch(`/api/university-info/${id}/`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRFToken': csrfToken
+                            }
+                        });
+                        const data = await response.json();
+                        if (!response.ok || !data.success) {
+                            throw new Error(data.error || 'Unable to delete university information');
+                        }
+                    } else {
+                        const updatedData = readNORSUInfoStorage().filter(item => String(item.id) !== String(id));
+                        syncNORSUInfoStorage(updatedData);
+                    }
+
+                    addNotification('norsu_info', 'NORSU Information Deleted', 'Institutional information has been deleted.', 'warning');
+                    logActivity('norsu_info_deleted', 'NORSU information deleted', 'content');
+                    await loadNORSUInfo();
+                    loadDashboardData();
+                    showNotification('NORSU information deleted and moved to archive!', 'success');
+                } catch (error) {
+                    console.error('Error deleting NORSU information:', error);
+                    showNotification(`Error deleting NORSU information: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // Update NORSU Management Statistics
+        function updateNORSUStatistics(colleges) {
+            const totalColleges = colleges.length;
+            const totalInstructors = colleges.reduce((sum, college) => sum + (parseInt(college.instructors) || 0), 0);
+            const totalPrograms = colleges.reduce((sum, college) => sum + (parseInt(college.programs) || 0), 0);
+
+            // Update statistics display
+            if (document.getElementById('totalColleges')) document.getElementById('totalColleges').textContent = totalColleges.toLocaleString();
+            if (document.getElementById('totalCollegesCount')) document.getElementById('totalCollegesCount').textContent = totalColleges.toLocaleString();
+            if (document.getElementById('totalInstructorsCount')) document.getElementById('totalInstructorsCount').textContent = totalInstructors.toLocaleString();
+            if (document.getElementById('totalProgramsCount')) document.getElementById('totalProgramsCount').textContent = totalPrograms.toLocaleString();
+        }
+
+        // Create new NORSU History
+        function createNORSUHistory() {
+            document.getElementById('historyTitle').value = 'NORSU HISTORY';
+            document.getElementById('historyBody').value = '';
+            delete document.getElementById('historyForm').dataset.editingId;
+            const modal = document.getElementById('historyModal');
+            if (modal) {
+                modal.style.display = 'block';
+            }
+        }
+
+        // Edit NORSU History
+        async function editNORSUHistory() {
+            try {
+                const res = await fetch('/api/norsu-history/');
+                const json = await res.json();
+                const data = json.success ? json.history : null;
+                if (!data) {
+                    showNotification('No NORSU history found to edit!', 'warning');
+                    createNORSUHistory();
+                    return;
+                }
+                document.getElementById('historyTitle').value = data.title || 'NORSU HISTORY';
+                document.getElementById('historyBody').value = data.body || '';
+            } catch(e) { console.warn(e); return; }
+            const modal = document.getElementById('historyModal');
+            if (modal) {
+                modal.style.display = 'block';
+            }
+        }
+
+        // Delete NORSU History
+        async function deleteNORSUHistory() {
+            // (history deletion handled below)
+
+            const _confirmed = await showCustomConfirm({ title: 'Delete NORSU History', message: 'Are you sure you want to delete the NORSU History content?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-book' });
+            if (_confirmed) {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+                    await fetch('/api/norsu-history/', { method: 'DELETE', headers: { 'X-CSRFToken': csrfToken } });
+
+                // Add notification
+                addNotification('norsu_history', 'NORSU History Deleted', 'The NORSU history content has been deleted.', 'content', null);
+
+                // Log activity
+                logActivity('norsu_history_deleted', 'NORSU history deleted', 'content');
+
+                // Reload history display
+                loadHistoryInfo();
+                loadDashboardData();
+
+                // Show notification
+                showNotification('NORSU History deleted and moved to archive!', 'success');
+            }
+        }
+
+        // Handle History Submit — saves to database
+        async function handleHistorySubmit(event) {
+            console.log('handleHistorySubmit called');
+            if (event) event.preventDefault();
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+            const formData = new FormData();
+            formData.append('title', document.getElementById('historyTitle').value.trim() || 'NORSU HISTORY');
+            formData.append('body', document.getElementById('historyBody').value.trim());
+
+            try {
+                const res = await fetch('/api/norsu-history/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-CSRFToken': csrfToken }
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) throw new Error(data.error || 'Save failed');
+
+                loadHistoryInfo();
+                addNotification('norsu_history', 'NORSU history updated', 'The NORSU history section has been updated.', 'content', data.history);
+                logActivity('norsu_history_updated', 'NORSU history updated', 'content');
+                closeModal('historyModal');
+                showNotification('NORSU history saved successfully!', 'success');
+            } catch (err) {
+                console.error('Error saving history:', err);
+                showNotification('Error saving history: ' + err.message, 'error');
+            }
+        }
+
+        // Load NORSU History card from database
+        async function loadHistoryInfo() {
+            const titleEl = document.getElementById('historyTitleDisplay');
+            const previewEl = document.getElementById('historyPreviewDisplay');
+            if (!titleEl || !previewEl) return;
+
+            try {
+                const res = await fetch('/api/norsu-history/');
+                const json = await res.json();
+                const data = json.success ? json.history : null;
+
+                if (!data) {
+                    titleEl.textContent = 'NORSU HISTORY';
+                    previewEl.textContent = 'History content has not been configured yet.';
+                    return;
+                }
+
+                titleEl.textContent = data.title || 'NORSU HISTORY';
+                previewEl.textContent = data.body ? (data.body.length > 280 ? data.body.slice(0, 277) + '…' : data.body) : 'History content has not been configured yet.';
+            } catch (e) {
+                console.warn('Error loading history:', e);
+            }
+        }
+
+        // Open history modal and prefill fields
+        async function openHistoryModal() {
+            try {
+                const res = await fetch('/api/norsu-history/');
+                const json = await res.json();
+                const data = json.success ? json.history : null;
+
+                const titleInput = document.getElementById('historyTitle');
+                const bodyInput = document.getElementById('historyBody');
+
+                if (data) {
+                    if (titleInput) titleInput.value = data.title || 'NORSU HISTORY';
+                    if (bodyInput) bodyInput.value = data.body || '';
+                } else {
+                    if (titleInput) titleInput.value = 'NORSU HISTORY';
+                    if (bodyInput) bodyInput.value = '';
+                }
+            } catch (e) {
+                console.warn('Error loading history for modal:', e);
+            }
+
+            document.getElementById('historyModal').classList.add('show');
+        }
+
+        // Delete NORSU History data
+        async function deleteHistoryData() {
+            const _confirmed = await showCustomConfirm({ title: 'Delete NORSU History', message: 'Are you sure you want to delete the NORSU History content?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-book' });
+            if (_confirmed) {
+                try {
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+                    await fetch('/api/norsu-history/', { method: 'DELETE', headers: { 'X-CSRFToken': csrfToken } });
+
+                    loadHistoryInfo();
+                    loadDashboardData();
+                    showNotification('NORSU History deleted!', 'success');
+
+                    // Log activity
+                    logActivity('norsu_history_deleted', 'NORSU history deleted', 'content');
+
+                    // Add notification
+                    addNotification('norsu_history', 'NORSU History Deleted', 'The NORSU history content has been deleted.', 'content', null);
+                } catch (error) {
+                    console.error('Error deleting NORSU history:', error);
+                    showNotification('Error deleting history: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Load University President profile from database
+        async function loadPresidentInfo() {
+            const roleEl = document.getElementById('presidentRoleDisplay');
+            const nameEl = document.getElementById('presidentNameDisplay');
+            const captionEl = document.getElementById('presidentCaptionDisplay');
+            const imgEl = document.getElementById('presidentDashboardImg');
+
+            if (!roleEl || !nameEl || !captionEl || !imgEl) return;
+
+            const defaultImg = imgEl.getAttribute('data-default-src') || imgEl.src;
+            const defaultCaption = 'Information will be updated soon.';
+
+            try {
+                const res = await fetch('/api/president-profile/');
+                const json = await res.json();
+                const data = json.success ? json.profile : null;
+
+                if (!data) {
+                    captionEl.textContent = defaultCaption;
+                    return;
+                }
+
+                if (data.role) roleEl.textContent = data.role;
+                if (data.name) nameEl.textContent = data.name;
+                captionEl.textContent = data.caption || defaultCaption;
+                if (data.photo) {
+                    imgEl.src = data.photo;
+                } else {
+                    imgEl.src = defaultImg;
+                }
+
+                imgEl.onerror = function () {
+                    imgEl.onerror = null;
+                    imgEl.src = defaultImg;
+                };
+            } catch (e) {
+                console.warn('Error loading president profile:', e);
+            }
+        }
+
+        // Preview President Image
+        function previewPresidentImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById('presidentImagePreview');
+                    const previewImg = document.getElementById('presidentPreviewImg');
+                    if (preview && previewImg) {
+                        previewImg.src = e.target.result;
+                        preview.style.display = 'block';
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Open President Modal
+        function openPresidentModal() {
+            document.getElementById('presidentModal').style.display = 'block';
+        }
+
+        // Open University President modal with data from database
+        async function openPresidentModalData() {
+            try {
+                const res = await fetch('/api/president-profile/');
+                const json = await res.json();
+                const data = json.success ? json.profile : null;
+
+                const roleInput = document.getElementById('presidentRole');
+                const nameInput = document.getElementById('presidentName');
+                const captionInput = document.getElementById('presidentCaption');
+                const previewContainer = document.getElementById('presidentImagePreview');
+                const previewImg = previewContainer ? previewContainer.querySelector('img') : null;
+                const fileInput = document.getElementById('presidentImage');
+
+                if (fileInput) fileInput.value = '';
+
+                if (data) {
+                    if (roleInput) roleInput.value = data.role || 'University President';
+                    if (nameInput) nameInput.value = data.name || 'DR. NOEL MARJON E. YASI';
+                    if (captionInput) captionInput.value = data.caption || 'Information will be updated soon.';
+                    if (previewContainer && previewImg && data.photo) {
+                        previewImg.src = data.photo;
+                        previewContainer.style.display = 'block';
+                    } else if (previewContainer && previewImg) {
+                        previewImg.src = '';
+                        previewContainer.style.display = 'none';
+                    }
+                } else {
+                    if (roleInput) roleInput.value = 'University President';
+                    if (nameInput) nameInput.value = 'DR. NOEL MARJON E. YASI';
+                    if (captionInput) captionInput.value = 'Information will be updated soon.';
+                    if (previewContainer && previewImg) {
+                        previewImg.src = '';
+                        previewContainer.style.display = 'none';
+                    }
+                }
+            } catch (e) {
+                console.warn('Error loading president data for modal:', e);
+            }
+
+            document.getElementById('presidentModal').classList.add('show');
+        }
+
+        // Save president profile to database
+        async function savePresidentSimple() {
+            console.log('savePresidentSimple called - saving to database');
+
+            try {
+                const role = document.getElementById('presidentRole').value.trim() || 'University President';
+                const name = document.getElementById('presidentName').value.trim() || 'DR. NOEL MARJON E. YASI';
+                const caption = document.getElementById('presidentCaption').value.trim() || 'Information will be updated soon.';
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+
+                const formData = new FormData();
+                formData.append('role', role);
+                formData.append('name', name);
+                formData.append('caption', caption);
+
+                const fileInput = document.getElementById('presidentImage');
+                if (fileInput && fileInput.files && fileInput.files[0]) {
+                    formData.append('image', fileInput.files[0]);
+                }
+
+                const res = await fetch('/api/president-profile/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-CSRFToken': csrfToken }
+                });
+                const data = await res.json();
+
+                if (!res.ok || !data.success) throw new Error(data.error || 'Save failed');
+
+                await loadPresidentInfo();
+                closeModal('presidentModal');
+                showNotification('President profile saved successfully!', 'success');
+                addNotification('president_profile', 'President profile updated', 'University President profile has been updated.', 'content', data.profile);
+                logActivity('president_profile_updated', 'University President profile updated', 'content');
+            } catch (error) {
+                console.error('Error saving president profile:', error);
+                showNotification('Error saving profile: ' + error.message, 'error');
+            }
+        }
+
+        // Direct save function for President Profile (alias)
+        async function savePresidentProfileForm(event) {
+            console.log('savePresidentProfileForm called');
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            await savePresidentSimple();
+        }
+
+        // Edit President Profile (opens modal with current data)
+        async function editPresidentProfile() {
+            try {
+                const res = await fetch('/api/president-profile/');
+                const json = await res.json();
+                const existingData = json.success ? json.profile : null;
+
+                document.getElementById('presidentRole').value = (existingData && existingData.role) || 'University President';
+                document.getElementById('presidentName').value = (existingData && existingData.name) || 'DR. NOEL MARJON E. YASI';
+                document.getElementById('presidentCaption').value = (existingData && existingData.caption) || 'Information will be updated soon.';
+                document.getElementById('presidentImage').value = '';
+
+                const preview = document.getElementById('presidentImagePreview');
+                const previewImg = document.getElementById('presidentPreviewImg');
+                if (existingData && existingData.photo) {
+                    previewImg.src = existingData.photo;
+                    preview.style.display = 'block';
+                } else {
+                    preview.style.display = 'none';
+                    previewImg.src = '';
+                }
+            } catch (e) {
+                console.warn('Error loading president data for edit:', e);
+            }
+
+            document.querySelector('#presidentModal .modal-title').innerHTML =
+                '<i class="fas fa-edit" style="margin-right: 10px; color: #007fff;"></i>Edit University President Profile';
+            openPresidentModal();
+        }
+
+        // Create New President Profile (opens modal with empty fields)
+        function createPresidentProfile() {
+            document.getElementById('presidentRole').value = '';
+            document.getElementById('presidentName').value = '';
+            document.getElementById('presidentCaption').value = 'Information will be updated soon.';
+            document.getElementById('presidentImage').value = '';
+
+            const preview = document.getElementById('presidentImagePreview');
+            const previewImg = document.getElementById('presidentPreviewImg');
+            if (preview && previewImg) {
+                preview.style.display = 'none';
+                previewImg.src = '';
+            }
+
+            document.querySelector('#presidentModal .modal-title').innerHTML =
+                '<i class="fas fa-plus" style="margin-right: 10px; color: #28a745;"></i>Create University President Profile';
+            openPresidentModal();
+        }
+
+        // Delete President Profile (shows confirmation modal)
+        async function deletePresidentProfile() {
+            try {
+                const res = await fetch('/api/president-profile/');
+                const json = await res.json();
+                if (!json.success || !json.profile) {
+                    alert('No president profile found to delete.');
+                    return;
+                }
+            } catch (e) {
+                alert('No president profile found to delete.');
+                return;
+            }
+            document.getElementById('deletePresidentModal').style.display = 'block';
+        }
+
+        // Confirm Delete President Profile
+        async function confirmDeletePresident() {
+            try {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+                const res = await fetch('/api/president-profile/', {
+                    method: 'DELETE',
+                    headers: { 'X-CSRFToken': csrfToken }
+                });
+                const data = await res.json();
+
+                const roleEl = document.getElementById('presidentRoleDisplay');
+                const nameEl = document.getElementById('presidentNameDisplay');
+                const captionEl = document.getElementById('presidentCaptionDisplay');
+                const imgEl = document.getElementById('presidentDashboardImg');
+
+                if (roleEl) roleEl.textContent = 'University President';
+                if (nameEl) nameEl.textContent = 'DR. NOEL MARJON E. YASI';
+                if (captionEl) captionEl.textContent = 'Information will be updated soon.';
+                if (imgEl) imgEl.src = imgEl.getAttribute('data-default-src') || '/static/dashboard/images/pres.png';
+
+                closeModal('deletePresidentModal');
+                showNotification('President profile deleted!', 'success');
+                addNotification('president_profile', 'President profile deleted', 'University President profile has been deleted.', 'content', null);
+                loadDashboardData();
+                console.log('President profile deleted successfully');
+            } catch (error) {
+                console.error('Error deleting president profile:', error);
+                showNotification('Error deleting profile: ' + error.message, 'error');
+            }
+        }
+
+
+
+        // Refresh President Profile (reload data)
+        function refreshPresidentProfile() {
+            try {
+                loadPresidentInfo();
+
+                // Show success message
+                alert('President profile refreshed successfully!');
+
+                console.log('President profile refreshed');
+
+            } catch (error) {
+                console.error('Error refreshing president profile:', error);
+                alert('Error refreshing president profile: ' + error.message);
+            }
+        }
+
+        // Open President Modal
+        function openPresidentModal() {
+            document.getElementById('presidentModal').style.display = 'block';
+        }
+
+        // Toggle inline editing for President Profile
+        function togglePresidentEdit() {
+            const editBtn = document.getElementById('presidentEditToggleBtn');
+            const advancedBtn = document.getElementById('presidentAdvancedEditBtn');
+            const imageBtn = document.getElementById('presidentImageEditBtn');
+
+            if (!editBtn || !advancedBtn || !imageBtn) {
+                return;
+            }
+
+            const isEditing = editBtn.textContent.includes('Disable');
+
+            const elements = [
+                'presidentRoleDisplay',
+                'presidentNameDisplay',
+                'presidentCaptionDisplay'
+            ];
+
+            if (isEditing) {
+                // Disable editing
+                elements.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.contentEditable = false;
+                        el.style.backgroundColor = 'transparent';
+                        el.style.border = 'none';
+                    }
+                });
+
+                editBtn.innerHTML = '<i class="fas fa-edit"></i> Enable Edit';
+                editBtn.className = 'btn btn-secondary';
+                advancedBtn.style.display = 'none';
+                imageBtn.style.display = 'none';
+
+            } else {
+                // Enable editing
+                elements.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.contentEditable = true;
+                        el.style.backgroundColor = '#f9fafb';
+                        el.style.border = '1px dashed #d1d5db';
+                    }
+                });
+
+                editBtn.innerHTML = '<i class="fas fa-save"></i> Disable Edit';
+                editBtn.className = 'btn btn-success';
+                advancedBtn.style.display = 'inline-block';
+                imageBtn.style.display = 'block';
+            }
+        }
+
+        // Quick save president data when editing inline
+        function quickSavePresidentData() {
+            const editBtn = document.getElementById('presidentEditToggleBtn');
+            if (!editBtn) return;
+
+            const isEditing = editBtn.textContent.includes('Disable');
+
+            if (!isEditing) return; // Only save when in edit mode
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+            const formData = new FormData();
+            formData.append('role', document.getElementById('presidentRoleDisplay').textContent.trim() || 'University President');
+            formData.append('name', document.getElementById('presidentNameDisplay').textContent.trim() || 'DR. NOEL MARJON E. YASI');
+            formData.append('caption', document.getElementById('presidentCaptionDisplay').textContent.trim() || 'Information will be updated soon.');
+            fetch('/api/president-profile/', { method: 'POST', body: formData, headers: { 'X-CSRFToken': csrfToken } })
+                .then(r => r.json())
+                .then(d => { showNotification('President profile updated!', 'success'); })
+                .catch(e => { showNotification('Error: ' + e.message, 'error'); });
+        }
+
+        // Quick update president image
+        function quickUpdatePresidentImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imageData = e.target.result;
+
+                    // Update dashboard image
+                    document.getElementById('presidentDashboardImg').src = imageData;
+
+                    // Save to database
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+                    const formData = new FormData();
+                    formData.append('role', document.getElementById('presidentRoleDisplay').textContent.trim() || 'University President');
+                    formData.append('name', document.getElementById('presidentNameDisplay').textContent.trim() || 'DR. NOEL MARJON E. YASI');
+                    formData.append('caption', document.getElementById('presidentCaptionDisplay').textContent.trim() || 'Information will be updated soon.');
+                    formData.append('image', input.files[0]);
+                    fetch('/api/president-profile/', { method: 'POST', body: formData, headers: { 'X-CSRFToken': csrfToken } })
+                        .then(r => r.json())
+                        .then(d => { showNotification('President photo updated!', 'success'); })
+                        .catch(e => { showNotification('Error: ' + e.message, 'error'); });
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Open college modal
+        function openCollegeModal() {
+            if (document.getElementById('collegeModalTitle')) document.getElementById('collegeModalTitle').textContent = 'Add College';
+            const form = document.getElementById('collegeForm');
+            form.reset();
+            delete form.dataset.editingId; // Clear editing ID
+            form.dataset.students = '0';
+            form.dataset.programs = '0';
+            form.dataset.instructors = '0';
+            form.dataset.status = 'active';
+            removeCollegeImage(); // Clear image preview
+            document.getElementById('collegeThemeColor').value = '#0078d4';
+            document.getElementById('collegeThemeColorText').value = '#0078D4';
+            document.getElementById('collegeModal').classList.add('show');
+        }
+
+        // Edit college
+        async function editCollege(id) {
+            try {
+                const response = await fetch(`/api/colleges/${id}/`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const college = data.college;
+                    const form = document.getElementById('collegeForm');
+                    if (document.getElementById('collegeModalTitle')) document.getElementById('collegeModalTitle').textContent = 'Edit College';
+                    document.getElementById('collegeName').value = college.name;
+                    document.getElementById('collegeAbbreviation').value = college.abbreviation;
+                    document.getElementById('collegeDean').value = college.dean;
+                    form.dataset.students = String(college.students ?? 0);
+                    form.dataset.programs = String(college.programs ?? 0);
+                    form.dataset.instructors = String(college.instructors ?? 0);
+                    form.dataset.status = college.status || 'active';
+                    document.getElementById('collegeColleges').value = college.description || '';
+                    if (college.theme_color) {
+                        document.getElementById('collegeThemeColor').value = college.theme_color;
+                        document.getElementById('collegeThemeColorText').value = college.theme_color.toUpperCase();
+                    } else {
+                        document.getElementById('collegeThemeColor').value = '#0078d4';
+                        document.getElementById('collegeThemeColorText').value = '#0078D4';
+                    }
+
+                    // Handle image preview for editing
+                    const preview = document.getElementById('collegeImagePreview');
+                    const previewImg = document.getElementById('collegePreviewImg');
+                    if (college.image) {
+                        previewImg.src = college.image;
+                        preview.style.display = 'block';
+                    } else {
+                        preview.style.display = 'none';
+                    }
+
+                    // Store editing ID
+                    form.dataset.editingId = id;
+                    document.getElementById('collegeModal').classList.add('show');
+                }
+            } catch (error) {
+                console.error('Error loading college:', error);
+                showNotification('Error loading college details', 'error');
+            }
+        }
+
+        // Preview college image
+        function previewCollegeImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('collegeImagePreview');
+            const previewImg = document.getElementById('collegePreviewImg');
+
+            if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select a valid image file!');
+                    preview.style.display = 'none';
+                    return;
+                }
+
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image size must be less than 5MB!');
+                    preview.style.display = 'none';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // Remove college image
+        function removeCollegeImage() {
+            const preview = document.getElementById('collegeImagePreview');
+            const previewImg = document.getElementById('collegePreviewImg');
+            const imageInput = document.getElementById('collegeImage');
+
+            preview.style.display = 'none';
+            previewImg.src = '';
+            imageInput.value = '';
+        }
+
+        // Preview achievement image
+        function previewAchievementImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('achievementImagePreview');
+            const previewImg = document.getElementById('achievementPreviewImg');
+
+            if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select a valid image file!');
+                    preview.style.display = 'none';
+                    return;
+                }
+
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image size must be less than 5MB!');
+                    preview.style.display = 'none';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // Remove achievement image
+        function removeAchievementImage() {
+            const preview = document.getElementById('achievementImagePreview');
+            const previewImg = document.getElementById('achievementPreviewImg');
+            const imageInput = document.getElementById('achievementImage');
+
+            preview.style.display = 'none';
+            previewImg.src = '';
+            imageInput.value = '';
+        }
+
+        // Delete college
+        async function deleteCollege(id) {
+            const _confirmed = await showCustomConfirm({ title: 'Delete College', message: 'Are you sure you want to delete this college? This will also remove all associated data.', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-university' });
+            if (_confirmed) {
+                try {
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    const getResponse = await fetch(`/api/colleges/${id}/`);
+                    const getData = await getResponse.json();
+                    if (getData.success) {
+                        addToArchive('college', getData.college);
+                    }
+
+                    const response = await fetch(`/api/colleges/${id}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        loadColleges();
+                        loadDashboardData();
+                        showNotification('College deleted and moved to archive!', 'success');
+                    } else {
+                        showNotification('Error: ' + data.error, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting college:', error);
+                    showNotification('Error deleting college', 'error');
+                }
+            }
+        }
+
+        // Load media uploads
+        async function loadMediaUploads() {
+            const mediaUploadsTable = document.getElementById('mediaUploadsTable');
+            try {
+                const response = await fetch('/api/media-uploads/');
+                const data = await response.json();
+
+                if (data.uploads) {
+                    // Update statistics
+                    updateMediaUploadsStats(data.uploads);
+
+                    // Clear table
+                    mediaUploadsTable.innerHTML = '';
+
+                    if (data.uploads.length === 0) {
+                        mediaUploadsTable.innerHTML = '<tr><td colspan="7" style="text-align: center;">No media uploads found</td></tr>';
+                        return;
+                    }
+
+                    // Populate table
+                    data.uploads.forEach(upload => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td style="padding: 14px 12px; vertical-align: middle;">
+                                <div style="display: flex; align-items: center; gap: 10px; min-width: 260px;">
+                                    ${upload.file_url ? (upload.media_type === 'photo' ? `
+                                        <img src="${upload.file_url}" alt="${upload.title}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid #e0e0e0; flex-shrink: 0;" onerror="this.style.display='none'">
+                                    ` : `
+                                        <div style="width: 44px; height: 44px; border-radius: 6px; border: 1px solid #e0e0e0; background: #f5f5f5; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <i class="fas fa-play" style="color: #d13438;"></i>
+                                        </div>
+                                    `) : ''}
+                                    <div>
+                                        <div style="font-weight: 600;">${upload.title}</div>
+                                        <div style="font-size: 12px; color: #666;">${upload.file_name}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: 14px 12px; vertical-align: middle; white-space: nowrap;">
+                                <span class="badge ${upload.media_type === 'photo' ? 'badge-primary' : 'badge-secondary'}">
+                                    ${upload.media_type === 'photo' ? 'Photo' : 'Video'}
+                                </span>
+                            </td>
+                            <td style="padding: 14px 12px; vertical-align: middle; white-space: nowrap;">${upload.uploaded_by}</td>
+                            <td style="padding: 14px 12px; vertical-align: middle;">${upload.college}</td>
+                            <td style="padding: 14px 12px; vertical-align: middle; white-space: nowrap;">
+                                <span class="badge badge-${getUploadStatusClass(upload.approval_status)}">
+                                    ${getUploadStatusText(upload.approval_status)}
+                                </span>
+                            </td>
+                            <td style="padding: 14px 12px; vertical-align: middle; white-space: nowrap;">${upload.created_at}</td>
+                            <td style="padding: 14px 12px; vertical-align: middle; white-space: nowrap;">
+                                <div class="action-buttons">
+                                    ${upload.file_url ? `
+                                        <button class="btn btn-sm btn-info" onclick="window.open('${upload.file_url}', '_blank')" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    ` : ''}
+                                    ${upload.approval_status === 'pending' ? `
+                                        <button class="btn btn-sm btn-success" onclick="approveMediaUpload(${upload.id})" title="Approve">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="rejectMediaUpload(${upload.id})" title="Reject">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    ` : ''}
+                                    <button class="btn btn-sm btn-danger" onclick="deleteMediaUpload(${upload.id})" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                        mediaUploadsTable.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading media uploads:', error);
+                mediaUploadsTable.innerHTML = '<tr><td colspan="7" style="text-align: center;">Error loading media uploads</td></tr>';
+            }
+        }
+
+        // Update media uploads statistics
+        function updateMediaUploadsStats(uploads) {
+            const totalUploads = uploads.length;
+            const pendingUploads = uploads.filter(u => u.approval_status === 'pending').length;
+            const approvedUploads = uploads.filter(u => u.approval_status === 'approved').length;
+            const rejectedUploads = uploads.filter(u => u.approval_status === 'rejected').length;
+
+            if (document.getElementById('totalUploads')) document.getElementById('totalUploads').textContent = totalUploads;
+            if (document.getElementById('pendingUploads')) document.getElementById('pendingUploads').textContent = pendingUploads;
+            if (document.getElementById('approvedUploads')) document.getElementById('approvedUploads').textContent = approvedUploads;
+            if (document.getElementById('rejectedUploads')) document.getElementById('rejectedUploads').textContent = rejectedUploads;
+        }
+
+        // Get upload status class
+        function getUploadStatusClass(status) {
+            switch (status) {
+                case 'pending': return 'warning';
+                case 'approved': return 'success';
+                case 'rejected': return 'danger';
+                default: return 'secondary';
+            }
+        }
+
+        // Get upload status text
+        function getUploadStatusText(status) {
+            switch (status) {
+                case 'pending': return 'Pending';
+                case 'approved': return 'Approved';
+                case 'rejected': return 'Rejected';
+                default: return 'Unknown';
+            }
+        }
+
+        // Approve media upload
+        async function approveMediaUpload(uploadId) {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            try {
+                const response = await fetch(`/api/media-uploads/${uploadId}/approve/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('Media upload approved successfully!', 'success');
+                    loadMediaUploads();
+                } else {
+                    showNotification('Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error approving media upload:', error);
+                showNotification('Error approving media upload', 'error');
+            }
+        }
+
+        // Reject media upload
+        async function rejectMediaUpload(uploadId) {
+            const reason = prompt('Please enter rejection reason:');
+            if (!reason) return;
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            try {
+                const formData = new FormData();
+                formData.append('rejection_reason', reason);
+
+                const response = await fetch(`/api/media-uploads/${uploadId}/reject/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('Media upload rejected successfully!', 'success');
+                    loadMediaUploads();
+                } else {
+                    showNotification('Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error rejecting media upload:', error);
+                showNotification('Error rejecting media upload', 'error');
+            }
+        }
+
+        // Delete media upload
+        async function deleteMediaUpload(uploadId) {
+            const _confirmed = await showCustomConfirm({ title: 'Delete Media Upload', message: 'Are you sure you want to delete this media upload?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-photo-video' });
+            if (!_confirmed) return;
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            try {
+                const uploadsResponse = await fetch('/api/media-uploads/');
+                const uploadsData = await uploadsResponse.json();
+                const uploadToArchive = (uploadsData.uploads || []).find(upload => String(upload.id) === String(uploadId));
+                if (uploadToArchive) {
+                    addToArchive('media_upload', uploadToArchive);
+                }
+
+                const response = await fetch(`/api/media-uploads/${uploadId}/delete/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('Media upload deleted and backed up in archive!', 'success');
+                    loadMediaUploads();
+                    loadDashboardData();
+                } else {
+                    showNotification('Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting media upload:', error);
+                showNotification('Error deleting media upload', 'error');
+            }
+        }
+
+        // Alumni Success Stories Management
+        async function loadSuccessStories() {
+            const alumniSuccessTable = document.getElementById('alumniSuccessTable');
+            try {
+                const response = await fetch('/api/success-stories/');
+                const data = await response.json();
+
+                if (data.success) {
+                    const stories = data.stories;
+                    if (stories.length === 0) {
+                        alumniSuccessTable.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No success stories found. Add your first one!</td></tr>';
+                        return;
+                    }
+
+                    const storiesHTML = stories.map(story => `
+                        <tr>
+                            <td>
+                                ${story.image ? `<img src="${story.image}" alt="${story.alumni_name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">` : '<div style="width: 50px; height: 50px; background: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user" style="color: #0078d4;"></i></div>'}
+                            </td>
+                            <td><strong>${story.alumni_name}</strong></td>
+                            <td>${story.achievement}</td>
+                            <td class="status-cell">
+                                ${story.scheduled_at ? `<i class="far fa-clock" style="color: #28a745; margin-right: 4px;"></i>${new Date(story.scheduled_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}` : '<span style="color: #aaa;">Immediately</span>'}
+                            </td>
+                            <td class="status-cell">
+                                ${story.expires_at ? `<i class="far fa-times-circle" style="color: #dc3545; margin-right: 4px;"></i>${new Date(story.expires_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}` : '<span style="color: #aaa;">Never</span>'}
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-info" onclick="editSuccessStory('${story.id}')" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteSuccessStory('${story.id}')" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    alumniSuccessTable.innerHTML = storiesHTML;
+                }
+            } catch (error) {
+                console.error('Error loading success stories:', error);
+                alumniSuccessTable.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red; padding: 20px;">Error loading success stories.</td></tr>';
+            }
+        }
+
+        function openSuccessStoryModal(storyId = null) {
+            const modal = document.getElementById('successStoryModal');
+            const form = document.getElementById('successStoryForm');
+            const title = document.getElementById('successStoryModalTitle');
+            const achievementSelect = document.getElementById('storyAchievement');
+
+            function resetStoryAchievementOptions() {
+                achievementSelect.querySelectorAll('option[data-legacy="true"]').forEach(option => option.remove());
+            }
+
+            function setStoryAchievementValue(value) {
+                resetStoryAchievementOptions();
+                if (!value) {
+                    achievementSelect.value = '';
+                    return;
+                }
+
+                const hasExistingOption = Array.from(achievementSelect.options).some(option => option.value === value);
+                if (!hasExistingOption) {
+                    const legacyOption = new Option(value, value, true, true);
+                    legacyOption.dataset.legacy = 'true';
+                    achievementSelect.add(legacyOption);
+                }
+
+                achievementSelect.value = value;
+            }
+
+            form.reset();
+            document.getElementById('successStoryId').value = '';
+            if (window._storyEditor) window._storyEditor.setData('');
+            setStoryAchievementValue('');
+
+            if (storyId) {
+                title.innerHTML = '<i class="fas fa-user-graduate" style="margin-right: 10px; color: #0078d4;"></i>Edit Success Story';
+                fetch(`/api/success-stories/${storyId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const story = data.story;
+                            document.getElementById('successStoryId').value = story.id;
+                            document.getElementById('storyAlumniName').value = story.alumni_name;
+                            setStoryAchievementValue(story.achievement);
+
+                            if (window._storyEditor) {
+                                window._storyEditor.setData(story.description || '');
+                            } else {
+                                document.getElementById('storyDescription').value = story.description || '';
+                            }
+
+                            // Populate schedule fields (convert UTC ISO → local datetime-local input)
+                            function fmtLocal(iso) {
+                                if (!iso) return '';
+                                const d = new Date(iso);
+                                d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+                                return d.toISOString().slice(0, 16);
+                            }
+                            document.getElementById('storyScheduledAt').value = fmtLocal(story.scheduled_at);
+                            document.getElementById('storyExpiresAt').value = fmtLocal(story.expires_at);
+
+                        }
+                    });
+            } else {
+                title.innerHTML = '<i class="fas fa-user-graduate" style="margin-right: 10px; color: #0078d4;"></i>Add Success Story';
+            }
+
+            modal.classList.add('show');
+        }
+
+        async function saveSuccessStory() {
+            const form = document.getElementById('successStoryForm');
+            const formData = new FormData(form);
+            const achievement = document.getElementById('storyAchievement').value;
+
+            if (!achievement) {
+                showNotification('Please select a Latin honor.', 'error');
+                return;
+            }
+
+            // Add description correctly from CKEditor
+            const desc = window._storyEditor
+                ? window._storyEditor.getData()
+                : document.getElementById('storyDescription').value;
+            formData.set('description', desc);
+            formData.set('achievement', achievement);
+
+            // Add ID manually if it exists
+            const storyId = document.getElementById('successStoryId').value;
+            if (storyId) {
+                formData.append('id', storyId);
+            }
+
+            // Convert local datetime to UTC ISO string before saving
+            const schedEl = document.getElementById('storyScheduledAt');
+            if (schedEl && schedEl.value) {
+                const utcDate = new Date(schedEl.value).toISOString();
+                formData.set('scheduled_at', utcDate);
+            }
+            const expEl = document.getElementById('storyExpiresAt');
+            if (expEl && expEl.value) {
+                const utcDate = new Date(expEl.value).toISOString();
+                formData.set('expires_at', utcDate);
+            }
+
+            try {
+                const response = await fetch('/api/success-stories/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('Success story saved successfully!', 'success');
+                    closeModal('successStoryModal');
+                    loadSuccessStories();
+                } else {
+                    showNotification('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error saving success story:', error);
+                showNotification('Error saving success story', 'error');
+            }
+        }
+
+        async function deleteSuccessStory(id) {
+            const _confirmed = await showCustomConfirm({ title: 'Delete Success Story', message: 'Are you sure you want to delete this success story?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-star' });
+            if (!_confirmed) return;
+
+            try {
+                const detailsResponse = await fetch(`/api/success-stories/${id}/`);
+                const detailsData = await detailsResponse.json();
+                if (detailsData.success) {
+                    addToArchive('success_story', detailsData.story);
+                }
+
+                const response = await fetch(`/api/success-stories/${id}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('Success story deleted and moved to archive!', 'success');
+                    loadSuccessStories();
+                    loadDashboardData();
+                } else {
+                    showNotification('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting success story:', error);
+                showNotification('Error deleting success story', 'error');
+            }
+        }
+
+
+        function editSuccessStory(id) {
+            openSuccessStoryModal(id);
+        }
+
+        // Load achievements
+        async function loadAchievements() {
+            const achievementsTable = document.getElementById('achievementsTable');
+            try {
+                const response = await fetch('/api/achievements/');
+                const data = await response.json();
+
+                if (data.success) {
+                    const achievements = data.achievements;
+                    if (achievements.length === 0) {
+                        achievementsTable.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">No achievements found. Add your first achievement!</td></tr>';
+                        return;
+                    }
+
+                    const fmtDatetime = (val) => {
+                        if (!val) return '<span style="color:#aaa;font-size:0.8rem;">—</span>';
+                        const d = new Date(val);
+                        return d.toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    };
+
+                    const achievementsHTML = achievements.map(achievement => `
+                        <tr>
+                            <td>
+                                ${achievement.image ? `<img src="${achievement.image}" alt="${achievement.title}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">` : '<div style="width: 50px; height: 50px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-trophy" style="color: #f39c12;"></i></div>'}
+                            </td>
+                            <td><strong>${achievement.title}</strong></td>
+                            <td><span class="category-badge category-${achievement.category}">${getCategoryLabel(achievement.category)}</span></td>
+                            <td>${achievement.achievement_date ? new Date(achievement.achievement_date).toLocaleDateString() : 'N/A'}</td>
+                            <td>${(achievement.description || '').replace(/<[^>]*>?/gm, "").substring(0, 100)}${(achievement.description || '').replace(/<[^>]*>?/gm, "").length > 100 ? '...' : ''}</td>
+                            <td style="white-space:nowrap;font-size:0.82rem;">
+                                ${achievement.scheduled_at
+                            ? `<span style="display:inline-flex;align-items:center;gap:5px;">
+                                        <i class="fas fa-play-circle" style="color:#28a745;font-size:1rem;"></i>
+                                        ${fmtDatetime(achievement.scheduled_at)}
+                                       </span>`
+                            : '<span style="color:#aaa;font-size:0.8rem;">—</span>'}
+                            </td>
+                            <td style="white-space:nowrap;font-size:0.82rem;">
+                                ${achievement.expires_at
+                            ? `<span style="display:inline-flex;align-items:center;gap:5px;">
+                                        <i class="fas fa-stop-circle" style="color:#dc3545;font-size:1rem;"></i>
+                                        ${fmtDatetime(achievement.expires_at)}
+                                       </span>`
+                            : '<span style="color:#aaa;font-size:0.8rem;">—</span>'}
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-warning" onclick="viewAchievement('${achievement.id}')" title="Edit">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteAchievement('${achievement.id}')" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    achievementsTable.innerHTML = achievementsHTML;
+                }
+            } catch (error) {
+                console.error('Error loading achievements:', error);
+                achievementsTable.innerHTML = '<tr><td colspan="8" style="text-align: center; color: red; padding: 20px;">Error loading achievements.</td></tr>';
+            }
+        }
+
+        // Calendar Management Functions
+        async function loadCalendar() {
+            const calendarTable = document.getElementById('calendarTable');
+            try {
+                const response = await fetch('/api/calendar/');
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update Stat Card Count
+                    if (document.getElementById('totalCalendars')) {
+                        document.getElementById('totalCalendars').textContent = data.calendars.length;
+                    }
+
+                    if (data.calendars.length === 0) {
+                        calendarTable.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No calendars found. Add your first calendar!</td></tr>';
+                        return;
+                    }
+
+                    const html = data.calendars.map(cal => {
+                        let images = [];
+                        if (Array.isArray(cal.images)) {
+                            images = cal.images;
+                        } else if (typeof cal.images === 'string' && cal.images.trim() !== '') {
+                            try {
+                                images = JSON.parse(cal.images);
+                            } catch (e) {
+                                images = [cal.images];
+                            }
+                        }
+
+                        const statusBadge = cal.is_active ?
+                            '<span class="status-badge status-published">Active</span>' :
+                            '<span class="status-badge status-archived">Inactive</span>';
+
+                        // Extract images from CKEditor content if legacy fields are empty
+                        if (images.length === 0 && cal.description) {
+                            const imgRegex = /<img[^>]+src="([^">]+)"/g;
+                            let match;
+                            while ((match = imgRegex.exec(cal.description)) !== null && images.length < 10) {
+                                images.push(match[1]);
+                            }
+                        }
+
+                        // Create image thumbnails HTML
+                        let imagesHtml = '';
+                        if (images.length > 0) {
+                            imagesHtml = images.map(imgUrl => {
+                                // Ensure URL is absolute for display
+                                const fullUrl = (imgUrl.startsWith('data:image') || imgUrl.startsWith('http') || imgUrl.startsWith('/')) ? imgUrl : `/media/${imgUrl}`;
+                                return `<img src="${fullUrl}" alt="Calendar Image" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin: 2px; border: 1px solid #ddd;" onerror="this.src='/static/dashboard/images/placeholder.png';">`;
+                            }).join('');
+                        } else {
+                            imagesHtml = '<span style="color: #999; font-size: 12px;">No Images</span>';
+                        }
+
+                        return `
+                            <tr>
+                                <td><strong>${cal.title}</strong></td>
+                                <td>${cal.academic_year}</td>
+                                <td>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 2px; max-width: 200px;">
+                                        ${imagesHtml}
+                                    </div>
+                                </td>
+                                <td>${statusBadge}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-sm btn-info" onclick="editCalendar('${cal.id}')" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteCalendar('${cal.id}')" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                    calendarTable.innerHTML = html;
+                }
+            } catch (error) {
+                console.error('Error loading calendar:', error);
+                calendarTable.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Error loading calendar data</td></tr>';
+            }
+        }
+
+        function openCalendarModal() {
+            document.getElementById('calendarModalTitle').innerText = 'Add Academic Calendar';
+            document.getElementById('calendarForm').reset();
+            document.getElementById('calendarEventId').value = '';
+            const previewContainer = document.getElementById('calendarImagesPreview');
+            if (previewContainer) {
+                previewContainer.innerHTML = '';
+            }
+
+            // Clear CKEditor explicitly for newly created blocks
+            if (window._calendarEditor) {
+                window._calendarEditor.setData('');
+            }
+
+            // Reset global state
+            selectedFiles = [];
+            existingImages = [];
+
+            renderCalendarPreviews();
+
+            document.getElementById('calendarModal').classList.add('show');
+
+            // Test form immediately when modal opens
+            console.log('Modal opened, testing form...');
+            const testForm = document.getElementById('calendarForm');
+            console.log('Form found in modal:', testForm);
+
+            // Re-initialize form when modal opens
+            setTimeout(() => {
+                console.log('Re-initializing calendar form...');
+                initCalendarForm();
+            }, 100);
+        }
+
+        function closeCalendarModal() {
+            document.getElementById('calendarModal').classList.remove('show');
+        }
+
+        // Calendar Image Preview and Management Functions
+        function previewCalendarImages(input) {
+            console.log('previewCalendarImages called', input.files);
+            if (input.files && input.files.length > 0) {
+                const newFiles = Array.from(input.files);
+
+                // Add new files to our selectedFiles array
+                selectedFiles = [...selectedFiles, ...newFiles];
+
+                // Limit to 10 images total (existing + new)
+                if (selectedFiles.length + existingImages.length > 10) {
+                    showNotification('Maximum 10 images allowed total.', 'warning');
+                    selectedFiles = selectedFiles.slice(0, 10 - existingImages.length);
+                }
+
+                renderCalendarPreviews();
+
+                // Reset input value so same file can be selected again if removed
+                input.value = '';
+            }
+        }
+
+        function renderCalendarPreviews() {
+            console.log('Rendering calendar previews. Selected:', selectedFiles.length, 'Existing:', existingImages.length);
+            const previewContainer = document.getElementById('calendarImagesPreview');
+            if (!previewContainer) return;
+
+            if (selectedFiles.length === 0 && existingImages.length === 0) {
+                previewContainer.innerHTML = '<div style="color: #7f8c8d; font-size: 14px; width: 100%; text-align: center;">No images selected. Use the button above to add calendar images.</div>';
+                return;
+            }
+
+            previewContainer.innerHTML = '';
+
+            // Render existing images (already on server)
+            existingImages.forEach((imgUrl, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'preview-item';
+                wrapper.style.cssText = 'position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; border: 2px solid #0078d4;';
+
+                // Ensure URL is absolute
+                const fullUrl = (imgUrl.startsWith('data:image') || imgUrl.startsWith('http') || imgUrl.startsWith('/')) ? imgUrl : `/media/${imgUrl}`;
+
+                wrapper.innerHTML = `
+                    <img src="${fullUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div onclick="removeExistingImage(${index})" style="position: absolute; top: 2px; right: 2px; background: rgba(220, 53, 69, 0.8); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px;">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0, 120, 212, 0.8); color: white; font-size: 9px; text-align: center; padding: 1px;">Saved</div>
+                `;
+                previewContainer.appendChild(wrapper);
+            });
+
+            // Render newly selected files
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                const wrapper = document.createElement('div');
+                wrapper.className = 'preview-item';
+                wrapper.style.cssText = 'position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; border: 2px dashed #6c757d;';
+
+                reader.onload = function (e) {
+                    wrapper.innerHTML = `
+                        <img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div onclick="removeSelectedFile(${index})" style="position: absolute; top: 2px; right: 2px; background: rgba(0, 0, 0, 0.6); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px;">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(40, 167, 69, 0.8); color: white; font-size: 9px; text-align: center; padding: 1px;">New</div>
+                    `;
+                }
+                reader.readAsDataURL(file);
+                previewContainer.appendChild(wrapper);
+            });
+        }
+
+        function removeSelectedFile(index) {
+            selectedFiles.splice(index, 1);
+            renderCalendarPreviews();
+        }
+
+        function removeExistingImage(index) {
+            existingImages.splice(index, 1);
+            renderCalendarPreviews();
+        }
+
+        async function editCalendar(id) {
+            console.log('Editing calendar with ID:', id);
+            try {
+                const response = await fetch(`/api/calendar/${id}/`);
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        showNotification('Calendar not found!', 'error');
+                    } else if (response.status === 401 || response.status === 403) {
+                        showNotification('Session expired. Please login again.', 'error');
+                        setTimeout(() => window.location.href = '/super-admin-login/', 2000);
+                    } else {
+                        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                    }
+                    return;
+                }
+
+                const data = await response.json();
+                console.log('Final Data:', data);
+
+                if (data.success) {
+                    const calendar = data.calendar;
+
+                    if (calendar) {
+                        console.log('Calendar found:', calendar);
+                        document.getElementById('calendarModalTitle').innerText = 'Edit Academic Calendar';
+                        document.getElementById('calendarEventId').value = calendar.id;
+                        document.getElementById('calendarTitle').value = calendar.title || '';
+                        document.getElementById('calendarAcademicYear').value = calendar.academic_year || '';
+                        document.getElementById('calendarDescription').value = calendar.description || '';
+
+                        // Sync with CKEditor explicitly when editing
+                        if (window._calendarEditor) {
+                            window._calendarEditor.setData(calendar.description || '');
+                        }
+
+                        document.getElementById('calendarIsActive').checked = calendar.is_active;
+
+                        // Clear previous state
+                        selectedFiles = [];
+                        existingImages = calendar.images && Array.isArray(calendar.images) ? [...calendar.images] : [];
+
+                        // Show existing images with removal options
+                        if (typeof renderCalendarPreviews === 'function') {
+                            renderCalendarPreviews();
+                        }
+
+                        document.getElementById('calendarModal').classList.add('show');
+                    } else {
+                        console.error('Calendar not found in response data');
+                        showNotification('Calendar not found!', 'error');
+                    }
+                } else {
+                    console.error('API Error:', data.error || 'Unknown error');
+                    showNotification('Error: ' + (data.error || 'Failed to load calendar'), 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching calendar details:', error);
+                showNotification('Network error: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteCalendar(id) {
+            const _confirmed = await showCustomConfirm({ title: 'Delete Calendar Entry', message: 'Are you sure you want to delete this academic calendar entry?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-calendar-times' });
+            if (_confirmed) {
+                try {
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]') ?
+                        document.querySelector('[name=csrfmiddlewaretoken]').value : '';
+
+                    // Fetch calendar data to archive before deleting
+                    const getRes = await fetch(`/api/calendar/${id}/`);
+                    const getData = await getRes.json();
+                    if (getData.success) {
+                        if (typeof addToArchive === 'function') {
+                            addToArchive('calendar', getData.calendar);
+                        }
+                    }
+
+                    const response = await fetch(`/api/calendar/${id}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        loadCalendar();
+                        showNotification('Calendar deleted and moved to archive!', 'success');
+                    }
+                } catch (error) {
+                    console.error('Error deleting calendar:', error);
+                }
+            }
+        }
+
+        // Initialize calendar form handler after page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize calendar form immediately
+            initCalendarForm();
+        });
+
+        // Also initialize when the function is available
+        if (typeof initCalendarForm === 'function') {
+            initCalendarForm();
+        }
+
+        // Initialize calendar form handler
+        function initCalendarForm() {
+            console.log('initCalendarForm() called');
+            const calendarForm = document.getElementById('calendarForm');
+
+            if (calendarForm) {
+                console.log('Calendar form found, adding submit listener');
+
+                // Remove any existing event listeners to avoid duplicates
+                if (calendarForm._submitHandler) {
+                    calendarForm.removeEventListener('submit', calendarForm._submitHandler);
+                }
+
+                // Create the submit handler function
+                calendarForm._submitHandler = async function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Calendar form submission started');
+
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                    }
+
+                    try {
+                        // Sync CKEditor data to textarea
+                        if (window._calendarEditor) {
+                            const editorData = window._calendarEditor.getData();
+                            document.getElementById('calendarDescription').value = editorData;
+
+                            // Validate maximum 10 images in total (CKEditor inline + manual uploads)
+                            const inlineImages = (editorData.match(/<img[^>]+>/g) || []).length;
+                            if (inlineImages + selectedFiles.length + existingImages.length > 10) {
+                                throw new Error(`Maximum 10 images allowed total. You have ${inlineImages} inline and ${selectedFiles.length + existingImages.length} attached.`);
+                            }
+                        }
+
+                        // Create FormData from the form
+                        const formData = new FormData(this);
+
+                        // Ensure checkbox value is properly set
+                        const isActive = document.getElementById('calendarIsActive').checked;
+                        formData.set('is_active', isActive ? 'true' : 'false');
+
+                        // Remove the default 'images' entries if any (we handle them manually)
+                        formData.delete('images');
+
+                        // Add newly selected files
+                        selectedFiles.forEach(file => {
+                            formData.append('images', file);
+                        });
+
+                        // Add existing images to keep
+                        existingImages.forEach(imgUrl => {
+                            formData.append('keep_images', imgUrl);
+                        });
+
+                        // Check if this is an edit operation
+                        const calendarId = document.getElementById('calendarEventId').value;
+                        const isEdit = calendarId && calendarId !== '';
+
+                        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]') ?
+                            document.querySelector('[name=csrfmiddlewaretoken]').value :
+                            getCookie('csrftoken');
+
+                        // Use different endpoint and method for edit vs create
+                        const url = isEdit ? `/api/calendar/${calendarId}/` : '/api/calendar/';
+                        const method = isEdit ? 'POST' : 'POST'; // We use POST for both if multipart/form-data
+
+                        // If it's an edit, we might need to tell the backend to treat it as PUT or just handle POST
+                        if (isEdit) {
+                            formData.append('_method', 'PUT'); // Common pattern for Django REST with files
+                        }
+
+                        console.log('Sending request to:', url, 'Method:', method);
+
+                        const response = await fetch(url, {
+                            method: method,
+                            body: formData,
+                            headers: {
+                                'X-CSRFToken': csrfToken
+                            }
+                        });
+
+                        const data = await response.json();
+                        console.log('Response data:', data);
+
+                        if (data.success) {
+                            const action = isEdit ? 'updated' : 'created';
+                            showNotification(`Calendar ${action} successfully!`, 'success');
+                            addNotification('calendar', isEdit ? 'Calendar Updated' : 'New Calendar Entry', `Academic calendar "${formData.get('title')}" has been ${action}.`, 'Content', { title: formData.get('title') });
+
+
+                            // Reset everything
+                            closeCalendarModal();
+                            this.reset();
+                            selectedFiles = [];
+                            existingImages = [];
+                            document.getElementById('calendarEventId').value = '';
+
+                            if (window._calendarEditor) {
+                                window._calendarEditor.setData('');
+                            }
+
+                            // Refresh the table
+                            loadCalendar();
+                        } else {
+                            throw new Error(data.error || 'Failed to save calendar');
+                        }
+                    } catch (error) {
+                        console.error('Form submission error:', error);
+                        showNotification('Error: ' + error.message, 'error');
+                    } finally {
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fas fa-save" style="margin-right: 5px;"></i>Publish';
+                        }
+                    }
+                };
+
+                // Add the event listener
+                calendarForm.addEventListener('submit', calendarForm._submitHandler);
+                console.log('Calendar form submit listener attached successfully');
+
+            } else {
+                console.error('Calendar form NOT FOUND during initialization');
+                // Try again after a short delay
+                setTimeout(initCalendarForm, 1000);
+            }
+        }
+
+        function getCategoryLabel(category) {
+            const labels = {
+                'academic': 'Academic Excellence',
+                'sports': 'Sports',
+                'research': 'Research',
+                'community': 'Community Service',
+                'arts': 'Arts & Culture',
+                'leadership': 'Leadership',
+                'international': 'International',
+                'other': 'Other'
+            };
+            return labels[category] || category;
+        }
+
+        function openAchievementModal() {
+            document.getElementById('achievementModalTitle').innerText = 'Add Achievement';
+            document.getElementById('achievementForm').reset();
+            document.getElementById('achievementId').value = '';
+            document.getElementById('achievementScheduledAt').value = '';
+            document.getElementById('achievementExpiresAt').value = '';
+            document.getElementById('achievementRecipient').value = '';
+            if (window._achievementEditor) {
+                window._achievementEditor.setData('');
+            }
+            document.getElementById('achievementModal').classList.add('show');
+        }
+
+        async function viewAchievement(id) {
+            try {
+                const response = await fetch(`/api/achievements/${id}/`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const achievement = data.achievement;
+                    document.getElementById('achievementModalTitle').innerText = 'Edit Achievement';
+                    document.getElementById('achievementId').value = achievement.id;
+                    document.getElementById('achievementTitle').value = achievement.title;
+                    document.getElementById('achievementCategory').value = achievement.category;
+                    document.getElementById('achievementDate').value = achievement.achievement_date;
+                    document.getElementById('achievementRecipient').value = achievement.recipient || '';
+                    if (window._achievementEditor) {
+                        window._achievementEditor.setData(achievement.description || '');
+                    } else {
+                        document.getElementById('achievementDescription').value = achievement.description || '';
+                    }
+
+                    // Format datetime-local fields correctly (YYYY-MM-DDTHH:MM) in local browser offset
+                    if (achievement.scheduled_at) {
+                        const sDate = new Date(achievement.scheduled_at);
+                        const sFormatted = sDate.getFullYear() + '-' + String(sDate.getMonth() + 1).padStart(2, '0') + '-' + String(sDate.getDate()).padStart(2, '0') + 'T' + String(sDate.getHours()).padStart(2, '0') + ':' + String(sDate.getMinutes()).padStart(2, '0');
+                        document.getElementById('achievementScheduledAt').value = sFormatted;
+                    } else {
+                        document.getElementById('achievementScheduledAt').value = '';
+                    }
+
+                    if (achievement.expires_at) {
+                        const eDate = new Date(achievement.expires_at);
+                        const eFormatted = eDate.getFullYear() + '-' + String(eDate.getMonth() + 1).padStart(2, '0') + '-' + String(eDate.getDate()).padStart(2, '0') + 'T' + String(eDate.getHours()).padStart(2, '0') + ':' + String(eDate.getMinutes()).padStart(2, '0');
+                        document.getElementById('achievementExpiresAt').value = eFormatted;
+                    } else {
+                        document.getElementById('achievementExpiresAt').value = '';
+                    }
+
+                    document.getElementById('achievementModal').classList.add('show');
+                }
+            } catch (error) {
+                console.error('Error loading achievement:', error);
+                showNotification('Error loading achievement details', 'error');
+            }
+        }
+
+        async function saveAchievementForm(status) {
+            const form = document.getElementById('achievementForm');
+            const formData = new FormData(form);
+
+            // Add status
+            formData.set('status', status);
+
+            // Add description correctly from CKEditor
+            const desc = window._achievementEditor
+                ? window._achievementEditor.getData()
+                : document.getElementById('achievementDescription').value;
+            formData.set('description', desc);
+
+            // Explicitly set field names expected by backend
+            formData.set('title', document.getElementById('achievementTitle').value);
+            formData.set('category', document.getElementById('achievementCategory').value);
+            formData.set('recipient', document.getElementById('achievementRecipient').value);
+            formData.set('achievement_date', document.getElementById('achievementDate').value);
+
+            // Add ID manually if it exists
+            const achievementId = document.getElementById('achievementId').value;
+            if (achievementId) {
+                formData.set('id', achievementId);
+            }
+
+            // Convert local datetime to UTC ISO string before saving
+            const schedEl = document.getElementById('achievementScheduledAt');
+            if (schedEl && schedEl.value) {
+                const utcDate = new Date(schedEl.value).toISOString();
+                formData.set('scheduled_at', utcDate);
+            }
+            const expEl = document.getElementById('achievementExpiresAt');
+            if (expEl && expEl.value) {
+                const utcDate = new Date(expEl.value).toISOString();
+                formData.set('expires_at', utcDate);
+            }
+
+            try {
+                const response = await fetch('/api/achievements/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showNotification(`Achievement ${status === 'draft' ? 'saved as draft' : 'published'} successfully!`, 'success');
+                    addNotification('achievement', status === 'draft' ? 'Achievement Drafted' : 'Achievement Published', `Achievement "${document.getElementById('achievementTitle').value}" has been ${status}.`, 'Achievements', { title: document.getElementById('achievementTitle').value });
+
+                    closeModal('achievementModal');
+                    if (typeof loadAchievements === 'function') {
+                        loadAchievements();
+                    }
+                } else {
+                    showNotification('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error saving achievement:', error);
+                showNotification('Error saving achievement', 'error');
+            }
+        }
+
+        async function deleteAchievement(id) {
+            const _confirmed = await showCustomConfirm({ title: 'Delete Achievement', message: 'Are you sure you want to delete this achievement?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-trophy' });
+            if (_confirmed) {
+                try {
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    // Fetch achievement data to archive before deleting
+                    const getRes = await fetch(`/api/achievements/${id}/`);
+                    const getData = await getRes.json();
+                    if (getData.success) {
+                        if (typeof addToArchive === 'function') {
+                            addToArchive('achievement', getData.achievement);
+                        }
+                    }
+
+                    const response = await fetch(`/api/achievements/${id}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        loadAchievements();
+                        showNotification('Achievement deleted and moved to archive!', 'success');
+                    } else {
+                        showNotification('Error: ' + data.error, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting achievement:', error);
+                    showNotification('Error deleting achievement', 'error');
+                }
+            }
+        }
+
+        // Form submissions
+        document.getElementById('postForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            console.log('Post form submission started');
+
+            // Create FormData object to handle file upload
+            const formData = new FormData();
+            formData.append('title', document.getElementById('postTitle').value);
+            formData.append('content', document.getElementById('postContent').value);
+            formData.append('category', document.getElementById('postCategory').value);
+            const target = document.getElementById('postTarget').value;
+            formData.append('target_audience', target);
+
+            // Set college based on target
+            // If target is a specific college, set college field so it appears on that college's page
+            formData.append('college', target);
+            formData.append('author', 'Super Admin');
+
+            // Get CSRF token from the form
+            const csrfTokenElement = this.querySelector('[name=csrfmiddlewaretoken]');
+            const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
+            console.log('CSRF token found:', csrfToken ? 'Yes' : 'No');
+
+            // Get image file if uploaded
+            const imageInput = document.getElementById('postImage');
+            if (imageInput && imageInput.files && imageInput.files[0]) {
+                formData.append('image', imageInput.files[0]);
+                console.log('Image file added:', imageInput.files[0].name);
+            }
+
+            console.log('FormData prepared, sending to API...');
+
+            try {
+                // Send POST request to Django API
+                console.log('Fetching /api/posts/create/...');
+                const response = await fetch('/api/posts/create/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: formData
+                });
+
+                console.log('Response received:', response.status, response.statusText);
+
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Server returned non-JSON response: ' + response.statusText);
+                }
+
+                const result = await response.json();
+                console.log('Result:', result);
+
+                if (result.success) {
+                    console.log('Post saved to database:', result.post);
+
+                    // Clear form fields
+                    this.reset();
+
+                    // Clear image preview
+                    const previewContainer = document.getElementById('postImagePreview');
+                    const previewImg = previewContainer ? previewContainer.querySelector('img') : null;
+                    if (previewContainer) {
+                        previewContainer.style.display = 'none';
+                    }
+                    if (previewImg) {
+                        previewImg.src = '';
+                    }
+
+                    closeModal('postModal');
+                    loadPosts();
+                    loadDashboardData();
+
+                    // Show success alert
+                    alert('Post published successfully!');
+
+                    console.log('Post form submission completed');
+                } else {
+                    console.error('Error saving post:', result.message);
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error submitting post:', error);
+                console.error('Error details:', error.message, error.stack);
+                alert('Error submitting post: ' + error.message);
+            }
+        });
+
+        document.getElementById('newsForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            console.log('News form submission started');
+
+            const news = {
+                id: Date.now().toString(),
+                title: document.getElementById('newsTitle').value,
+                content: document.getElementById('newsContent').value,
+                category: document.getElementById('newsCategory').value,
+                image: getImageData('news'),
+                date: new Date().toISOString(),
+                status: 'published'
+            };
+
+            console.log('News data:', news);
+
+            const allNews = JSON.parse(localStorage.getItem('superAdminNews') || '[]');
+            allNews.push(news);
+            localStorage.setItem('superAdminNews', JSON.stringify(allNews));
+
+            console.log('News saved to localStorage');
+
+            // Clear form fields
+            this.reset();
+
+            // Clear image preview
+            const previewContainer = document.getElementById('newsImagePreview');
+            const previewImg = previewContainer ? previewContainer.querySelector('img') : null;
+            if (previewContainer) {
+                previewContainer.style.display = 'none';
+            }
+            if (previewImg) {
+                previewImg.src = '';
+            }
+
+            // Sync to other dashboards
+            syncNewsToDashboards(news);
+
+            closeModal('newsModal');
+            loadNews();
+            loadDashboardData();
+            showNotification('News published successfully!', 'success');
+
+            console.log('News form submission completed');
+        });
+
+
+
+
+
+        // Sync functions
+        function syncPostToDashboards(post) {
+            // Sync to alumni dashboard
+            const alumniPosts = JSON.parse(localStorage.getItem('alumniPosts') || '[]');
+            alumniPosts.push({
+                ...post,
+                id: post.id,
+                title: post.title,
+                content: post.content,
+                date: post.date,
+                category: post.category,
+                image: post.image || null
+            });
+            localStorage.setItem('alumniPosts', JSON.stringify(alumniPosts));
+
+            // Sync to news dashboard
+            const newsPosts = JSON.parse(localStorage.getItem('newsPosts') || '[]');
+            newsPosts.push({
+                ...post,
+                id: post.id,
+                title: post.title,
+                content: post.content,
+                date: post.date,
+                category: post.category,
+                image: post.image || null
+            });
+            localStorage.setItem('newsPosts', JSON.stringify(newsPosts));
+        }
+
+        function syncAnnouncementToDashboards(announcement) {
+            // Sync to alumni dashboard
+            const alumniAnnouncements = JSON.parse(localStorage.getItem('alumniAnnouncements') || '[]');
+            alumniAnnouncements.push({
+                ...announcement,
+                id: announcement.id,
+                title: announcement.title,
+                content: announcement.content,
+                date: announcement.date,
+                priority: announcement.priority,
+                image: announcement.image || null
+            });
+            localStorage.setItem('alumniAnnouncements', JSON.stringify(alumniAnnouncements));
+
+            // Sync to news dashboard
+            const newsAnnouncements = JSON.parse(localStorage.getItem('newsAnnouncements') || '[]');
+            newsAnnouncements.push({
+                ...announcement,
+                id: announcement.id,
+                title: announcement.title,
+                content: announcement.content,
+                date: announcement.date,
+                priority: announcement.priority,
+                image: announcement.image || null
+            });
+            localStorage.setItem('newsAnnouncements', JSON.stringify(newsAnnouncements));
+        }
+
+        function syncNewsToDashboards(news) {
+            // Sync to alumni dashboard
+            const alumniNews = JSON.parse(localStorage.getItem('alumniNews') || '[]');
+            alumniNews.push({
+                ...news,
+                id: news.id,
+                title: news.title,
+                content: news.content,
+                date: news.date,
+                category: news.category,
+                image: news.image || null
+            });
+            localStorage.setItem('alumniNews', JSON.stringify(alumniNews));
+
+            // Sync to news dashboard
+            const dashboardNews = JSON.parse(localStorage.getItem('dashboardNews') || '[]');
+            dashboardNews.push({
+                ...news,
+                id: news.id,
+                title: news.title,
+                content: news.content,
+                date: news.date,
+                category: news.category,
+                image: news.image || null
+            });
+            localStorage.setItem('dashboardNews', JSON.stringify(dashboardNews));
+        }
+
+        function syncAlumniToDashboards(alumnus) {
+            // Sync to alumni dashboard
+            const alumniData = JSON.parse(localStorage.getItem('alumniData') || '[]');
+            alumniData.push({
+                ...alumnus,
+                id: alumnus.id,
+                name: alumnus.name,
+                title: alumnus.position || 'Alumni',
+                content: alumnus.bio || 'Success story',
+                date: alumnus.date,
+                image: alumnus.image || null,
+                batch: alumnus.batch,
+                course: alumnus.course
+            });
+            localStorage.setItem('alumniData', JSON.stringify(alumniData));
+
+            // Sync to individual college dashboards
+            const colleges = ['cas', 'cit', 'cted', 'ccje'];
+            colleges.forEach(college => {
+                const collegeAlumni = JSON.parse(localStorage.getItem(`${college}Alumni`) || '[]');
+                collegeAlumni.push({
+                    ...alumnus,
+                    id: alumnus.id,
+                    name: alumnus.name,
+                    title: alumnus.position || 'Alumni',
+                    content: alumnus.bio || 'Success story',
+                    date: alumnus.date,
+                    image: alumnus.image || null,
+                    batch: alumnus.batch,
+                    course: alumnus.course
+                });
+                localStorage.setItem(`${college}Alumni`, JSON.stringify(collegeAlumni));
+            });
+        }
+
+        function syncAchievementToDashboards(achievement) {
+            // Sync to index dashboard
+            const indexAchievements = JSON.parse(localStorage.getItem('indexAchievements') || '[]');
+            indexAchievements.push({
+                id: achievement.id,
+                title: achievement.title,
+                category: achievement.category,
+                date: achievement.date,
+                description: achievement.description,
+                recipient: achievement.recipient,
+                image: achievement.image || null
+            });
+            localStorage.setItem('indexAchievements', JSON.stringify(indexAchievements));
+
+            // Sync to alumni dashboard
+            const alumniAchievements = JSON.parse(localStorage.getItem('alumniAchievements') || '[]');
+            alumniAchievements.push({
+                id: achievement.id,
+                title: achievement.title,
+                category: achievement.category,
+                date: achievement.date,
+                description: achievement.description,
+                recipient: achievement.recipient,
+                image: achievement.image || null
+            });
+            localStorage.setItem('alumniAchievements', JSON.stringify(alumniAchievements));
+
+            // Sync to news dashboard
+            const dashboardAchievements = JSON.parse(localStorage.getItem('dashboardAchievements') || '[]');
+            dashboardAchievements.push({
+                id: achievement.id,
+                title: achievement.title,
+                category: achievement.category,
+                date: achievement.date,
+                description: achievement.description,
+                recipient: achievement.recipient,
+                image: achievement.image || null
+            });
+            localStorage.setItem('dashboardAchievements', JSON.stringify(dashboardAchievements));
+        }
+
+        // Helper functions
+
+        // Get CSRF token from cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function getCSRFToken() {
+            return getCookie('csrftoken');
+        }
+
+        function getPriorityColor(priority) {
+            switch (priority) {
+                case 'urgent': return '#e74c3c';
+                case 'high': return '#f39c12';
+                case 'medium': return '#3498db';
+                case 'low': return '#27ae60';
+                default: return '#95a5a6';
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            // Harvard editorial config per type
+            const config = {
+                success: { accent: '#2d7a3a', label: 'Success', icon: 'fa-check' },
+                error: { accent: '#A41034', label: 'Error', icon: 'fa-times' },
+                warning: { accent: '#b06000', label: 'Warning', icon: 'fa-exclamation' },
+                info: { accent: '#1b3665', label: 'Notice', icon: 'fa-info' },
+            };
+            const c = config[type] || config.info;
+            const duration = 4000;
+
+            // Inject styles once
+            if (!document.getElementById('_harvardToastStyle')) {
+                const s = document.createElement('style');
+                s.id = '_harvardToastStyle';
+                s.textContent = `
+                    @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Source+Sans+3:wght@400;600&display=swap');
+                    @keyframes _hToastIn   { from { opacity:0; transform:translateY(-18px); } to { opacity:1; transform:translateY(0); } }
+                    @keyframes _hToastOut  { from { opacity:1; transform:translateY(0); }    to { opacity:0; transform:translateY(-10px); } }
+                    @keyframes _hProgress  { from { width:100%; } to { width:0%; } }
+                    #_toastContainer { pointer-events:none; }
+                    ._h-toast { pointer-events:all; }
+                    ._h-toast:hover ._h-dismiss { opacity:1 !important; }
+                `;
+                document.head.appendChild(s);
+            }
+
+            // Container — top-center
+            let container = document.getElementById('_toastContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = '_toastContainer';
+                Object.assign(container.style, {
+                    position: 'fixed',
+                    top: '24px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: '99998',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '10px',
+                    pointerEvents: 'none',
+                });
+                document.body.appendChild(container);
+            }
+
+            // Toast card
+            const toast = document.createElement('div');
+            toast.className = '_h-toast';
+            Object.assign(toast.style, {
+                display: 'flex',
+                alignItems: 'stretch',
+                background: '#ffffff',
+                borderTop: '1px solid #e0e0e0',
+                borderRight: '1px solid #e0e0e0',
+                borderBottom: '1px solid #e0e0e0',
+                borderLeft: `5px solid ${c.accent}`,
+                borderRadius: '0px',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.07)',
+                minWidth: '340px',
+                maxWidth: '460px',
+                position: 'relative',
+                overflow: 'hidden',
+                animation: `_hToastIn 0.32s cubic-bezier(0.22,1,0.36,1) both`,
+                fontFamily: "'Source Sans 3', 'Source Sans Pro', Arial, sans-serif",
+            });
+
+            toast.innerHTML = `
+                <!-- Icon column -->
+                <div style="
+                    width: 48px; flex-shrink:0;
+                    background: ${c.accent};
+                    display:flex; align-items:center; justify-content:center;
+                    color:#fff; font-size:15px;
+                ">
+                    <i class="fas ${c.icon}"></i>
+                </div>
+
+                <!-- Content -->
+                <div style="flex:1; padding:14px 16px 14px 18px; min-width:0;">
+                    <div style="
+                        font-family:'Libre Baskerville', Georgia, 'Times New Roman', serif;
+                        font-size:13px; font-weight:700; letter-spacing:0.08em;
+                        text-transform:uppercase; color:${c.accent};
+                        margin-bottom:4px;
+                    ">${c.label}</div>
+                    <div style="
+                        font-size:15px; font-weight:600; color:#1a1a1a;
+                        line-height:1.4; word-break:break-word;
+                        font-family:'Source Sans 3','Source Sans Pro',Arial,sans-serif;
+                    ">${message}</div>
+                </div>
+
+                <!-- Dismiss -->
+                <button class="_h-dismiss" onclick="this.closest('._h-toast').style.animation='_hToastOut 0.25s ease forwards'; setTimeout(()=>this.closest('._h-toast').remove(),260);" style="
+                    opacity:0; transition:opacity 0.2s;
+                    background:none; border:none; cursor:pointer;
+                    padding:0 14px; color:#888; font-size:14px;
+                    display:flex; align-items:center; justify-content:center;
+                    flex-shrink:0;
+                "
+                onmouseover="this.style.color='${c.accent}';"
+                onmouseout="this.style.color='#888';">
+                    <i class="fas fa-times"></i>
+                </button>
+
+                <!-- Progress bar -->
+                <div style="
+                    position:absolute; bottom:0; left:0; height:2px;
+                    background:${c.accent}; opacity:0.35;
+                    animation:_hProgress ${duration}ms linear forwards;
+                "></div>
+            `;
+
+            toast.setAttribute('data-toast', '1');
+            container.appendChild(toast);
+
+            // Auto-dismiss
+            setTimeout(() => {
+                toast.style.animation = '_hToastOut 0.28s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        async function logout() {
+            const _confirmed = await showCustomConfirm({ title: 'Logout', message: 'Are you sure you want to logout from the Super Admin dashboard?', icon: 'fa-sign-out-alt', iconColor: '#60a5fa', iconBg: 'rgba(96,165,250,0.15)', iconBorder: 'rgba(96,165,250,0.25)', confirmLabel: 'Yes, Logout', confirmIcon: 'fa-sign-out-alt', confirmGradient: 'linear-gradient(135deg,#3b82f6 0%,#1d4ed8 100%)', confirmShadow: '0 4px 15px rgba(59,130,246,0.35)', confirmHoverShadow: '0 8px 20px rgba(59,130,246,0.5)', showUndone: false });
+            if (_confirmed) {
+                localStorage.removeItem('superAdminSession');
+                sessionStorage.removeItem('adminSession');
+                window.location.href = '/admin-logout/';
+            }
+        }
+
+        // Edit and delete functions (placeholders)
+        function openPostModal() {
+            if (document.getElementById('postModalTitle')) document.getElementById('postModalTitle').textContent = 'New Post';
+            const form = document.getElementById('postForm');
+            form.reset();
+            delete form.dataset.editingId;
+            removeImage('post');
+            // Clear schedule fields
+            document.getElementById('postScheduledAt').value = '';
+            document.getElementById('postExpiresAt').value = '';
+            // Clear CKEditor
+            if (window._postEditor) window._postEditor.setData('');
+            document.getElementById('postModal').classList.add('show');
+        }
+
+        async function editPost(id) {
+            try {
+                const response = await fetch(`/api/posts/get/${id}/`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const post = data.post;
+                    if (document.getElementById('postModalTitle')) document.getElementById('postModalTitle').textContent = 'Edit Post';
+                    document.getElementById('postTitle').value = post.title;
+                    // Set CKEditor content
+                    if (window._postEditor) {
+                        window._postEditor.setData(post.content || '');
+                    } else {
+                        document.getElementById('postContent').value = post.content || '';
+                    }
+                    document.getElementById('postCategory').value = normalizePostCategory(post.category);
+
+                    // Populate schedule fields (convert UTC ISO → local datetime-local input)
+                    function fmtLocal(iso) {
+                        if (!iso) return '';
+                        const d = new Date(iso);
+                        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+                        return d.toISOString().slice(0, 16);
+                    }
+                    document.getElementById('postScheduledAt').value = fmtLocal(post.scheduled_at);
+                    document.getElementById('postExpiresAt').value = fmtLocal(post.expires_at);
+
+                    // Store editing ID
+                    document.getElementById('postForm').dataset.editingId = id;
+                    document.getElementById('postModal').classList.add('show');
+                } else {
+                    showNotification('Error loading post: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error loading post:', error);
+                showNotification('Error loading post details', 'error');
+            }
+        }
+
+        async function deletePost(id) {
+            console.log("Attempting to delete post with ID:", id);
+            const _confirmed = await showCustomConfirm({ title: 'Delete Post', message: 'Are you sure you want to delete this post? This cannot be undone.', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-trash-alt' });
+            if (_confirmed) {
+                try {
+                    // Get CSRF token
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+                    const headers = {};
+
+                    if (csrfToken) {
+                        headers['X-CSRFToken'] = csrfToken.value;
+                    }
+
+                    // Fetch post data to archive before deleting
+                    const getRes = await fetch(`/api/posts/get/${id}/`);
+                    const getData = await getRes.json();
+                    if (getData.success) {
+                        if (typeof addToArchive === 'function') {
+                            addToArchive('post', getData.post);
+                        }
+                    }
+
+                    const response = await fetch(`/api/posts/delete/${id}/`, {
+                        method: 'POST',
+                        headers: headers
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        await loadPosts();
+                        loadDashboardData();
+                        showNotification('Post deleted and moved to archive!', 'success');
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error deleting post:', error);
+                    alert('Error deleting post: ' + error.message);
+                }
+            }
+        }
+
+        async function viewPostDetails(id) {
+            try {
+                const response = await fetch(`/api/posts/get/${id}/`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const post = data.post;
+
+                    // Create a beautiful view-only modal
+                    const modalHtml = `
+                        <div class="modal show" id="viewPostModal">
+                            <div class="modal-content" style="max-width: 800px; border: none; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+                                <div class="modal-header" style="background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%); color: white; padding: 20px 30px; border: none; display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <i class="fas fa-file-alt" style="font-size: 1.2rem;"></i>
+                                        <h3 style="margin: 0; font-weight: 600;">Post Details</h3>
+                                    </div>
+                                    <button onclick="this.closest('.modal').remove()" style="background: rgba(255,255,255,0.2); border: none; color: white; font-size: 20px; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">&times;</button>
+                                </div>
+                                <div style="padding: 30px; background: white;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;">
+                                        <h2 style="margin: 0; color: #1e293b; font-size: 1.5rem; font-weight: 700; flex: 1;">${post.title}</h2>
+                                        <span class="college-badge college-${(post.college || 'all').toLowerCase()}" style="margin-left: 20px; padding: 6px 12px; font-size: 0.85rem; border-radius: 6px;">
+                                            ${post.college && post.college.toLowerCase() !== 'all' ? post.college : 'General'}
+                                        </span>
+                                    </div>
+                                    
+                                    <div style="display: flex; gap: 20px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #f1f5f9;">
+                                        <div style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem;">
+                                            <i class="fas fa-user-circle"></i>
+                                            <span>${post.author || 'Super Admin'}</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem;">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            <span>${new Date(post.created_at).toLocaleDateString()}</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem;">
+                                            <i class="fas fa-tag"></i>
+                                            <span>${getPostCategoryLabel(post.category)}</span>
+                                        </div>
+                                    </div>
+
+                                    ${post.image ? `
+                                        <div style="margin-bottom: 25px; border-radius: 12px; overflow: hidden; max-height: 400px; border: 1px solid #f1f5f9;">
+                                            <img src="${post.image}" style="width: 100%; height: auto; object-fit: cover;">
+                                        </div>
+                                    ` : ''}
+
+                                    <div style="color: #334155; line-height: 1.8; font-size: 1.05rem; max-height: 300px; overflow-y: auto; padding-right: 10px;" class="custom-scrollbar">
+                                        ${post.content || '<em style="color: #94a3b8;">No content provided.</em>'}
+                                    </div>
+
+                                    <div style="margin-top: 35px; display: flex; justify-content: flex-end; gap: 12px;">
+                                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()" style="padding: 10px 20px; border-radius: 8px; font-weight: 600;">Close</button>
+                                        <button class="btn btn-primary" onclick="this.closest('.modal').remove(); editPost(${post.id});" style="padding: 10px 20px; border-radius: 8px; font-weight: 600; background: #0078d4; border: none; display: flex; align-items: center; gap: 8px;">
+                                            <i class="fas fa-edit"></i> Edit This Post
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.insertAdjacentHTML('beforeend', modalHtml);
+                } else {
+                    showNotification('Error loading post: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error viewing post:', error);
+                showNotification('Error loading post details', 'error');
+            }
+        }
+
+        function editAnnouncement(id) {
+            showNotification('Edit functionality coming soon!', 'warning');
+        }
+
+        async function deleteAnnouncement(id) {
+            const _confirmed = await showCustomConfirm({ title: 'Delete Announcement', message: 'Are you sure you want to delete this announcement?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-trash-alt' });
+            if (_confirmed) {
+                const announcements = JSON.parse(localStorage.getItem('superAdminAnnouncements') || '[]');
+                const itemToArchive = announcements.find(a => a.id === id);
+                if (itemToArchive && typeof addToArchive === 'function') {
+                    addToArchive('announcement', itemToArchive);
+                }
+                const updatedAnnouncements = announcements.filter(announcement => announcement.id !== id);
+                localStorage.setItem('superAdminAnnouncements', JSON.stringify(updatedAnnouncements));
+                loadAnnouncements();
+                loadDashboardData();
+                showNotification('Announcement moved to archive!', 'success');
+            }
+        }
+
+        function editNews(id) {
+            showNotification('Edit functionality coming soon!', 'warning');
+        }
+
+        async function deleteNews(id) {
+            const _confirmed = await showCustomConfirm({ title: 'Delete News', message: 'Are you sure you want to delete this news item?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-trash-alt' });
+            if (_confirmed) {
+                const news = JSON.parse(localStorage.getItem('superAdminNews') || '[]');
+                const itemToArchive = news.find(n => n.id === id);
+                if (itemToArchive && typeof addToArchive === 'function') {
+                    addToArchive('news', itemToArchive);
+                }
+                const updatedNews = news.filter(item => item.id !== id);
+                localStorage.setItem('superAdminNews', JSON.stringify(updatedNews));
+                loadNews();
+                loadDashboardData();
+                showNotification('News moved to archive!', 'success');
+            }
+        }
+
+        function editAlumni(id) {
+            showNotification('Edit functionality coming soon!', 'warning');
+        }
+
+        async function deleteAlumniById(id) {
+            const _confirmed = await showCustomConfirm({ title: 'Delete Alumni', message: 'Are you sure you want to delete this alumni record?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-user-times' });
+            if (_confirmed) {
+                try {
+                    // Fetch alumni data to archive before deleting
+                    const getRes = await fetch(`/api/alumni/${id}/`);
+                    const getData = await getRes.json();
+                    if (getData.success) {
+                        if (typeof addToArchive === 'function') {
+                            addToArchive('alumni', getData.alumni);
+                        }
+                    }
+
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    const response = await fetch(`/api/alumni/${id}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        loadAlumni();
+                        loadDashboardData();
+                        showNotification('Alumni moved to archive!', 'success');
+                    }
+                } catch (error) {
+                    console.error('Error deleting alumni:', error);
+                    showNotification('Error deleting alumni', 'error');
+                }
+            }
+        }
+
+        function populateSiteContactInfoForm(contact) {
+            if (!contact) return;
+
+            const fieldMap = {
+                contactOfficeName: contact.officeName || '',
+                contactInquiryTitle: contact.inquiryTitle || '',
+                contactInquiryDescription: contact.inquiryDescription || '',
+                contactAddressLabel: contact.addressLabel || '',
+                contactPhoneLabel: contact.phoneLabel || '',
+                contactAddressText: contact.addressText || '',
+                contactPhoneNumber: contact.phoneNumber || '',
+                contactEmailLabel: contact.emailLabel || '',
+                contactEmailAddress: contact.emailAddress || '',
+            };
+
+            Object.entries(fieldMap).forEach(([fieldId, value]) => {
+                const field = document.getElementById(fieldId);
+                if (field) field.value = value;
+            });
+        }
+
+        async function loadSiteContactInfo() {
+            const form = document.getElementById('contactSettingsForm');
+            if (!form) return;
+
+            try {
+                const response = await fetch('/api/site-contact-info/');
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Unable to load contact information');
+                }
+
+                populateSiteContactInfoForm(data.contact);
+            } catch (error) {
+                console.error('Error loading site contact information:', error);
+                showNotification(`Error loading contacts: ${error.message}`, 'error');
+            }
+        }
+
+        async function saveSiteContactInfo(event) {
+            if (event) {
+                event.preventDefault();
+            }
+
+            const form = document.getElementById('contactSettingsForm');
+            if (!form) return;
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalHtml = submitBtn ? submitBtn.innerHTML : '';
+
+            try {
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Saving...';
+                }
+
+                const formData = new FormData(form);
+                const response = await fetch('/api/site-contact-info/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Unable to save contact information');
+                }
+
+                populateSiteContactInfoForm(data.contact);
+                showNotification(data.message || 'Contact information saved successfully!', 'success');
+            } catch (error) {
+                console.error('Error saving site contact information:', error);
+                showNotification(`Error saving contacts: ${error.message}`, 'error');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHtml;
+                }
+            }
+        }
+
+        // Inquiry Management Global State
+        var lastInquiryId = null;
+        var isFirstInquiryLoad = true;
+
+        // Inquiry Management Functions
+        async function loadInquiries() {
+            console.log('Fetching inquiries...');
+            try {
+                const response = await fetch('/api/contact-messages/');
+                console.log('Inquiries response status:', response.status);
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    console.error('Inquiries fetch failed:', text);
+                    return;
+                }
+
+                const data = await response.json();
+                console.log('Inquiries data received:', data);
+
+                if (data.success) {
+                    const inquiriesTable = document.getElementById('inquiriesTable');
+                    const inquiries = data.messages;
+
+                    // Check for new inquiries
+                    if (inquiries.length > 0) {
+                        const latestId = inquiries[0].id;
+                        if (!isFirstInquiryLoad && lastInquiryId && latestId > lastInquiryId) {
+                            // New message received!
+                            const newMsg = inquiries[0];
+                            addNotification('message', 'New Inquiry Received', `From: ${newMsg.full_name} - ${newMsg.subject}`, 'inquiry', newMsg);
+                            showNotification(`New message from ${newMsg.full_name}`, 'info');
+                        }
+                        lastInquiryId = latestId;
+                    }
+                    isFirstInquiryLoad = false;
+
+                    // Update badge
+                    const unreadCount = inquiries.filter(m => !m.is_read).length;
+                    const badge = document.getElementById('inquiryBadge');
+                    if (unreadCount > 0) {
+                        badge.innerText = unreadCount;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+
+                    if (inquiries.length === 0) {
+                        inquiriesTable.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No inquiries found.</td></tr>';
+                        return;
+                    }
+
+                    inquiriesTable.innerHTML = inquiries.map(msg => `
+                        <tr class="${msg.is_read ? '' : 'unread-row'}" style="${msg.is_read ? '' : 'font-weight: 600; background: #f0f7ff;'}">
+                            <td>${msg.full_name}</td>
+                            <td>
+                                <div>
+                                    <i class="fas fa-envelope" style="width: 15px;"></i> ${msg.email}
+                                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=${msg.email}" target="_blank" title="Reply via Gmail" style="margin-left: 8px; color: #A51C30; text-decoration: none; display: inline-flex; align-items: center;">
+                                        <i class="fas fa-reply" style="font-size: 0.85rem;"></i>
+                                    </a>
+                                </div>
+                                ${msg.phone ? `<div><i class="fas fa-phone" style="width: 15px;"></i> ${msg.phone}</div>` : ''}
+                            </td>
+                            <td>${msg.subject}</td>
+                            <td><span class="badge-status" style="background: #eef2f5; color: #333;">${msg.department || 'General'}</span></td>
+                            <td>${new Date(msg.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <span class="badge-status ${msg.is_read ? 'active' : 'inactive'}">
+                                    ${msg.is_read ? 'Read' : 'New'}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-info" onclick="viewInquiryDetail('${msg.id}')" title="View Message">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=${msg.email}" target="_blank" class="btn btn-sm btn-success" title="Reply via Gmail" style="display: inline-flex; align-items: center; justify-content: center; background: #28a745; border-color: #28a745; color: white;">
+                                        <i class="fas fa-reply"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteInquiry('${msg.id}')" title="Delete Inquiry" style="background: #dc3545; border-color: #dc3545; color: white;">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading inquiries:', error);
+            }
+        }
+
+        async function deleteInquiry(id) {
+            const _confirmed = await showCustomConfirm({
+                title: 'Move to Archive?',
+                message: 'Are you sure you want to delete this inquiry? It will be moved to the Archive backup for safety.',
+                confirmLabel: 'Yes, Archive It',
+                confirmIcon: 'fa-archive'
+            });
+
+            if (_confirmed) {
+                try {
+                    // 1. Fetch current data to archive it before deletion
+                    const resFetch = await fetch('/api/contact-messages/');
+                    const dataFetch = await resFetch.json();
+                    const msg = dataFetch.messages.find(m => m.id == id);
+
+                    if (msg) {
+                        // 2. Add to Archive backup
+                        addToArchive('inquiry', msg);
+                    }
+
+                    // 3. Delete from backend
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    const response = await fetch(`/api/contact-messages/${id}/delete/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        showNotification('Inquiry moved to Archive', 'success');
+                        loadInquiries(); // Refresh table and badge
+                        loadDashboardData();
+                    } else {
+                        showNotification(data.error || 'Error deleting inquiry', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting inquiry:', error);
+                    showNotification('Error deleting inquiry', 'error');
+                }
+            }
+        }
+
+        async function viewInquiryDetail(id) {
+            try {
+                // Find message in current data or fetch again
+                const response = await fetch('/api/contact-messages/');
+                const data = await response.json();
+                const msg = data.messages.find(m => m.id == id);
+
+                if (msg) {
+                    // Create a simple modal or use an existing one to show detail
+                    const modalHtml = `
+                        <div class="modal show" id="inquiryDetailModal">
+                            <div class="modal-content" style="max-width: 600px;">
+                                <div class="modal-header" style="background: #0078d4; color: white; padding: 15px 25px;">
+                                    <h3 style="margin: 0;">Message from ${msg.full_name}</h3>
+                                    <button onclick="this.closest('.modal').remove()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+                                </div>
+                                <div style="padding: 25px;">
+                                    <div style="display: grid; grid-template-columns: 120px 1fr; gap: 10px; margin-bottom: 20px; font-size: 14px;">
+                                        <strong>Subject:</strong> <div>${msg.subject}</div>
+                                        <strong>Date:</strong> <div>${new Date(msg.created_at).toLocaleString()}</div>
+                                        <strong>Email:</strong> <div>${msg.email}</div>
+                                        <strong>Phone:</strong> <div>${msg.phone || 'N/A'}</div>
+                                        <strong>Department:</strong> <div>${msg.department || 'General'}</div>
+                                    </div>
+                                    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; white-space: pre-wrap; line-height: 1.6;">${msg.message}</div>
+                                    <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 10px;">
+                                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=${msg.email}" target="_blank" class="btn btn-success" style="display: inline-flex; align-items: center; background: #28a745; border-color: #28a745; color: white; text-decoration: none; padding: 8px 20px; border-radius: 5px; font-size: 14px; font-weight: 500;">
+                                            <i class="fas fa-reply" style="margin-right: 8px;"></i> Reply via Gmail
+                                        </a>
+                                        <button class="btn btn-danger" onclick="deleteInquiry('${msg.id}'); this.closest('.modal').remove();" style="display: inline-flex; align-items: center; background: #dc3545; border-color: #dc3545; color: white; padding: 8px 20px; border-radius: 5px; font-size: 14px; font-weight: 500;">
+                                            <i class="fas fa-trash-alt" style="margin-right: 8px;"></i> Delete
+                                        </button>
+                                        <button class="btn btn-primary" onclick="markInquiryRead('${msg.id}'); this.closest('.modal').remove();">Mark as Read & Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+                    // Mark as read immediately if it was unread
+                    if (!msg.is_read) {
+                        markInquiryRead(id);
+                    }
+                }
+            } catch (error) {
+                console.error('Error viewing inquiry:', error);
+            }
+        }
+
+        async function markInquiryRead(id) {
+            try {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const response = await fetch(`/api/contact-messages/${id}/read/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    loadInquiries(); // Refresh table and badge
+                }
+            } catch (error) {
+                console.error('Error marking as read:', error);
+            }
+        }
+
+        // Toggle Sidebar function
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+
+            if (window.innerWidth <= 768) {
+                // Mobile behavior
+                sidebar.classList.toggle('show');
+            } else {
+                // Desktop behavior
+                const isCollapsed = sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+
+                // Save state
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            }
+        }
+
+        // Initialize sidebar state
+        document.addEventListener('DOMContentLoaded', function () {
+
+
+            // Load Inquiries (for badge count)
+            loadInquiries();
+
+            // Periodic check for new inquiries (every 10 seconds)
+            setInterval(loadInquiries, 10000);
+
+            if (window.innerWidth > 768) {
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (isCollapsed) {
+                    const sidebar = document.getElementById('sidebar');
+                    const mainContent = document.getElementById('mainContent');
+                    sidebar.classList.add('collapsed');
+                    mainContent.classList.add('expanded');
+                }
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            const deleteModal = document.getElementById('deletePresidentModal');
+            const presidentModal = document.getElementById('presidentModal');
+
+            if (event.target == deleteModal) {
+                closeModal('deletePresidentModal');
+            }
+            if (event.target == presidentModal) {
+                closeModal('presidentModal');
+            }
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+
+            // Close specific modals
+            if (event.target.id === 'achievementModal') {
+                closeModal('achievementModal');
+            }
+            if (event.target.id === 'collegeModal') {
+                closeModal('collegeModal');
+            }
+            if (event.target.id === 'infoModal') {
+                closeModal('infoModal');
+            }
+            if (event.target.id === 'norsuInfoModal') {
+                closeModal('norsuInfoModal');
+            }
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function (event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        });
+
+        // File upload functionality
+        function setupFileUpload(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            const previewContainer = document.getElementById(previewId);
+            const previewImg = previewContainer.querySelector('img');
+
+            if (input && previewContainer) {
+                input.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+
+                    if (file) {
+                        // Validate file type
+                        if (!file.type.startsWith('image/')) {
+                            showNotification('Please select an image file', 'error');
+                            this.value = '';
+                            return;
+                        }
+
+                        // Validate file size (max 5MB)
+                        if (file.size > 5 * 1024 * 1024) {
+                            showNotification('Image size must be less than 5MB', 'error');
+                            this.value = '';
+                            return;
+                        }
+
+                        // Read and display the image
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewImg.src = e.target.result;
+                            previewContainer.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        previewContainer.style.display = 'none';
+                        previewImg.src = '';
+                    }
+                });
+            }
+        }
+
+        // Remove image function
+        function removeImage(type) {
+            const input = document.getElementById(type + 'Image');
+            const previewContainer = document.getElementById(type + 'ImagePreview');
+            const previewImg = previewContainer ? previewContainer.querySelector('img') : null;
+
+            console.log(`Removing image for ${type}:`, {
+                input: input,
+                previewContainer: previewContainer,
+                previewImg: previewImg
+            });
+
+            if (input) {
+                input.value = '';
+            }
+            if (previewContainer) {
+                previewContainer.style.display = 'none';
+            }
+            if (previewImg) {
+                previewImg.src = '';
+            }
+        }
+
+        // Get image data as base64
+        function getImageData(type) {
+            const input = document.getElementById(type + 'Image');
+            const previewContainer = document.getElementById(type + 'ImagePreview');
+            const previewImg = previewContainer ? previewContainer.querySelector('img') : null;
+
+            console.log(`Getting image data for ${type}:`, {
+                input: input,
+                hasFiles: input && input.files && input.files.length > 0,
+                previewContainer: previewContainer,
+                previewImg: previewImg,
+                previewSrc: previewImg ? previewImg.src : 'no src'
+            });
+
+            if (input && input.files && input.files.length > 0) {
+                const imageData = previewImg ? previewImg.src : null;
+                console.log(`Image data for ${type}:`, imageData ? 'data present' : 'no data');
+                return imageData;
+            }
+            console.log(`No image data found for ${type}`);
+            return null;
+        }
+
+        // Preview image function for posts and alumni
+        function previewImage(type, input) {
+            console.log('previewImage called with type:', type, 'and input:', input);
+
+            // Check if input is a file input or base64 data
+            if (typeof input === 'string') {
+                // Handle base64 data (for edit mode)
+                console.log('Processing base64 image data for type:', type);
+
+                if (type === 'post') {
+                    const previewContainer = document.getElementById('postImagePreview');
+                    const previewImg = document.getElementById('postPreviewImg');
+
+                    if (previewImg && previewContainer) {
+                        previewImg.src = input;
+                        previewContainer.style.display = 'block';
+                        console.log('Post image preview set from base64');
+                    } else {
+                        console.error('Post preview elements not found:', { previewImg, previewContainer });
+                    }
+                } else if (type === 'alumni') {
+                    const previewContainer = document.getElementById('alumniImagePreview');
+                    const previewImg = document.getElementById('alumniPreviewImg');
+
+                    if (previewImg && previewContainer) {
+                        previewImg.src = input;
+                        previewContainer.style.display = 'block';
+                        console.log('Alumni image preview set from base64');
+                    } else {
+                        console.error('Alumni preview elements not found:', { previewImg, previewContainer });
+                    }
+                } else {
+                    console.error('Unsupported image type:', type);
+                }
+                return;
+            }
+
+            // Handle file input
+            const file = input.files[0];
+            if (file) {
+                console.log('File selected:', file.name, 'Size:', file.size, 'Type:', file.type);
+
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    showNotification('Please select an image file', 'error');
+                    input.value = '';
+                    return;
+                }
+
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('Image size must be less than 5MB', 'error');
+                    input.value = '';
+                    return;
+                }
+
+                console.log('File validation passed, reading file...');
+
+                // Read and display the image
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    console.log('Image loaded, setting preview for type:', type);
+
+                    if (type === 'post') {
+                        const previewContainer = document.getElementById('postImagePreview');
+                        const previewImg = document.getElementById('postPreviewImg');
+
+                        if (previewImg && previewContainer) {
+                            previewImg.src = e.target.result;
+                            previewContainer.style.display = 'block';
+                            console.log('Post image preview set from file');
+                        } else {
+                            console.error('Post preview elements not found:', { previewImg, previewContainer });
+                        }
+                    } else if (type === 'alumni') {
+                        const previewContainer = document.getElementById('alumniImagePreview');
+                        const previewImg = document.getElementById('alumniPreviewImg');
+
+                        if (previewImg && previewContainer) {
+                            previewImg.src = e.target.result;
+                            previewContainer.style.display = 'block';
+                            console.log('Alumni image preview set from file');
+                        } else {
+                            console.error('Alumni preview elements not found:', { previewImg, previewContainer });
+                        }
+                    } else {
+                        console.error('Unsupported image type:', type);
+                    }
+                };
+
+                reader.onerror = function () {
+                    console.error('Error reading file');
+                    showNotification('Error reading image file', 'error');
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                console.log('No file selected, hiding preview');
+
+                // Hide preview if no file
+                if (type === 'post') {
+                    const previewContainer = document.getElementById('postImagePreview');
+                    if (previewContainer) {
+                        previewContainer.style.display = 'none';
+                    }
+                } else if (type === 'alumni') {
+                    const previewContainer = document.getElementById('alumniImagePreview');
+                    if (previewContainer) {
+                        previewContainer.style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        // Remove image function
+        function removeImage(type) {
+            console.log('removeImage called with type:', type);
+
+            if (type === 'post') {
+                const input = document.getElementById('postImage');
+                const previewContainer = document.getElementById('postImagePreview');
+                const previewImg = document.getElementById('postPreviewImg');
+
+                if (input) input.value = '';
+                if (previewImg) previewImg.src = '';
+                if (previewContainer) previewContainer.style.display = 'none';
+
+                console.log('Post image removed');
+            } else if (type === 'alumni') {
+                const input = document.getElementById('alumniImage');
+                const previewContainer = document.getElementById('alumniImagePreview');
+                const previewImg = document.getElementById('alumniPreviewImg');
+
+                if (input) input.value = '';
+                if (previewImg) previewImg.src = '';
+                if (previewContainer) previewContainer.style.display = 'none';
+
+                console.log('Alumni image removed');
+            } else {
+                console.error('Unsupported image type for removal:', type);
+            }
+        }
+
+        // Setup file upload functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            // Direct event listener for post image
+            const postImageInput = document.getElementById('postImage');
+            if (postImageInput) {
+                postImageInput.addEventListener('change', function (e) {
+                    console.log('Post image change event triggered');
+                    previewImage('post', this);
+                });
+            }
+
+            // Direct event listener for alumni image
+            const alumniImageInput = document.getElementById('alumniImage');
+            if (alumniImageInput) {
+                alumniImageInput.addEventListener('change', function (e) {
+                    console.log('Alumni image change event triggered');
+                    previewImage('alumni', this);
+                });
+            }
+
+            setupFileUpload('postImage', 'postImagePreview');
+            setupFileUpload('announcementImage', 'announcementImagePreview');
+            setupFileUpload('newsImage', 'newsImagePreview');
+            setupFileUpload('alumniImage', 'alumniImagePreview');
+            setupFileUpload('achievementImage', 'achievementImagePreview');
+            setupFileUpload('presidentImage', 'presidentImagePreview', true); // Add compression for president image
+        });
+
+        // Enhanced file upload with compression for president image
+        function setupFileUpload(inputId, previewId, enableCompression = false) {
+            const input = document.getElementById(inputId);
+            const previewContainer = document.getElementById(previewId);
+            const previewImg = previewContainer ? previewContainer.querySelector('img') : null;
+
+            if (!input || !previewContainer) return;
+
+            input.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    showNotification('Please select an image file', 'error');
+                    this.value = '';
+                    return;
+                }
+
+                // Validate file size (smaller limit for president image)
+                const maxSize = enableCompression ? 2 * 1024 * 1024 : 5 * 1024 * 1024; // 2MB for president, 5MB for others
+                if (file.size > maxSize) {
+                    const maxSizeMB = maxSize / (1024 * 1024);
+                    showNotification(`Image size must be less than ${maxSizeMB}MB`, 'error');
+                    this.value = '';
+                    return;
+                }
+
+                // Read and display the image
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imgSrc = e.target.result;
+
+                    if (enableCompression) {
+                        // Compress image for president
+                        compressImage(imgSrc, 800, 800, function (compressedSrc) {
+                            if (previewImg) {
+                                previewImg.src = compressedSrc;
+                                previewContainer.style.display = 'block';
+                            }
+                        });
+                    } else {
+                        // Normal display for other images
+                        if (previewImg) {
+                            previewImg.src = imgSrc;
+                            previewContainer.style.display = 'block';
+                        }
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Simple image compression function
+        function compressImage(src, maxWidth, maxHeight, callback) {
+            const img = new Image();
+            img.onload = function () {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Calculate new dimensions
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = (maxWidth / width) * height;
+                    width = maxWidth;
+                }
+
+                if (height > maxHeight) {
+                    width = (maxHeight / height) * width;
+                    height = maxHeight;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                // Draw and compress
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Try to get compressed data (0.7 quality)
+                try {
+                    const compressedSrc = canvas.toDataURL('image/jpeg', 0.7);
+                    callback(compressedSrc);
+                } catch (e) {
+                    console.log('Compression failed, using original');
+                    callback(src);
+                }
+            };
+            img.src = src;
+        }
+
+        // Debug function for announcement form
+        function testAnnouncementForm() {
+            console.log('=== ANNOUNCEMENT FORM DEBUG ===');
+
+            const title = document.getElementById('announcementTitle');
+            const content = document.getElementById('announcementContent');
+            const priority = document.getElementById('announcementPriority');
+            const target = document.getElementById('announcementTarget');
+            const image = document.getElementById('announcementImage');
+            const imageData = getImageData('announcement');
+
+            console.log('Form Elements:', {
+                title: title,
+                content: content,
+                priority: priority,
+                target: target,
+                image: image
+            });
+
+            console.log('Form Values:', {
+                title: title ? title.value : 'NOT FOUND',
+                content: content ? content.value : 'NOT FOUND',
+                priority: priority ? priority.value : 'NOT FOUND',
+                target: target ? target.value : 'NOT FOUND',
+                image: image ? (image.files && image.files.length > 0 ? 'FILE SELECTED' : 'NO FILE') : 'NOT FOUND',
+                imageData: imageData ? 'IMAGE DATA PRESENT' : 'NO IMAGE DATA'
+            });
+
+            console.log('Form Validation:', {
+                titleValid: title && title.value.trim().length > 0,
+                contentValid: content && content.value.trim().length > 0,
+                allValid: title && title.value.trim().length > 0 && content && content.value.trim().length > 0
+            });
+
+            // Test localStorage
+            try {
+                const existing = JSON.parse(localStorage.getItem('superAdminAnnouncements') || '[]');
+                console.log('Existing announcements:', existing.length);
+            } catch (e) {
+                console.error('LocalStorage error:', e);
+            }
+
+            console.log('=== END DEBUG ===');
+        }

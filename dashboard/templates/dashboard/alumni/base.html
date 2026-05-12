@@ -1,0 +1,891 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>{% block title %}Negros Oriental State University Alumni{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=33">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --crimson: #A51C30;
+            --crimson-dark: #821626;
+            --crimson-light: #C41E3A;
+            --crimson-hover: #7E1424;
+            --black: #1A1A1A;
+            --dark-gray: #2D2D2D;
+            --light-gray: #F4F4F4;
+            --ivory: #FCFAF6;
+            --gold: #C4961A;
+            --lily-white: #FFFFFF;
+            --text-primary: #030303;
+            --text-secondary: #4A4A4A;
+            --text-muted: #6C6C6C;
+            --border-color: #E5E5E5;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --font-serif: 'Playfair Display', Georgia, serif;
+            --font-sans: 'Inter', -apple-system, sans-serif;
+            --alumni-navbar-height: 76px;
+            --alumni-shell-gutter: clamp(18px, 4vw, 40px);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <div class="logo">🎓</div>
+                <a href="{% url 'home' %}">
+                    <span>NORSU-BSC ALUMNI</span>
+                </a>
+            </div>
+
+            <button class="hamburger-menu" id="hamburgerBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="{% url 'alumni' %}">Home</a></li>
+                <li><a href="{% url 'alumni_about' %}">About</a></li>
+                <li><a href="{% url 'programs_alumni' %}">Colleges</a></li>
+                <li><a href="{% url 'events' %}">Events</a></li>
+                <li><a href="{% url 'achievements' %}">Topnotchers</a></li>
+            </ul>
+        </div>
+    </nav>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            padding-top: var(--alumni-navbar-height);
+            background-color: var(--ivory);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            width: 100%;
+            min-width: 320px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body.menu-open {
+            overflow: hidden;
+        }
+
+        .container {
+            width: min(1280px, 100%);
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 var(--alumni-shell-gutter);
+        }
+
+        img,
+        video,
+        iframe {
+            max-width: 100%;
+        }
+
+
+        /* Navbar Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 0;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        .logo {
+            background: var(--crimson);
+            width: 44px;
+            height: 44px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(165, 28, 48, 0.2);
+        }
+
+        .nav-brand a {
+            display: block;
+            text-decoration: none;
+            color: var(--black);
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: -0.03em;
+            font-family: var(--font-serif);
+            text-transform: uppercase;
+            min-width: 0;
+        }
+
+        .nav-brand span {
+            display: block;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 4px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .nav-menu li a {
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.88rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-menu > li > a {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .nav-menu > li > a::after {
+            content: '';
+            position: absolute;
+            left: 14px;
+            right: 14px;
+            bottom: 7px;
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--crimson), var(--crimson-light));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-menu > li > a:hover,
+        .nav-menu > li > a.active,
+        .dropdown:hover > a {
+            color: var(--crimson);
+            background: rgba(165, 28, 48, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .nav-menu > li > a:hover::after,
+        .nav-menu > li > a.active::after,
+        .dropdown:hover > a::after {
+            transform: scaleX(1);
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 280px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 10px;
+            display: none;
+            z-index: 1000;
+            list-style: none;
+            border: 1px solid var(--border-color);
+        }
+
+        .dropdown:hover>.dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            position: relative;
+        }
+
+        .dropdown-item a {
+            display: flex !important;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 12px 16px !important;
+            color: var(--text-muted) !important;
+            background: transparent !important;
+            font-size: 0.9rem !important;
+        }
+
+        .dropdown-item a:hover {
+            color: var(--crimson) !important;
+            background: rgba(165, 28, 48, 0.08) !important;
+        }
+
+        /* Nested Dropdown (Level 2) */
+        .submenu {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            background: white;
+            min-width: 280px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 10px;
+            display: none;
+            list-style: none;
+            border: 1px solid var(--border-color);
+        }
+
+        .dropdown-item:hover>.submenu {
+            display: block;
+        }
+
+        .dropdown-item i {
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .btn-join {
+            background: var(--crimson);
+            color: var(--lily-white);
+            padding: 12px 28px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .btn-join:hover {
+            background: var(--crimson-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(165, 28, 48, 0.3);
+        }
+
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: transparent;
+            border: 2px solid #1f1b1b;
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .hamburger-menu span {
+            width: 25px;
+            height: 3px;
+            background: #1f1b1b;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        .desktop-join-btn {
+            display: inline-block;
+        }
+
+        .mobile-join-btn {
+            display: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hamburger-menu {
+                display: flex;
+            }
+
+            .navbar {
+                padding: 10px 0;
+            }
+
+            .navbar .container {
+                gap: 12px;
+            }
+
+            .nav-brand {
+                gap: 12px;
+            }
+
+            .nav-brand a {
+                font-size: 1rem;
+                line-height: 1.15;
+            }
+
+            .nav-brand span {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .desktop-join-btn {
+                display: none;
+            }
+
+            .mobile-join-btn {
+                display: block;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: var(--alumni-navbar-height);
+                right: -100%;
+                width: min(320px, calc(100vw - 24px));
+                max-width: calc(100vw - 24px);
+                height: calc(100dvh - var(--alumni-navbar-height));
+                background: var(--black);
+                border-left: 2px solid var(--crimson);
+                flex-direction: column;
+                padding: 20px;
+                gap: 0;
+                transition: right 0.4s ease;
+                box-shadow: -5px 0 20px rgba(253, 251, 251, 0.3);
+                overflow-y: auto;
+            }
+
+            .nav-menu.active {
+                right: 0;
+            }
+
+            .nav-menu li {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .nav-menu li a {
+                display: block;
+                width: 100%;
+                padding: 15px;
+                text-align: left;
+                border-radius: 10px;
+                background: rgb(255 248 248);
+            }
+
+            .nav-menu li a:hover,
+            .nav-menu li a.active {
+                background: rgba(165, 28, 48, 0.14);
+                color: var(--crimson);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+
+            .nav-brand a {
+                font-size: 0.92rem;
+            }
+
+            .hamburger-menu {
+                padding: 7px;
+            }
+
+            .hamburger-menu span {
+                width: 22px;
+            }
+        }
+    </style>
+
+
+
+    <script>
+        const alumniNavbar = document.querySelector('.navbar');
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const navMenu = document.getElementById('navMenu');
+
+        function syncAlumniNavbarHeight() {
+            if (!alumniNavbar) return;
+            document.documentElement.style.setProperty('--alumni-navbar-height', `${Math.ceil(alumniNavbar.offsetHeight)}px`);
+        }
+
+        function setActiveAlumniNav() {
+            if (!alumniNavbar) return;
+
+            const normalizedPath = window.location.pathname.replace(/\/+$/, '') || '/';
+            const activate = (selector) => {
+                alumniNavbar.querySelectorAll(selector).forEach(link => {
+                    link.classList.add('active');
+                });
+            };
+
+            if (normalizedPath === '/alumni') {
+                activate('a[href="/alumni/"]');
+            }
+
+            if (normalizedPath === '/alumni/about') {
+                activate('a[href="/alumni/about/"]');
+            }
+
+            if (normalizedPath === '/alumni/programs' || normalizedPath === '/directory' || normalizedPath === '/alumni/directory') {
+                activate('a[href="/alumni/programs/"]');
+            }
+
+            if (normalizedPath === '/alumni/events') {
+                activate('a[href="/alumni/events/"]');
+            }
+
+            if (normalizedPath === '/alumni/achievements') {
+                activate('a[href="/alumni/achievements/"]');
+            }
+        }
+
+        syncAlumniNavbarHeight();
+        setActiveAlumniNav();
+        window.addEventListener('load', syncAlumniNavbarHeight);
+        window.addEventListener('resize', syncAlumniNavbarHeight);
+
+        hamburgerBtn.addEventListener('click', function () {
+            hamburgerBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+            document.body.classList.toggle('menu-open', navMenu.classList.contains('active'));
+        });
+
+        const navLinks = navMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function () {
+                hamburgerBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            });
+        });
+
+        document.addEventListener('click', function (event) {
+            const isClickInsideNav = navMenu.contains(event.target);
+            const isClickOnHamburger = hamburgerBtn.contains(event.target);
+
+            if (!isClickInsideNav && !isClickOnHamburger && navMenu.classList.contains('active')) {
+                hamburgerBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            }
+        });
+
+        window.addEventListener('resize', function () {
+            if (window.innerWidth > 768 && navMenu.classList.contains('active')) {
+                hamburgerBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            }
+        });
+    </script>
+
+    {% block content %}
+    {% endblock %}
+    <!-- Professional Footer -->
+    <footer class="professional-footer">
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-grid">
+                    <!-- Contact Us Section -->
+                    <div class="footer-column">
+                        <h3 class="footer-heading">Contact Us</h3>
+                        <div class="footer-logo-section">
+                            <div class="footer-brand">
+                                <div class="footer-logo-icon">🎓</div>
+                                <span class="footer-brand-text">NORSU-BSC ALUMNI</span>
+                            </div>
+                        </div>
+                        <div class="footer-contact-info">
+                            <p class="footer-contact-item">
+                                <span class="contact-icon">📍</span>
+                                Bayawan-Santa Catalina Campus, Negros Oriental, Philippines 6221
+                            </p>
+                            <p class="footer-contact-item">
+                                <span class="contact-icon">📞</span>
+                                (035) 123-4567, 123-4568, 123-4569
+                            </p>
+                            <p class="footer-contact-item">
+                                <span class="contact-icon">📧</span>
+                                alumni@norsu.edu.ph
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links Section -->
+                    <div class="footer-column">
+                        <h3 class="footer-heading">Quick Links</h3>
+                        <ul class="footer-links">
+                            <li><a href="{% url 'about' %}">About NORSU-BSC</a></li>
+                            <li><a href="{% url 'directory' %}">Alumni Directory</a></li>
+                            <li><a href="{% url 'events' %}">Events & Activities</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Access Section -->
+                    <div class="footer-column">
+                        <h3 class="footer-heading">Access</h3>
+                        <ul class="footer-links">
+                            <li><a href="{% url 'directory' %}">Alumni Portal</a></li>
+                            <li><a href="{% url 'achievements' %}">Topnotchers</a></li>
+                            <li><a href="{% url 'contact' %}">Contact & Feedback</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Policy Section -->
+                    <div class="footer-column">
+                        <h3 class="footer-heading">Policy</h3>
+                        <ul class="footer-links">
+                            <li><a href="#">Privacy Policies</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Data Privacy</a></li>
+                            <li><a href="{% url 'contact' %}">Contact Form</a></li>
+                        </ul>
+                        <div class="footer-social-icons">
+                            <a href="https://facebook.com" target="_blank" class="social-icon" title="Facebook">📘</a>
+                            <a href="https://youtube.com" target="_blank" class="social-icon" title="YouTube">📺</a>
+                            <a href="https://instagram.com" target="_blank" class="social-icon" title="Instagram">📷</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll to Top Button -->
+        <button class="scroll-to-top" id="scrollTopBtn" title="Back to top">
+            <span>↑</span>
+        </button>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2026 Negros Oriental State University - Bayawan-Santa Catalina Campus. All rights reserved.
+                </p>
+                <p>&copy; Copyright © 2026 All Rights Reserved</p>
+            </div>
+
+        </div>
+    </footer>
+    <style>
+        /* Professional Footer Styles - Crimson & Black */
+        .professional-footer {
+            background: var(--black);
+            color: rgba(255, 255, 255, 0.85);
+            position: relative;
+            margin-top: 0;
+            border-top: 4px solid var(--crimson);
+        }
+
+        .footer-top {
+            padding: 5rem 0 3rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-grid > .footer-column:last-child {
+            display: none;
+        }
+
+        .footer-heading {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--lily-white);
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            font-family: var(--font-sans);
+        }
+
+        .footer-heading::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--crimson);
+        }
+
+        .footer-logo-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--crimson);
+            border: none;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-brand-text {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--lily-white);
+            letter-spacing: -0.02em;
+            font-family: var(--font-serif);
+            text-transform: uppercase;
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.65);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            display: block;
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--crimson-light);
+            padding-left: 5px;
+        }
+
+        .footer-social-icons {
+            display: flex;
+            gap: 1.2rem;
+            margin-top: 2rem;
+        }
+
+        .social-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .social-icon:hover {
+            background: var(--crimson);
+            border-color: var(--crimson);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .scroll-to-top {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 56px;
+            height: 56px;
+            background: var(--crimson);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            z-index: 999;
+            box-shadow: 0 10px 30px rgba(165, 28, 48, 0.3);
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top:hover {
+            background: var(--crimson-dark);
+            transform: translateY(-5px);
+        }
+
+        .footer-bottom {
+            padding: 2rem 0;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .footer-bottom p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.02em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+
+            .footer-top {
+                padding: 4rem 0 2rem;
+            }
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top:hover {
+            background: var(--crimson);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(165, 28, 48, 0.4);
+        }
+
+        .footer-bottom {
+            padding: 2rem 0;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-bottom p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+
+            .footer-top {
+                padding: 4rem 0 2rem;
+            }
+
+            .scroll-to-top {
+                bottom: 30px;
+                right: 30px;
+                width: 50px;
+                height: 50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .footer-top {
+                padding: 3.5rem 0 2rem;
+            }
+
+            .footer-brand-text {
+                font-size: 1rem;
+            }
+
+            .footer-contact-item,
+            .footer-links a,
+            .footer-bottom p {
+                font-size: 0.88rem;
+            }
+
+            .scroll-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 46px;
+                height: 46px;
+            }
+        }
+    </style>
+
+    <script>
+        // Scroll to top functionality
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', function () {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+
+
+
+</body>
+
+</html>
