@@ -602,6 +602,7 @@
         display: grid;
         grid-template-columns: minmax(320px, 1.05fr) minmax(300px, 0.95fr);
         align-items: center;
+        box-sizing: border-box !important;
         gap: 50px;
     }
 
@@ -3106,6 +3107,13 @@
             padding: 80px 30px !important;
         }
 
+        .main-section::before {
+            display: none !important;
+            content: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+
         .uv-news-section,
         .colleges-section,
         .alumni,
@@ -3186,14 +3194,20 @@
         .main-section {
             padding: 50px 20px !important;
             grid-template-columns: 1fr !important;
+            box-sizing: border-box !important;
         }
 
         .main-section::before {
             display: none !important;
+            content: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
         }
 
         .right-image {
-            order: 2 !important;
+            padding: 0px !important;
+            box-sizing: border-box !important;
+            margin: 0px;
         }
 
         .uv-news-section,
@@ -3411,7 +3425,7 @@
 
     <div class="right-image">
         <iframe
-            style="width: 100%; aspect-ratio: 16/9; border-radius: 22px; box-shadow: 0 7px 22px rgba(0, 0, 0, 0.22);"
+            style="display: block; margin: 0 auto; width: 100%; aspect-ratio: 16/9; border-radius: 22px; box-shadow: 0 7px 22px rgba(0, 0, 0, 0.22);"
             src="https://www.youtube.com/embed/97PRYCQ6LFM?si=Tvvb5_LswyQR1EQS" title="YouTube video player"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

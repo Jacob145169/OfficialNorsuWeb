@@ -220,6 +220,7 @@ body {
     max-width: 1400px;
     margin: 0 auto;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .left-content {
@@ -988,7 +989,9 @@ body {
     }
     
     .right-image {
-        order: 2;
+        padding: 0px !important;
+        box-sizing: border-box !important;
+        margin: 0px;
     }
     
     /* Colleges Mobile */
