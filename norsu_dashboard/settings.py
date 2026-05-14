@@ -38,6 +38,10 @@ ALLOWED_HOSTS = [
     '.ngrok-free.dev',   # Allow all ngrok-free subdomains
     '.ngrok.io',         # Allow legacy ngrok subdomains
     '.ngrok.app',        # Allow ngrok.app subdomains
+
+    'www.norsubsc.site',
+    'norsubsc.site',
+    'NorsuBSC.pythonanywhere.com',
 ]
 
 # Allow ngrok domains to send CSRF-protected form requests
