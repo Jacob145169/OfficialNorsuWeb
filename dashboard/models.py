@@ -547,6 +547,13 @@ class Program(models.Model):
     description = models.TextField()
     level = models.CharField(max_length=50, choices=LEVEL_CHOICES, default='undergraduate')
     college = models.CharField(max_length=50)
+    college_ref = models.ForeignKey(
+        College,
+        on_delete=models.CASCADE,
+        related_name='programs',
+        blank=True,
+        null=True,
+    )
     duration = models.CharField(max_length=100, blank=True)
     objectives = models.TextField(blank=True, null=True)  # kept for backward compat
     dresscode_schedule = models.TextField(blank=True, null=True)
@@ -560,10 +567,50 @@ class Program(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['title']
 
     def __str__(self):
         return self.title
+
+    def _sync_college_fields(self):
+        if self.college_ref_id:
+            self.college = (self.college_ref.abbreviation or '').strip().lower()
+            return
+
+        college_key = (self.college or '').strip().lower()
+        if not college_key:
+            return
+
+        college_obj = College.objects.filter(abbreviation__iexact=college_key).first()
+        if college_obj:
+            self.college_ref = college_obj
+            self.college = college_obj.abbreviation.lower()
+
+    @staticmethod
+    def _sync_program_counts(*college_ids):
+        valid_ids = {college_id for college_id in college_ids if college_id}
+        for college_id in valid_ids:
+            College.objects.filter(pk=college_id).update(
+                programs_offered=Program.objects.filter(college_ref_id=college_id).count()
+            )
+
+    def save(self, *args, **kwargs):
+        previous_college_ref_id = None
+        if self.pk:
+            previous_college_ref_id = (
+                Program.objects.filter(pk=self.pk)
+                .values_list('college_ref_id', flat=True)
+                .first()
+            )
+
+        self._sync_college_fields()
+        super().save(*args, **kwargs)
+        self._sync_program_counts(previous_college_ref_id, self.college_ref_id)
+
+    def delete(self, *args, **kwargs):
+        college_ref_id = self.college_ref_id
+        super().delete(*args, **kwargs)
+        self._sync_program_counts(college_ref_id)
 
 
 class InquiryReply(models.Model):
@@ -610,4 +657,3 @@ class NorsuHistory(models.Model):
 
     def __str__(self):
         return self.title
-

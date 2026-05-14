@@ -1621,9 +1621,9 @@ def college_list_create(request):
         return JsonResponse({'success': True, 'colleges': colleges_data})
     
     elif request.method == 'POST':
-        # POST requests require authentication
-        if not request.user.is_authenticated:
-            return JsonResponse({'success': False, 'error': 'Authentication required'}, status=401)
+        guard = _superadmin_json_guard(request)
+        if guard:
+            return guard
             
         try:
             college_id = request.POST.get('id')
@@ -1645,9 +1645,12 @@ def college_list_create(request):
             goals = _json.loads(goals_json) if goals_json else []
             
             image = request.FILES.get('image')
+            normalized_abbreviation = _normalize_college_key(abbreviation)
+            previous_abbreviation = ''
 
             if college_id:
                 college = College.objects.get(id=college_id)
+                previous_abbreviation = _normalize_college_key(college.abbreviation)
                 college.name = name
                 college.abbreviation = abbreviation
                 college.dean = dean
@@ -1681,6 +1684,25 @@ def college_list_create(request):
                     goals=goals,
                     image=image
                 )
+
+            if normalized_abbreviation:
+                from django.contrib.auth.models import User
+
+                if previous_abbreviation and previous_abbreviation != normalized_abbreviation:
+                    AdminProfile.objects.filter(college__iexact=previous_abbreviation).update(college=normalized_abbreviation)
+                    Program.objects.filter(
+                        Q(college_ref=college) | Q(college__iexact=previous_abbreviation)
+                    ).update(college=normalized_abbreviation, college_ref=college)
+
+                profile = AdminProfile.objects.filter(college__iexact=normalized_abbreviation).select_related('user').first()
+                if not profile:
+                    user = User.objects.create_user(
+                        username=_generate_available_username(f'{normalized_abbreviation}_admin'),
+                        is_staff=True,
+                    )
+                    user.set_unusable_password()
+                    user.save(update_fields=['password'])
+                    AdminProfile.objects.create(user=user, college=normalized_abbreviation)
             
             return JsonResponse({
                 'success': True, 
@@ -2196,33 +2218,19 @@ def program_list_create(request):
     POST: Creates a new program and returns the created program data.
     """
     if request.method == 'GET':
-        college = request.GET.get('college')
-        if college:
-            programs = Program.objects.filter(college__iexact=college)
-        else:
-            programs = Program.objects.all()
-        programs_data = []
-        
-        for program in programs:
-            program_dict = {
-                'id': program.id,
-                'title': program.title,
-                'description': program.description,
-                'level': program.level,
-                'college': program.college,
-                'duration': program.duration,
-                'objectives': program.objectives,
-                'dresscode_schedule': program.dresscode_schedule,
-                'dresscode_images': program.dresscode_images or [],
-                'vision': program.vision,
-                'mission': program.mission,
-                'image': program.image.url if program.image else '',
-                'image2': program.image2.url if program.image2 else '',
-                'status': program.status,
-                'created_at': program.created_at.isoformat(),
-                'updated_at': program.updated_at.isoformat(),
-            }
-            programs_data.append(program_dict)
+        requested_college = request.GET.get('college')
+        college_scope = _get_college_admin_scope(request)
+        programs = Program.objects.select_related('college_ref').all()
+
+        if college_scope:
+            programs = _filter_program_queryset_by_college(programs, college_scope)
+        elif requested_college:
+            programs = _filter_program_queryset_by_college(programs, requested_college)
+
+        if not request.user.is_authenticated:
+            programs = programs.filter(status='published')
+
+        programs_data = [_serialize_program(program) for program in programs]
         
         return JsonResponse({
             'success': True,
@@ -2230,18 +2238,24 @@ def program_list_create(request):
         })
     
     elif request.method == 'POST':
+        guard, college_scope = _program_management_guard(request)
+        if guard:
+            return guard
+
         try:
             # Extract data from POST request
             title = request.POST.get('title')
             description = request.POST.get('description', '')
             level = request.POST.get('level', 'undergraduate')
-            college = request.POST.get('college').lower() if request.POST.get('college') else None
+            requested_college = request.POST.get('college')
             duration = request.POST.get('duration', '')
             objectives = request.POST.get('objectives', '')
             dresscode_schedule = request.POST.get('dresscode_schedule', '')
             vision = request.POST.get('vision', '')
             mission = request.POST.get('mission', '')
             status = request.POST.get('status', 'published')
+            effective_college = college_scope or requested_college
+            college_key, college_obj = _resolve_college_record(effective_college)
             
             # Validate required fields
             if not title:
@@ -2250,7 +2264,7 @@ def program_list_create(request):
                     'error': 'Title is required'
                 }, status=400)
             
-            if not college:
+            if not college_key or not college_obj:
                 return JsonResponse({
                     'success': False,
                     'error': 'College is required'
@@ -2280,7 +2294,8 @@ def program_list_create(request):
                 title=title,
                 description=description,
                 level=level,
-                college=college,
+                college=college_key,
+                college_ref=college_obj,
                 duration=duration,
                 objectives=objectives,
                 dresscode_schedule=dresscode_schedule,
@@ -2296,24 +2311,7 @@ def program_list_create(request):
             return JsonResponse({
                 'success': True,
                 'message': 'Program created successfully',
-                'program': {
-                    'id': program.id,
-                    'title': program.title,
-                    'description': program.description,
-                    'level': program.level,
-                    'college': program.college,
-                    'duration': program.duration,
-                    'objectives': program.objectives,
-                    'dresscode_schedule': program.dresscode_schedule,
-                    'dresscode_images': program.dresscode_images or [],
-                    'vision': program.vision,
-                    'mission': program.mission,
-                    'image': program.image.url if program.image else '',
-                    'image2': program.image2.url if program.image2 else '',
-                    'status': program.status,
-                    'created_at': program.created_at.isoformat(),
-                    'updated_at': program.updated_at.isoformat(),
-                }
+                'program': _serialize_program(program)
             }, status=201)
         except Exception as e:
             return JsonResponse({
@@ -2335,8 +2333,23 @@ def program_detail(request, pk):
     PUT: Updates the program and returns updated data.
     DELETE: Deletes the program and returns success message.
     """
+    programs = Program.objects.select_related('college_ref').all()
+    college_scope = _get_college_admin_scope(request)
+
+    if request.method == 'GET':
+        if college_scope:
+            programs = _filter_program_queryset_by_college(programs, college_scope)
+        elif not request.user.is_authenticated:
+            programs = programs.filter(status='published')
+    else:
+        guard, college_scope = _program_management_guard(request)
+        if guard:
+            return guard
+        if college_scope:
+            programs = _filter_program_queryset_by_college(programs, college_scope)
+
     try:
-        program = Program.objects.get(pk=pk)
+        program = programs.get(pk=pk)
     except Program.DoesNotExist:
         return JsonResponse({
             'success': False,
@@ -2344,29 +2357,9 @@ def program_detail(request, pk):
         }, status=404)
     
     if request.method == 'GET':
-        # Retrieve program details
-        program_dict = {
-            'id': program.id,
-            'title': program.title,
-            'description': program.description,
-            'level': program.level,
-            'college': program.college,
-            'duration': program.duration,
-            'objectives': program.objectives,
-            'dresscode_schedule': program.dresscode_schedule,
-            'dresscode_images': program.dresscode_images or [],
-            'vision': program.vision,
-            'mission': program.mission,
-            'image': program.image.url if program.image else '',
-            'image2': program.image2.url if program.image2 else '',
-            'status': program.status,
-            'created_at': program.created_at.isoformat(),
-            'updated_at': program.updated_at.isoformat(),
-        }
-        
         return JsonResponse({
             'success': True,
-            'program': program_dict
+            'program': _serialize_program(program)
         })
     
     elif request.method == 'PUT' or request.method == 'POST':
@@ -2376,13 +2369,15 @@ def program_detail(request, pk):
             title = request.POST.get('title')
             description = request.POST.get('description')
             level = request.POST.get('level')
-            college = request.POST.get('college')
+            requested_college = request.POST.get('college')
             duration = request.POST.get('duration')
             objectives = request.POST.get('objectives')
             dresscode_schedule = request.POST.get('dresscode_schedule')
             vision = request.POST.get('vision')
             mission = request.POST.get('mission')
             status = request.POST.get('status')
+            effective_college = college_scope or requested_college or program.college
+            college_key, college_obj = _resolve_college_record(effective_college)
             
             # Update fields if provided
             if title:
@@ -2391,8 +2386,9 @@ def program_detail(request, pk):
                 program.description = description
             if level:
                 program.level = level
-            if college:
-                program.college = college
+            if college_key and college_obj:
+                program.college = college_key
+                program.college_ref = college_obj
             if duration is not None:
                 program.duration = duration
             if objectives is not None:
@@ -2446,24 +2442,7 @@ def program_detail(request, pk):
             return JsonResponse({
                 'success': True,
                 'message': 'Program updated successfully',
-                'program': {
-                    'id': program.id,
-                    'title': program.title,
-                    'description': program.description,
-                    'level': program.level,
-                    'college': program.college,
-                    'duration': program.duration,
-                    'objectives': program.objectives,
-                    'dresscode_schedule': program.dresscode_schedule,
-                    'dresscode_images': program.dresscode_images or [],
-                    'vision': program.vision,
-                    'mission': program.mission,
-                    'image': program.image.url if program.image else '',
-                    'image2': program.image2.url if program.image2 else '',
-                    'status': program.status,
-                    'created_at': program.created_at.isoformat(),
-                    'updated_at': program.updated_at.isoformat(),
-                }
+                'program': _serialize_program(program)
             })
         except Exception as e:
             return JsonResponse({
@@ -2614,6 +2593,90 @@ def _get_admin_profile(user):
         return AdminProfile.objects.select_related('user').get(user=user)
     except AdminProfile.DoesNotExist:
         return None
+
+
+def _get_college_admin_scope(request):
+    if not request.user.is_authenticated or request.user.is_superuser:
+        return None
+
+    profile = _get_admin_profile(request.user)
+    if not profile:
+        return None
+
+    return _normalize_college_key(profile.college)
+
+
+def _program_management_guard(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'error': 'Authentication required'}, status=401), None
+
+    if request.user.is_superuser:
+        return None, None
+
+    college_scope = _get_college_admin_scope(request)
+    if not college_scope:
+        return JsonResponse({'success': False, 'error': 'Admin access required'}, status=403), None
+
+    return None, college_scope
+
+
+def _resolve_college_record(college_value):
+    college_key = _normalize_college_key(college_value)
+    if not college_key:
+        return '', None
+
+    college_obj = College.objects.filter(abbreviation__iexact=college_key).first()
+    return college_key, college_obj
+
+
+def _filter_program_queryset_by_college(queryset, college_key):
+    normalized_key = _normalize_college_key(college_key)
+    if not normalized_key:
+        return queryset
+
+    return queryset.filter(
+        Q(college_ref__abbreviation__iexact=normalized_key) |
+        Q(college__iexact=normalized_key)
+    )
+
+
+def _serialize_program(program):
+    college_obj = getattr(program, 'college_ref', None)
+    college_key = _normalize_college_key(college_obj.abbreviation if college_obj else program.college)
+    college_name = college_obj.name if college_obj else ''
+
+    if college_key and not college_name:
+        college_name = (
+            College.objects.filter(abbreviation__iexact=college_key)
+            .values_list('name', flat=True)
+            .first()
+            or college_key.upper()
+        )
+
+    return {
+        'id': program.id,
+        'title': program.title,
+        'description': program.description,
+        'level': program.level,
+        'college': college_key,
+        'college_id': college_obj.id if college_obj else None,
+        'college_name': college_name,
+        'duration': program.duration,
+        'objectives': program.objectives,
+        'dresscode_schedule': program.dresscode_schedule,
+        'dresscode_images': program.dresscode_images or [],
+        'vision': program.vision,
+        'mission': program.mission,
+        'image': program.image.url if program.image else '',
+        'image2': program.image2.url if program.image2 else '',
+        'status': program.status,
+        'created_at': program.created_at.isoformat(),
+        'updated_at': program.updated_at.isoformat(),
+    }
+
+
+def _public_program_queryset(queryset):
+    return queryset.filter(status__in=['published', 'active'])
 
 
 @csrf_exempt

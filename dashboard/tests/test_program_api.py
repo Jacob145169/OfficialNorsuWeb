@@ -13,7 +13,7 @@ This test verifies that the Program API endpoints work correctly:
 
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from dashboard.models import Program
+from dashboard.models import College, Program
 import json
 
 
@@ -26,11 +26,21 @@ class ProgramAPITest(TestCase):
     def setUp(self):
         """Set up test client and test data"""
         self.client = Client()
+        self.ccje = College.objects.create(
+            name='College of Criminal Justice Education',
+            abbreviation='CCJE',
+            dean='CCJE Dean',
+        )
         
         # Create a test user for authentication if needed
         self.user = User.objects.create_user(
             username='testadmin',
             password='testpass123'
+        )
+        self.superadmin = User.objects.create_superuser(
+            username='superadmin',
+            email='superadmin@example.com',
+            password='SuperAdmin123!',
         )
         
         # Create a test program for update/delete operations
@@ -39,6 +49,7 @@ class ProgramAPITest(TestCase):
             description='A comprehensive program in criminal justice',
             level='undergraduate',
             college='ccje',
+            college_ref=self.ccje,
             duration='4 years',
             status='published'
         )
@@ -82,6 +93,7 @@ class ProgramAPITest(TestCase):
         }
         
         initial_count = Program.objects.count()
+        self.client.force_login(self.superadmin)
         response = self.client.post('/api/programs/', data=program_data)
         
         # Should return 201 Created
@@ -106,6 +118,7 @@ class ProgramAPITest(TestCase):
         new_program = Program.objects.latest('created_at')
         self.assertEqual(new_program.title, 'Bachelor of Science in Forensic Science')
         self.assertEqual(new_program.college, 'ccje')
+        self.assertEqual(new_program.college_ref, self.ccje)
         self.assertEqual(new_program.duration, '4 years')
     
     def test_create_program_missing_required_fields(self):
@@ -120,6 +133,7 @@ class ProgramAPITest(TestCase):
             'duration': '4 years'
         }
         
+        self.client.force_login(self.superadmin)
         response = self.client.post('/api/programs/', data=program_data)
         
         # Should return 400 Bad Request
@@ -129,6 +143,25 @@ class ProgramAPITest(TestCase):
         data = json.loads(response.content)
         self.assertFalse(data.get('success'), "Success should be False")
         self.assertIn('error', data, "Response should contain error message")
+
+    def test_public_list_programs_only_returns_published_records(self):
+        Program.objects.create(
+            title='Hidden Draft Program',
+            description='Not for public viewing',
+            level='undergraduate',
+            college='ccje',
+            college_ref=self.ccje,
+            duration='4 years',
+            status='draft',
+        )
+
+        response = self.client.get('/api/programs/')
+
+        self.assertEqual(response.status_code, 200)
+        payload = json.loads(response.content)
+        titles = [program['title'] for program in payload['programs']]
+        self.assertIn('Bachelor of Science in Criminology', titles)
+        self.assertNotIn('Hidden Draft Program', titles)
     
     def test_retrieve_program_endpoint(self):
         """
@@ -162,6 +195,7 @@ class ProgramAPITest(TestCase):
             'duration': '5 years'
         }
         
+        self.client.force_login(self.superadmin)
         response = self.client.post(f'/api/programs/{program_id}/', data=update_data)
         
         # Should return 200 OK
@@ -189,6 +223,7 @@ class ProgramAPITest(TestCase):
         initial_count = Program.objects.count()
         
         # Use DELETE method via generic() since client.delete() doesn't support it directly
+        self.client.force_login(self.superadmin)
         response = self.client.generic('DELETE', f'/api/programs/{program_id}/')
         
         # Should return 200 OK

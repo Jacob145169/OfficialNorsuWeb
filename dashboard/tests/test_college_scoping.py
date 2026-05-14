@@ -105,6 +105,52 @@ class CollegeScopingTests(TestCase):
         self.assertEqual(faculty_response.status_code, 200)
         self.assertEqual([f['name'] for f in faculty_response.json()['faculty']], ['CAS Faculty'])
 
+    def test_college_admin_program_create_is_forced_to_assigned_college(self):
+        self.client.force_login(self.cas_admin)
+
+        response = self.client.post('/api/programs/', {
+            'title': 'Spoofed Program',
+            'description': 'Should stay under CAS',
+            'college': 'cit',
+            'duration': '4 years',
+            'status': 'published',
+        })
+
+        self.assertEqual(response.status_code, 201)
+        created_program = Program.objects.get(title='Spoofed Program')
+        self.assertEqual(created_program.college, 'cas')
+        self.assertEqual(created_program.college_ref, self.cas)
+
+    def test_college_admin_program_list_is_scoped_to_assigned_college(self):
+        Program.objects.create(title='CAS Program', description='Own', college='cas', college_ref=self.cas)
+        Program.objects.create(title='CIT Program', description='Other', college='cit', college_ref=self.cit)
+        self.client.force_login(self.cas_admin)
+
+        response = self.client.get('/api/programs/?college=cit')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([program['title'] for program in response.json()['programs']], ['CAS Program'])
+
+    def test_college_admin_cannot_update_or_delete_other_college_program(self):
+        other_program = Program.objects.create(
+            title='CIT Program',
+            description='Other',
+            college='cit',
+            college_ref=self.cit,
+            duration='4 years',
+        )
+        self.client.force_login(self.cas_admin)
+
+        update_response = self.client.post(f'/api/programs/{other_program.id}/', {
+            'title': 'Hijacked Program',
+        })
+        delete_response = self.client.generic('DELETE', f'/api/programs/{other_program.id}/')
+
+        self.assertEqual(update_response.status_code, 404)
+        self.assertEqual(delete_response.status_code, 404)
+        other_program.refresh_from_db()
+        self.assertEqual(other_program.title, 'CIT Program')
+
     def test_college_admin_alumni_list_is_scoped_by_college_field(self):
         Alumni.objects.create(name='CAS Alum', batch='2025', course='CAS Course', college='cas')
         Alumni.objects.create(name='CIT Alum', batch='2025', course='CIT Course', college='cit')

@@ -417,7 +417,7 @@
           <div class="prog-body">
             <div class="prog-name">${p.title}</div>
             <div class="prog-desc">${p.description || 'Program details will be published soon.'}</div>
-            <a href="javascript:void(0)" class="prog-link" onclick="navigateToProgram('${p.title}')">
+            <a href="javascript:void(0)" class="prog-link" onclick="navigateToProgram('${p.id}')">
               Learn More <i class="fas fa-arrow-right"></i>
             </a>
           </div>
@@ -427,8 +427,8 @@
     } catch (e) { console.error('Programs error:', e); }
   }
 
-  function navigateToProgram(title) {
-    window.location.href = '/programs/';
+  function navigateToProgram(programId) {
+    window.location.href = `/programs/?program=${programId}#program-${programId}`;
   }
 
   /* ─── FACULTY / ORG CHART ─── */
