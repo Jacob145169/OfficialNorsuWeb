@@ -247,12 +247,25 @@
         padding: 3rem;
         border-top: 8px solid var(--h-crimson);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        min-height: 240px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
     }
 
     .editorial-block[data-type="mission"] {
         background: var(--h-black);
         color: var(--h-white);
         border-top: 8px solid var(--h-crimson);
+    }
+
+    .editorial-block--has-image {
+        overflow: hidden;
+    }
+
+    .editorial-block--has-image .editorial-title,
+    .editorial-block--has-image .editorial-content {
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
     .editorial-title {

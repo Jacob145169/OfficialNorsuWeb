@@ -736,6 +736,60 @@
                         </div>
                     </div>
 
+                    <!-- NORSU Information Section -->
+                    <div class="content-card" style="margin-bottom: 24px;">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-landmark" style="margin-right: 8px;"></i>NORSU Information
+                            </h2>
+                            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                <span
+                                    style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #eef6ff; border: 1px solid #cfe3ff; border-radius: 999px; font-size: 13px; font-weight: 700; color: #0f3d75;">
+                                    <i class="fas fa-database"></i>
+                                    <span id="totalNORSUInfo">0</span> record(s)
+                                </span>
+                                <button class="btn btn-success" onclick="createNORSUInfo()">
+                                    <i class="fas fa-plus"></i> Create
+                                </button>
+                                <button class="btn btn-info" onclick="editSelectedNORSUInfo()">
+                                    <i class="fas fa-edit"></i> Edit Latest
+                                </button>
+                                <button class="btn btn-danger" onclick="deleteSelectedNORSUInfo()">
+                                    <i class="fas fa-trash"></i> Delete Latest
+                                </button>
+                                <button class="btn btn-secondary" onclick="loadNORSUInfo()">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p style="margin: 0 0 16px 0; color: #4b5563; font-size: 14px;">
+                                Manage the public Mission and Vision text plus the two editable images used on the home page and About page.
+                            </p>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th style="min-width: 180px;">General Mandate</th>
+                                            <th style="min-width: 180px;">Vision</th>
+                                            <th style="min-width: 120px;">Vision Image</th>
+                                            <th style="min-width: 180px;">Mission</th>
+                                            <th style="min-width: 120px;">Mission Image</th>
+                                            <th style="min-width: 180px;">Strategic Goals</th>
+                                            <th style="min-width: 180px;">Core Values</th>
+                                            <th style="min-width: 180px;">Quality Policy</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="norsuInfoTable">
+                                        <tr>
+                                            <td colspan="8" style="text-align: center;">Loading NORSU information...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- College List Section -->
                     <div class="content-card" style="margin-bottom: 24px;">
                         <div class="card-header">
@@ -2790,6 +2844,51 @@
                     <textarea id="infoMission" name="infoMission" style="display:none;"></textarea>
                 </div>
 
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="infoVisionImage"
+                            style="display: block; margin-bottom: 8px; font-weight: 600; color: #000000;">
+                            <i class="fas fa-image" style="margin-right: 5px; color: #0078d4;"></i>Vision Image
+                        </label>
+                        <input type="file" id="infoVisionImage" name="infoVisionImage" accept="image/*"
+                            onchange="previewNORSUInfoImage(event, 'vision')"
+                            style="display: block; width: 100%; padding: 10px; border: 2px dashed #d0d7de; border-radius: 8px; background: #f8fbff;">
+                        <input type="hidden" id="infoVisionImageRemove" value="0">
+                        <p style="margin: 8px 0 0 0; font-size: 12px; color: #6b7280;">Shown as the dynamic background for the Vision panel on the public About page.</p>
+                        <div id="infoVisionImagePreview"
+                            style="margin-top: 12px; display: none; padding: 12px; border: 1px solid #d0d7de; border-radius: 10px; background: #f8fafc;">
+                            <img id="infoVisionPreviewImg" src="" alt="Vision preview"
+                                style="width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; display: block;">
+                            <button type="button" onclick="removeNORSUInfoImage('vision')"
+                                style="margin-top: 10px; padding: 8px 14px; background: #dc3545; color: #ffffff; border: none; border-radius: 6px; cursor: pointer;">
+                                <i class="fas fa-trash" style="margin-right: 5px;"></i>Remove Image
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="infoMissionImage"
+                            style="display: block; margin-bottom: 8px; font-weight: 600; color: #000000;">
+                            <i class="fas fa-image" style="margin-right: 5px; color: #0078d4;"></i>Mission Image
+                        </label>
+                        <input type="file" id="infoMissionImage" name="infoMissionImage" accept="image/*"
+                            onchange="previewNORSUInfoImage(event, 'mission')"
+                            style="display: block; width: 100%; padding: 10px; border: 2px dashed #d0d7de; border-radius: 8px; background: #f8fbff;">
+                        <input type="hidden" id="infoMissionImageRemove" value="0">
+                        <p style="margin: 8px 0 0 0; font-size: 12px; color: #6b7280;">Shown as the dynamic background for the Mission panel on the public About page.</p>
+                        <div id="infoMissionImagePreview"
+                            style="margin-top: 12px; display: none; padding: 12px; border: 1px solid #d0d7de; border-radius: 10px; background: #f8fafc;">
+                            <img id="infoMissionPreviewImg" src="" alt="Mission preview"
+                                style="width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; display: block;">
+                            <button type="button" onclick="removeNORSUInfoImage('mission')"
+                                style="margin-top: 10px; padding: 8px 14px; background: #dc3545; color: #ffffff; border: none; border-radius: 6px; cursor: pointer;">
+                                <i class="fas fa-trash" style="margin-right: 5px;"></i>Remove Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label for="infoStrategicGoals"
                         style="display: block; margin-bottom: 8px; font-weight: 600; color: #000000;">
@@ -3814,6 +3913,7 @@
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function () {
             loadDashboardData();
+            loadNORSUInfo();
             loadColleges();
             loadPresidentInfo();
             loadHistoryInfo();
@@ -7034,6 +7134,85 @@
             }
         }
 
+        function getNORSUInfoImageConfig(kind) {
+            return {
+                input: document.getElementById(`info${kind.charAt(0).toUpperCase() + kind.slice(1)}Image`),
+                preview: document.getElementById(`info${kind.charAt(0).toUpperCase() + kind.slice(1)}ImagePreview`),
+                image: document.getElementById(`info${kind.charAt(0).toUpperCase() + kind.slice(1)}PreviewImg`),
+                removeField: document.getElementById(`info${kind.charAt(0).toUpperCase() + kind.slice(1)}ImageRemove`)
+            };
+        }
+
+        function setNORSUInfoImagePreview(kind, src) {
+            const config = getNORSUInfoImageConfig(kind);
+            if (!config.preview || !config.image) return;
+
+            if (src) {
+                config.image.src = src;
+                config.preview.style.display = 'block';
+            } else {
+                config.image.src = '';
+                config.preview.style.display = 'none';
+            }
+        }
+
+        function clearNORSUInfoImageFields() {
+            ['vision', 'mission'].forEach(kind => {
+                const config = getNORSUInfoImageConfig(kind);
+                if (config.input) {
+                    config.input.value = '';
+                }
+                if (config.removeField) {
+                    config.removeField.value = '0';
+                }
+                setNORSUInfoImagePreview(kind, '');
+            });
+        }
+
+        function previewNORSUInfoImage(event, kind) {
+            const file = event?.target?.files?.[0];
+            const config = getNORSUInfoImageConfig(kind);
+            if (!file || !config.input) {
+                setNORSUInfoImagePreview(kind, '');
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                showNotification('Please select a valid image file.', 'warning');
+                config.input.value = '';
+                setNORSUInfoImagePreview(kind, '');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showNotification('Image size must be 5MB or smaller.', 'warning');
+                config.input.value = '';
+                setNORSUInfoImagePreview(kind, '');
+                return;
+            }
+
+            if (config.removeField) {
+                config.removeField.value = '0';
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                setNORSUInfoImagePreview(kind, e.target?.result || '');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeNORSUInfoImage(kind) {
+            const config = getNORSUInfoImageConfig(kind);
+            if (config.input) {
+                config.input.value = '';
+            }
+            if (config.removeField) {
+                config.removeField.value = '1';
+            }
+            setNORSUInfoImagePreview(kind, '');
+        }
+
         async function fetchNORSUInfoData() {
             try {
                 const response = await fetch('/api/university-info/');
@@ -7087,7 +7266,7 @@
             if (infoData.length === 0) {
                 infoTable.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <td colspan="8" style="text-align: center; padding: 40px; color: #7f8c8d;">
                             <i class="fas fa-info-circle" style="font-size: 48px; margin-bottom: 10px; display: block;"></i>
                             No NORSU information found. Add your first information to get started!
                         </td>
@@ -7102,12 +7281,20 @@
                 const truncateText = (text, maxLength = 100) => {
                     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
                 };
+                const renderImageCell = (src, alt) => {
+                    if (!src) {
+                        return `<span style="color: #9ca3af; font-size: 12px;">No image</span>`;
+                    }
+                    return `<img src="${src}" alt="${alt}" style="width: 96px; height: 64px; object-fit: cover; border-radius: 8px; border: 1px solid #d1d5db;">`;
+                };
 
                 return `
                 <tr>
                     <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${info.generalMandate || ''}">${truncateText(info.generalMandate || '')}</td>
                     <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${info.vision || ''}">${truncateText(info.vision || '')}</td>
+                    <td>${renderImageCell(info.visionImage, 'Vision image')}</td>
                     <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${info.mission || ''}">${truncateText(info.mission || '')}</td>
+                    <td>${renderImageCell(info.missionImage, 'Mission image')}</td>
                     <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${info.strategicGoals || ''}">${truncateText(info.strategicGoals || '')}</td>
                     <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${info.coreValues || ''}">${truncateText(info.coreValues || '')}</td>
                     <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${info.qualityPolicy || ''}">${truncateText(info.qualityPolicy || '')}</td>
@@ -7136,6 +7323,17 @@
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
             const formData = new FormData();
             Object.entries(payload).forEach(([key, value]) => formData.append(key, value || ''));
+            formData.append('removeVisionImage', document.getElementById('infoVisionImageRemove')?.value || '0');
+            formData.append('removeMissionImage', document.getElementById('infoMissionImageRemove')?.value || '0');
+
+            const visionImageFile = document.getElementById('infoVisionImage')?.files?.[0];
+            const missionImageFile = document.getElementById('infoMissionImage')?.files?.[0];
+            if (visionImageFile) {
+                formData.append('visionImage', visionImageFile);
+            }
+            if (missionImageFile) {
+                formData.append('missionImage', missionImageFile);
+            }
 
             try {
                 const isUpdate = editingId && isDatabaseRecordId(editingId);
@@ -7174,6 +7372,7 @@
                 infoForm.reset();
                 delete infoForm.dataset.editingId;
                 clearNORSUInfoEditors();
+                clearNORSUInfoImageFields();
                 closeModal('infoModal');
 
                 showNotification(
@@ -7206,6 +7405,7 @@
             document.getElementById('infoForm').reset();
             delete document.getElementById('infoForm').dataset.editingId;
             clearNORSUInfoEditors();
+            clearNORSUInfoImageFields();
             const modal = document.getElementById('infoModal');
             if (modal) {
                 modal.style.display = 'block';
@@ -7267,6 +7467,7 @@
             delete document.getElementById('infoForm').dataset.editingId;
 
             clearNORSUInfoEditors();
+            clearNORSUInfoImageFields();
 
             const modal = document.getElementById('infoModal');
             if (modal) {
@@ -7295,6 +7496,9 @@
                 if (window._infoStrategicGoalsEditor) window._infoStrategicGoalsEditor.setData(info.strategicGoals || '');
                 if (window._infoCoreValuesEditor) window._infoCoreValuesEditor.setData(info.coreValues || '');
                 if (window._infoQualityPolicyEditor) window._infoQualityPolicyEditor.setData(info.qualityPolicy || '');
+                clearNORSUInfoImageFields();
+                setNORSUInfoImagePreview('vision', info.visionImage || '');
+                setNORSUInfoImagePreview('mission', info.missionImage || '');
 
                 // Store editing ID
                 document.getElementById('infoForm').dataset.editingId = id;
@@ -7649,6 +7853,9 @@
 
                 if (!res.ok || !data.success) throw new Error(data.error || 'Save failed');
 
+                if (data.profile) {
+                    localStorage.setItem('superAdminPresidentInfo', JSON.stringify(data.profile));
+                }
                 await loadPresidentInfo();
                 closeModal('presidentModal');
                 showNotification('President profile saved successfully!', 'success');
@@ -7755,6 +7962,7 @@
                 if (captionEl) captionEl.textContent = 'Information will be updated soon.';
                 if (imgEl) imgEl.src = imgEl.getAttribute('data-default-src') || '/static/dashboard/images/pres.png';
 
+                localStorage.removeItem('superAdminPresidentInfo');
                 closeModal('deletePresidentModal');
                 showNotification('President profile deleted!', 'success');
                 addNotification('president_profile', 'President profile deleted', 'University President profile has been deleted.', 'content', null);

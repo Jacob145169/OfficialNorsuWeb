@@ -152,7 +152,16 @@ class UniversityInfoAdmin(admin.ModelAdmin):
     search_fields = ('general_mandate', 'vision', 'mission', 'strategic_goals', 'core_values', 'quality_policy')
     fieldsets = (
         ('University Information', {
-            'fields': ('general_mandate', 'vision', 'mission', 'strategic_goals', 'core_values', 'quality_policy')
+            'fields': (
+                'general_mandate',
+                'vision',
+                'vision_image',
+                'mission',
+                'mission_image',
+                'strategic_goals',
+                'core_values',
+                'quality_policy',
+            )
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),

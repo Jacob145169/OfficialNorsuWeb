@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.db.models import Sum, Q
 from datetime import timedelta
-from dashboard.models import Post, Program, Faculty, Facility, AcademicCalendar, Announcement, Alumni, News, Achievement, College, MediaUpload, AlumniAbout, AlumniNews, AlumniEvent, AlumniSuccessStory, ContactMessage, InquiryReply
+from dashboard.models import Post, Program, Faculty, Facility, AcademicCalendar, Announcement, Alumni, News, Achievement, College, MediaUpload, AlumniAbout, AlumniNews, AlumniEvent, AlumniSuccessStory, ContactMessage, InquiryReply, UniversityInfo
 
 
 def _safe_int(value, default=0):
@@ -40,10 +40,13 @@ def index(request):
     for post in posts:
         post.is_new = post.created_at >= seven_days_ago
 
+    university_info = UniversityInfo.objects.order_by('-updated_at', '-id').first()
+
     context = {
         'posts': posts,
         'achievements': achievements,
         'success_stories': success_stories,
+        'university_info': university_info,
     }
     
     return render(request, 'dashboard/index.html', context)
@@ -2675,61 +2678,124 @@ def _serialize_program(program):
     }
 
 
-def _public_program_queryset(queryset):
-    return queryset.filter(status__in=['published', 'active'])
+def _is_truthy(value):
+    return str(value or '').strip().lower() in {'1', 'true', 'yes', 'on'}
+
+
+def _serialize_university_info(entry):
+    created_at = entry.created_at.isoformat() if entry.created_at else ''
+    updated_at = entry.updated_at.isoformat() if entry.updated_at else ''
+    return {
+        'id': entry.id,
+        'generalMandate': entry.general_mandate or '',
+        'vision': entry.vision or '',
+        'mission': entry.mission or '',
+        'visionImage': entry.vision_image.url if entry.vision_image else '',
+        'missionImage': entry.mission_image.url if entry.mission_image else '',
+        'strategicGoals': entry.strategic_goals or '',
+        'coreValues': entry.core_values or '',
+        'qualityPolicy': entry.quality_policy or '',
+        'createdAt': created_at,
+        'updatedAt': updated_at,
+        'created_at': created_at,
+        'updated_at': updated_at,
+    }
+
+
+def _apply_university_info_payload(entry, request):
+    entry.general_mandate = request.POST.get('generalMandate', request.POST.get('general_mandate', entry.general_mandate or ''))
+    entry.vision = request.POST.get('vision', entry.vision or '')
+    entry.mission = request.POST.get('mission', entry.mission or '')
+    entry.strategic_goals = request.POST.get('strategicGoals', request.POST.get('strategic_goals', entry.strategic_goals or ''))
+    entry.core_values = request.POST.get('coreValues', request.POST.get('core_values', entry.core_values or ''))
+    entry.quality_policy = request.POST.get('qualityPolicy', request.POST.get('quality_policy', entry.quality_policy or ''))
+
+    if _is_truthy(request.POST.get('removeVisionImage')):
+        if entry.vision_image:
+            entry.vision_image.delete(save=False)
+        entry.vision_image = None
+    if _is_truthy(request.POST.get('removeMissionImage')):
+        if entry.mission_image:
+            entry.mission_image.delete(save=False)
+        entry.mission_image = None
+
+    vision_image = request.FILES.get('visionImage') or request.FILES.get('vision_image')
+    mission_image = request.FILES.get('missionImage') or request.FILES.get('mission_image')
+
+    if vision_image:
+        if entry.vision_image:
+            entry.vision_image.delete(save=False)
+        entry.vision_image = vision_image
+    if mission_image:
+        if entry.mission_image:
+            entry.mission_image.delete(save=False)
+        entry.mission_image = mission_image
 
 
 @csrf_exempt
-@login_required(login_url='/super-admin-login/')
 def api_university_info_list_create(request):
     """List or create university info entries."""
     if request.method == 'GET':
-        entries = UniversityInfo.objects.all().order_by('-updated_at' if hasattr(UniversityInfo, 'updated_at') else '-id')
-        return JsonResponse({'success': True, 'entries': [
-            {'id': e.id, 'key': e.key, 'title': getattr(e, 'title', ''), 'content': e.content,
-             'image': e.image.url if e.image else ''}
-            for e in entries
-        ]})
+        entries = UniversityInfo.objects.all().order_by('-updated_at', '-id')
+        return JsonResponse({
+            'success': True,
+            'info': [_serialize_university_info(entry) for entry in entries]
+        })
     elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            return JsonResponse({'success': False, 'error': 'Authentication required'}, status=401)
+
         try:
-            key = request.POST.get('key', '')
-            content = request.POST.get('content', '')
-            title = request.POST.get('title', '')
-            image = request.FILES.get('image')
             entry_id = request.POST.get('id')
 
             if entry_id:
                 entry = UniversityInfo.objects.get(pk=entry_id)
+                status_code = 200
             else:
-                entry = UniversityInfo(key=key)
+                entry = UniversityInfo()
+                status_code = 201
 
-            entry.content = content
-            if hasattr(entry, 'title'):
-                entry.title = title
-            if image:
-                entry.image = image
+            _apply_university_info_payload(entry, request)
             entry.save()
-            return JsonResponse({'success': True, 'id': entry.id})
+            return JsonResponse({
+                'success': True,
+                'message': 'University information saved successfully',
+                'info': _serialize_university_info(entry)
+            }, status=status_code)
+        except UniversityInfo.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Not found'}, status=404)
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
     return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
 
 
 @csrf_exempt
-@login_required(login_url='/super-admin-login/')
 def api_university_info_detail(request, pk):
-    """Get or delete a university info entry."""
+    """Get, update, or delete a university info entry."""
     try:
         entry = UniversityInfo.objects.get(pk=pk)
     except UniversityInfo.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Not found'}, status=404)
 
     if request.method == 'GET':
-        return JsonResponse({'success': True, 'entry': {
-            'id': entry.id, 'key': entry.key, 'content': entry.content,
-            'title': getattr(entry, 'title', ''), 'image': entry.image.url if entry.image else ''
-        }})
+        return JsonResponse({'success': True, 'info': _serialize_university_info(entry)})
+    elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            return JsonResponse({'success': False, 'error': 'Authentication required'}, status=401)
+
+        try:
+            _apply_university_info_payload(entry, request)
+            entry.save()
+            return JsonResponse({
+                'success': True,
+                'message': 'University information updated successfully',
+                'info': _serialize_university_info(entry)
+            })
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
     elif request.method == 'DELETE':
+        if not request.user.is_authenticated:
+            return JsonResponse({'success': False, 'error': 'Authentication required'}, status=401)
         entry.delete()
         return JsonResponse({'success': True})
     return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
@@ -2764,35 +2830,68 @@ def api_site_contact_info(request):
     return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
 
 
+def _serialize_president_profile(profile):
+    if not profile:
+        return None
+
+    image_url = profile.image.url if profile.image else ''
+    return {
+        'id': profile.id,
+        'name': profile.name or '',
+        'role': profile.role or '',
+        'caption': profile.caption or '',
+        'photo': image_url,
+        'image': image_url,
+        'updatedAt': profile.updated_at.isoformat() if profile.updated_at else '',
+    }
+
+
 @csrf_exempt
-@login_required(login_url='/super-admin-login/')
 def api_president_profile(request):
     """Get or update president profile."""
     profile = PresidentProfile.objects.first()
     if request.method == 'GET':
-        if not profile:
-            return JsonResponse({'success': True, 'data': {}})
-        data = {
-            'id': profile.id,
-            'name': getattr(profile, 'name', ''),
-            'title': getattr(profile, 'title', ''),
-            'message': getattr(profile, 'message', ''),
-            'image': profile.image.url if hasattr(profile, 'image') and profile.image else '',
-        }
-        return JsonResponse({'success': True, 'data': data})
+        serialized = _serialize_president_profile(profile)
+        return JsonResponse({
+            'success': True,
+            'profile': serialized,
+            'data': serialized or {},
+        })
     elif request.method == 'POST':
+        guard = _superadmin_json_guard(request)
+        if guard:
+            return guard
+
         try:
             if not profile:
                 profile = PresidentProfile()
-            profile.name = request.POST.get('name', getattr(profile, 'name', ''))
-            profile.title = request.POST.get('title', getattr(profile, 'title', ''))
-            profile.message = request.POST.get('message', getattr(profile, 'message', ''))
+            profile.name = request.POST.get('name', profile.name or 'DR. NOEL MARJON E. YASI')
+            profile.role = request.POST.get('role', request.POST.get('title', profile.role or 'University President'))
+            profile.caption = request.POST.get('caption', request.POST.get('message', profile.caption or 'Information will be updated soon.'))
             if 'image' in request.FILES:
+                if profile.image:
+                    profile.image.delete(save=False)
                 profile.image = request.FILES['image']
             profile.save()
-            return JsonResponse({'success': True})
+            serialized = _serialize_president_profile(profile)
+            return JsonResponse({
+                'success': True,
+                'message': 'President profile saved successfully',
+                'profile': serialized,
+                'data': serialized,
+            })
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    elif request.method == 'DELETE':
+        guard = _superadmin_json_guard(request)
+        if guard:
+            return guard
+
+        if profile:
+            if profile.image:
+                profile.image.delete(save=False)
+            profile.delete()
+        return JsonResponse({'success': True})
     return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
 
 

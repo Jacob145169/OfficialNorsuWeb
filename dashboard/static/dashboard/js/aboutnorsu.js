@@ -25,6 +25,8 @@ class NORSUAboutPage {
             generalMandate: 'University information for this section will appear here once it is published by the administrator.',
             vision: 'Information will be updated soon.',
             mission: 'Information will be updated soon.',
+            visionImage: '',
+            missionImage: '',
             strategicGoals: 'Information will be updated soon.',
             coreValues: 'Information will be updated soon.',
             qualityPolicy: 'Information will be updated soon.'
@@ -229,12 +231,44 @@ class NORSUAboutPage {
             `;
         }
 
+        this.applyEditorialImages(info);
+
         if (this.lastUpdatedEl) {
             const timestamp = info.updatedAt || info.createdDate || info.updated_at || info.created_at;
             const when = timestamp ? new Date(timestamp).toLocaleString() : 'Unknown';
             this.lastUpdatedEl.hidden = false;
             this.lastUpdatedEl.innerHTML = `<i class="fa-solid fa-clock"></i> Last updated: <strong>${this.escapeHtml(String(when))}</strong>`;
         }
+    }
+
+    applyEditorialImages(info = {}) {
+        const blocks = [
+            {
+                key: 'missionImage',
+                selector: '.editorial-block[data-type="mission"]',
+                overlay: 'linear-gradient(135deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.58))'
+            },
+            {
+                key: 'visionImage',
+                selector: '.editorial-block[data-type="vision"]',
+                overlay: 'linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.82))'
+            }
+        ];
+
+        blocks.forEach(({ key, selector, overlay }) => {
+            const block = document.querySelector(selector);
+            if (!block) return;
+
+            const imageUrl = (info[key] || '').trim();
+            if (imageUrl) {
+                const safeUrl = imageUrl.replace(/"/g, '\\"');
+                block.style.background = `${overlay}, url("${safeUrl}") center / cover no-repeat`;
+                block.classList.add('editorial-block--has-image');
+            } else {
+                block.style.background = '';
+                block.classList.remove('editorial-block--has-image');
+            }
+        });
     }
 
     /**
@@ -262,6 +296,8 @@ class NORSUAboutPage {
                 </div>
             `;
         }
+
+        this.applyEditorialImages(this.defaultInfo);
 
         if (this.lastUpdatedEl) {
             this.lastUpdatedEl.hidden = false;
@@ -387,9 +423,9 @@ class NORSUAboutPage {
     }
 
     /**
-     * Apply University President profile from localStorage to the About page section
+     * Apply University President profile from the database to the About page section.
      */
-    applyPresidentProfile() {
+    async applyPresidentProfile() {
         const imgEl = document.getElementById('presidentPhotoImg');
         const roleEl = document.getElementById('presidentRole');
         const nameEl = document.getElementById('presidentName');
@@ -399,11 +435,30 @@ class NORSUAboutPage {
             return;
         }
 
-        const data = this.readStorageData(this.presidentStorageKey);
+        let data = null;
+        try {
+            const response = await fetch('/api/president-profile/', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const payload = await response.json();
+            if (!response.ok || !payload.success) {
+                throw new Error(payload.error || 'Unable to load president profile');
+            }
+            data = payload.profile || null;
+            if (data) {
+                localStorage.setItem(this.presidentStorageKey, JSON.stringify(data));
+            }
+        } catch (error) {
+            console.warn('Falling back to localStorage for president profile:', error);
+            data = this.readStorageData(this.presidentStorageKey);
+        }
+
         const role = this.hasMeaningfulContent(data?.role) ? data.role : this.defaultPresident.role;
         const name = this.hasMeaningfulContent(data?.name) ? data.name : this.defaultPresident.name;
         const caption = this.hasMeaningfulContent(data?.caption) ? data.caption : this.defaultPresident.caption;
-        const photo = this.hasMeaningfulContent(data?.photo) ? data.photo : null;
+        const photo = this.hasMeaningfulContent(data?.photo) ? data.photo : (this.hasMeaningfulContent(data?.image) ? data.image : null);
 
         if (roleEl) {
             roleEl.textContent = role;

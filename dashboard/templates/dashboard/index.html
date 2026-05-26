@@ -858,6 +858,13 @@
         transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.4s ease;
     }
 
+    .vm-card--image {
+        background-image: var(--vm-card-overlay), var(--vm-card-bg);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
     .vm-card::before {
         content: '';
         position: absolute;
@@ -875,6 +882,13 @@
         background: rgba(255, 255, 255, 0.09);
         border-color: rgba(244, 196, 48, 0.2);
         box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .vm-card--image:hover {
+        background-image: var(--vm-card-overlay-hover, var(--vm-card-overlay)), var(--vm-card-bg);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
     }
 
     .vm-card:hover::before {
@@ -3522,7 +3536,7 @@
     <div class="vm-grid">
 
         <!-- VISION (featured — tall card, col 1, spans 2 rows) -->
-        <div class="vm-card featured">
+        <div class="vm-card featured{% if university_info and university_info.vision_image %} vm-card--image{% endif %}"{% if university_info and university_info.vision_image %} style="--vm-card-bg: url('{{ university_info.vision_image.url }}'); --vm-card-overlay: linear-gradient(135deg, rgba(9, 17, 35, 0.82), rgba(18, 36, 67, 0.56)); --vm-card-overlay-hover: linear-gradient(135deg, rgba(9, 17, 35, 0.72), rgba(18, 36, 67, 0.46));"{% endif %}>
             <div>
                 <div class="vm-card-icon">🌐</div>
                 <div class="vm-card-label" style="margin-top:20px;">Vision</div>
@@ -3539,7 +3553,7 @@
         </div>
 
         <!-- MISSION -->
-        <div class="vm-card">
+        <div class="vm-card{% if university_info and university_info.mission_image %} vm-card--image{% endif %}"{% if university_info and university_info.mission_image %} style="--vm-card-bg: url('{{ university_info.mission_image.url }}'); --vm-card-overlay: linear-gradient(135deg, rgba(6, 8, 14, 0.88), rgba(18, 26, 48, 0.62)); --vm-card-overlay-hover: linear-gradient(135deg, rgba(6, 8, 14, 0.76), rgba(18, 26, 48, 0.52));"{% endif %}>
             <div>
                 <div class="vm-card-icon">🎯</div>
                 <div class="vm-card-label" style="margin-top:20px;">Mission</div>

@@ -284,6 +284,8 @@ class UniversityInfo(models.Model):
     general_mandate = models.TextField(blank=True)
     vision = models.TextField(blank=True)
     mission = models.TextField(blank=True)
+    vision_image = models.ImageField(upload_to='university-info/', blank=True, null=True)
+    mission_image = models.ImageField(upload_to='university-info/', blank=True, null=True)
     strategic_goals = models.TextField(blank=True)
     core_values = models.TextField(blank=True)
     quality_policy = models.TextField(blank=True)
