@@ -19,7 +19,7 @@
     <!-- Cropper JS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <link rel="stylesheet" href="{% static 'dashboard/css/super-admin-dashboard.css' %}?v=20260507">
+    <link rel="stylesheet" href="{% static 'dashboard/css/super-admin-dashboard.css' %}?v=20260529a">
     <style>
         /* Default constraint for CKEditor unstyled image figures to prevent massive uploads */
         .ck-content figure.image:not([style*="width"]) {
@@ -534,13 +534,23 @@
                                 </div>
                                 <div>
                                     <h2 class="sa-title">System Analytics</h2>
-                                    <p class="sa-subtitle" id="analyticsUpdatedAt">Live database metrics updated {{ system_analytics.generated_at_display }}</p>
+                                    <p class="sa-subtitle" id="analyticsUpdatedAt">Connected to live system records. Updated {{ system_analytics.generated_at_display }}</p>
                                 </div>
                             </div>
                             <button id="refreshChartsBtn" class="sa-refresh-btn" type="button" onclick="handleRefreshCharts(this)">
                                 <i id="refreshChartsIcon" class="fas fa-sync-alt"></i>
                                 <span>Refresh Charts</span>
                             </button>
+                        </div>
+
+                        <div class="sa-kpi-strip" id="systemAnalyticsKpis">
+                            {% for item in system_analytics.kpis %}
+                            <div class="sa-kpi-item">
+                                <span class="sa-kpi-dot" style="background: {{ item.color }};"></span>
+                                <span class="sa-kpi-label">{{ item.label }}</span>
+                                <span class="sa-kpi-value">{{ item.value }}</span>
+                            </div>
+                            {% endfor %}
                         </div>
 
                         <div class="sa-chart-grid">
@@ -551,10 +561,10 @@
                                     </div>
                                     <div>
                                         <div class="sa-chart-card-title">Content Distribution</div>
-                                        <div class="sa-chart-card-sub">Across posts, announcements, news, achievements, and media uploads. {{ system_analytics.content_distribution.total }} total managed records.</div>
+                                        <div class="sa-chart-card-sub" id="contentDistributionSubtitle">Across posts, announcements, news, achievements, and media uploads. {{ system_analytics.content_distribution.total }} total managed records.</div>
                                     </div>
                                 </div>
-                                <div class="sa-distribution-list">
+                                <div class="sa-distribution-list" id="contentDistributionList">
                                     {% for item in system_analytics.content_distribution.items %}
                                     <div class="sa-distribution-item">
                                         <div class="sa-distribution-topline">
@@ -581,15 +591,15 @@
                                     </div>
                                     <div>
                                         <div class="sa-chart-card-title">Monthly Activity</div>
-                                        <div class="sa-chart-card-sub">Real record creation volume over the latest reporting window.</div>
+                                        <div class="sa-chart-card-sub">Real creation volume from every connected system module.</div>
                                     </div>
                                 </div>
-                                <div class="sa-bar-chart">
+                                <div class="sa-bar-chart" id="monthlyActivityChart">
                                     {% for bar in system_analytics.monthly_activity.bars %}
                                     <div class="sa-bar-column">
                                         <span class="sa-bar-value">{{ bar.value }}</span>
                                         <div class="sa-bar-track">
-                                            <div class="sa-bar-fill{% if bar.is_peak %} is-peak{% endif %}" style="height: {{ bar.height_percent }}%;"></div>
+                                            <div class="sa-bar-fill{% if bar.is_peak %} is-peak{% endif %}" style="height: {{ bar.height_percent }}%;" title="{{ bar.summary|default:'No records' }}"></div>
                                         </div>
                                         <span class="sa-bar-label">{{ bar.label }}</span>
                                     </div>
@@ -597,7 +607,7 @@
                                     <div class="sa-empty-inline">No monthly activity data available yet.</div>
                                     {% endfor %}
                                 </div>
-                                <div class="sa-chart-caption">
+                                <div class="sa-chart-caption" id="monthlyActivityCaption">
                                     <span>{{ system_analytics.monthly_activity.window_label }} total: <strong>{{ system_analytics.monthly_activity.total }}</strong></span>
                                     <span>Peak: <strong>{{ system_analytics.monthly_activity.peak_label }}</strong> with <strong>{{ system_analytics.monthly_activity.peak_value }}</strong></span>
                                 </div>
@@ -613,7 +623,7 @@
                                         <div class="sa-chart-card-sub">{{ system_analytics.college_engagement.metric }}</div>
                                     </div>
                                 </div>
-                                <div class="engagement-stats">
+                                <div class="engagement-stats" id="collegeEngagementList">
                                     {% for item in system_analytics.college_engagement.items %}
                                     <div class="engagement-item">
                                         <span class="college-name">{{ item.label }}</span>
@@ -630,7 +640,7 @@
                                     </div>
                                     {% endfor %}
                                 </div>
-                                <div class="sa-chart-caption">
+                                <div class="sa-chart-caption" id="collegeEngagementCaption">
                                     {% if system_analytics.college_engagement.top_item %}
                                     <span>Top signal: <strong>{{ system_analytics.college_engagement.top_item.name }}</strong></span>
                                     <span><strong>{{ system_analytics.college_engagement.top_item.total_records }}</strong> tracked records</span>
@@ -647,15 +657,15 @@
                                     </div>
                                     <div>
                                         <div class="sa-chart-card-title">Alumni Growth</div>
-                                        <div class="sa-chart-card-sub">Cumulative alumni records tracked across the latest reporting window.</div>
+                                        <div class="sa-chart-card-sub">Cumulative alumni records based on actual system entry dates.</div>
                                     </div>
                                 </div>
-                                <div class="sa-bar-chart sa-bar-chart-growth">
+                                <div class="sa-bar-chart sa-bar-chart-growth" id="alumniGrowthChart">
                                     {% for bar in system_analytics.alumni_growth.bars %}
                                     <div class="sa-bar-column">
                                         <span class="sa-bar-value">{{ bar.value }}</span>
                                         <div class="sa-bar-track">
-                                            <div class="sa-bar-fill sa-bar-fill-growth{% if bar.is_latest %} is-latest{% endif %}" style="height: {{ bar.height_percent }}%;"></div>
+                                            <div class="sa-bar-fill sa-bar-fill-growth{% if bar.is_latest %} is-latest{% endif %}" style="height: {{ bar.height_percent }}%;" title="{{ bar.additions }} added in {{ bar.label }}"></div>
                                         </div>
                                         <span class="sa-bar-label">{{ bar.label }}</span>
                                     </div>
@@ -663,7 +673,7 @@
                                     <div class="sa-empty-inline">No alumni growth data available yet.</div>
                                     {% endfor %}
                                 </div>
-                                <div class="sa-chart-caption">
+                                <div class="sa-chart-caption" id="alumniGrowthCaption">
                                     <span>{{ system_analytics.alumni_growth.window_label }} additions: <strong>{{ system_analytics.alumni_growth.additions_in_window }}</strong></span>
                                     <span>Total alumni records: <strong>{{ system_analytics.alumni_growth.total }}</strong></span>
                                 </div>
@@ -895,6 +905,9 @@
                                 </button>
                                 <button class="btn btn-danger" onclick="deleteNORSUHistory()">
                                     <i class="fas fa-trash"></i> Delete
+                                </button>
+                                <button class="btn btn-secondary" onclick="refreshNORSUHistory()">
+                                    <i class="fas fa-sync"></i> Refresh
                                 </button>
                             </div>
                         </div>
@@ -3052,7 +3065,7 @@
             style="max-width: 800px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
             <div class="modal-header"
                 style="background: #ffffff; color:#000000; padding:20px 28px; border-radius:15px 15px 0 0; border-bottom: 1px solid #e5e7eb;">
-                <h3 class="modal-title" style="margin:0; font-size:20px; font-weight:700;">
+                <h3 class="modal-title" id="historyModalTitle" style="margin:0; font-size:20px; font-weight:700;">
                     <i class="fas fa-history" style="margin-right:8px; color: #007fff;"></i>NORSU History
                 </h3>
                 <button class="close-btn" onclick="closeModal('historyModal')"
@@ -3079,7 +3092,7 @@
                         style="padding:9px 18px; background:#6b7280; color:#ffffff; border-radius:8px; border:none; font-size:13px; font-weight:600; cursor:pointer;">
                         Cancel
                     </button>
-                    <button type="submit" onclick="handleHistorySubmit(event)"
+                    <button type="button" onclick="saveHistorySimple()"
                         style="padding:9px 18px; background:#007fff; color:#ffffff; border-radius:8px; border:none; font-size:13px; font-weight:600; cursor:pointer;">
                         Save History
                     </button>
@@ -3872,6 +3885,131 @@
         // ============================================================
         //  Refresh Charts Handler
         // ============================================================
+        function escapeAnalyticsHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function renderSystemAnalytics(analytics) {
+            const updatedAt = document.getElementById('analyticsUpdatedAt');
+            if (updatedAt) {
+                updatedAt.textContent = `Connected to live system records. Updated ${analytics.generated_at_display}`;
+            }
+
+            const kpiStrip = document.getElementById('systemAnalyticsKpis');
+            if (kpiStrip) {
+                const kpis = analytics.kpis || [];
+                kpiStrip.innerHTML = kpis.map(item => `
+                    <div class="sa-kpi-item">
+                        <span class="sa-kpi-dot" style="background:${escapeAnalyticsHtml(item.color)};"></span>
+                        <span class="sa-kpi-label">${escapeAnalyticsHtml(item.label)}</span>
+                        <span class="sa-kpi-value">${Number(item.value || 0).toLocaleString()}</span>
+                    </div>
+                `).join('');
+            }
+
+            const distributionSubtitle = document.getElementById('contentDistributionSubtitle');
+            if (distributionSubtitle) {
+                distributionSubtitle.textContent = `Across posts, announcements, news, achievements, and media uploads. ${analytics.content_distribution.total} total managed records.`;
+            }
+
+            const distributionList = document.getElementById('contentDistributionList');
+            if (distributionList) {
+                const items = analytics.content_distribution.items || [];
+                distributionList.innerHTML = items.length ? items.map(item => `
+                    <div class="sa-distribution-item">
+                        <div class="sa-distribution-topline">
+                            <div class="sa-distribution-label-wrap">
+                                <span class="sa-legend-swatch" style="background:${escapeAnalyticsHtml(item.color)};"></span>
+                                <span class="sa-legend-label">${escapeAnalyticsHtml(item.label)}</span>
+                            </div>
+                            <span class="sa-legend-value">${Number(item.count || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="sa-inline-progress">
+                            <div class="sa-inline-progress-fill" style="width:${Number(item.percentage || 0)}%; background:${escapeAnalyticsHtml(item.color)};"></div>
+                        </div>
+                    </div>
+                `).join('') : '<div class="sa-empty-inline">No content data available yet.</div>';
+            }
+
+            const monthlyChart = document.getElementById('monthlyActivityChart');
+            if (monthlyChart) {
+                const bars = analytics.monthly_activity.bars || [];
+                monthlyChart.innerHTML = bars.length ? bars.map(bar => `
+                    <div class="sa-bar-column">
+                        <span class="sa-bar-value">${Number(bar.value || 0).toLocaleString()}</span>
+                        <div class="sa-bar-track">
+                            <div class="sa-bar-fill${bar.is_peak ? ' is-peak' : ''}" style="height:${Number(bar.height_percent || 0)}%;" title="${escapeAnalyticsHtml(bar.summary || 'No records')}"></div>
+                        </div>
+                        <span class="sa-bar-label">${escapeAnalyticsHtml(bar.label)}</span>
+                    </div>
+                `).join('') : '<div class="sa-empty-inline">No monthly activity data available yet.</div>';
+            }
+
+            const monthlyCaption = document.getElementById('monthlyActivityCaption');
+            if (monthlyCaption) {
+                monthlyCaption.innerHTML = `
+                    <span>${escapeAnalyticsHtml(analytics.monthly_activity.window_label)} total: <strong>${Number(analytics.monthly_activity.total || 0).toLocaleString()}</strong></span>
+                    <span>Peak: <strong>${escapeAnalyticsHtml(analytics.monthly_activity.peak_label)}</strong> with <strong>${Number(analytics.monthly_activity.peak_value || 0).toLocaleString()}</strong></span>
+                `;
+            }
+
+            const engagementList = document.getElementById('collegeEngagementList');
+            if (engagementList) {
+                const items = analytics.college_engagement.items || [];
+                engagementList.innerHTML = items.length ? items.map(item => `
+                    <div class="engagement-item">
+                        <span class="college-name">${escapeAnalyticsHtml(item.label)}</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width:${Number(item.percentage || 0)}%; background:${escapeAnalyticsHtml(item.color)};"></div>
+                        </div>
+                        <span class="percentage">${Number(item.percentage || 0)}%</span>
+                        <span class="sa-engagement-meta">${escapeAnalyticsHtml(item.meta)}</span>
+                    </div>
+                `).join('') : `
+                    <div class="empty-state" style="padding: 24px 0;">
+                        <i class="fas fa-chart-bar"></i>
+                        <p>No college engagement data available yet.</p>
+                    </div>
+                `;
+            }
+
+            const engagementCaption = document.getElementById('collegeEngagementCaption');
+            if (engagementCaption) {
+                const topItem = analytics.college_engagement.top_item;
+                engagementCaption.innerHTML = topItem ? `
+                    <span>Top signal: <strong>${escapeAnalyticsHtml(topItem.name)}</strong></span>
+                    <span><strong>${Number(topItem.total_records || 0).toLocaleString()}</strong> tracked records</span>
+                ` : '<span>No college engagement data yet.</span>';
+            }
+
+            const alumniChart = document.getElementById('alumniGrowthChart');
+            if (alumniChart) {
+                const bars = analytics.alumni_growth.bars || [];
+                alumniChart.innerHTML = bars.length ? bars.map(bar => `
+                    <div class="sa-bar-column">
+                        <span class="sa-bar-value">${Number(bar.value || 0).toLocaleString()}</span>
+                        <div class="sa-bar-track">
+                            <div class="sa-bar-fill sa-bar-fill-growth${bar.is_latest ? ' is-latest' : ''}" style="height:${Number(bar.height_percent || 0)}%;" title="${Number(bar.additions || 0).toLocaleString()} added in ${escapeAnalyticsHtml(bar.label)}"></div>
+                        </div>
+                        <span class="sa-bar-label">${escapeAnalyticsHtml(bar.label)}</span>
+                    </div>
+                `).join('') : '<div class="sa-empty-inline">No alumni growth data available yet.</div>';
+            }
+
+            const alumniCaption = document.getElementById('alumniGrowthCaption');
+            if (alumniCaption) {
+                alumniCaption.innerHTML = `
+                    <span>${escapeAnalyticsHtml(analytics.alumni_growth.window_label)} additions: <strong>${Number(analytics.alumni_growth.additions_in_window || 0).toLocaleString()}</strong></span>
+                    <span>Total alumni records: <strong>${Number(analytics.alumni_growth.total || 0).toLocaleString()}</strong></span>
+                `;
+            }
+        }
+
         async function handleRefreshCharts(btn) {
             if (btn.disabled) return;
             btn.disabled = true;
@@ -3882,7 +4020,15 @@
             if (span) span.textContent = 'Refreshing...';
 
             try {
-                window.location.href = `${window.location.pathname}?tab=dashboard&refresh=${Date.now()}`;
+                const response = await fetch('/api/system-analytics/', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Unable to refresh analytics');
+                }
+                renderSystemAnalytics(data.analytics || data);
+                showNotification('System analytics refreshed from live records.', 'success');
             } catch (error) {
                 console.error('Error refreshing system analytics view:', error);
                 showNotification('Unable to refresh analytics view.', 'error');
@@ -7565,6 +7711,10 @@
 
         // Create new NORSU History
         function createNORSUHistory() {
+            if (document.getElementById('historyModalTitle')) {
+                document.getElementById('historyModalTitle').innerHTML =
+                    '<i class="fas fa-plus" style="margin-right:8px; color: #28a745;"></i>Create NORSU History';
+            }
             document.getElementById('historyTitle').value = 'NORSU HISTORY';
             document.getElementById('historyBody').value = '';
             delete document.getElementById('historyForm').dataset.editingId;
@@ -7585,8 +7735,13 @@
                     createNORSUHistory();
                     return;
                 }
+                if (document.getElementById('historyModalTitle')) {
+                    document.getElementById('historyModalTitle').innerHTML =
+                        '<i class="fas fa-edit" style="margin-right:8px; color: #007fff;"></i>Edit NORSU History';
+                }
                 document.getElementById('historyTitle').value = data.title || 'NORSU HISTORY';
                 document.getElementById('historyBody').value = data.body || '';
+                document.getElementById('historyForm').dataset.editingId = data.id || '';
             } catch(e) { console.warn(e); return; }
             const modal = document.getElementById('historyModal');
             if (modal) {
@@ -7596,12 +7751,27 @@
 
         // Delete NORSU History
         async function deleteNORSUHistory() {
-            // (history deletion handled below)
+            try {
+                const res = await fetch('/api/norsu-history/');
+                const json = await res.json();
+                if (!json.success || !json.history) {
+                    alert('No NORSU history found to delete.');
+                    return;
+                }
+            } catch (e) {
+                alert('No NORSU history found to delete.');
+                return;
+            }
 
             const _confirmed = await showCustomConfirm({ title: 'Delete NORSU History', message: 'Are you sure you want to delete the NORSU History content?', confirmLabel: 'Yes, Delete', confirmIcon: 'fa-book' });
             if (_confirmed) {
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
-                    await fetch('/api/norsu-history/', { method: 'DELETE', headers: { 'X-CSRFToken': csrfToken } });
+                const response = await fetch('/api/norsu-history/', { method: 'DELETE', headers: { 'X-CSRFToken': csrfToken } });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    showNotification('Error deleting history: ' + (data.error || 'Delete failed'), 'error');
+                    return;
+                }
 
                 // Add notification
                 addNotification('norsu_history', 'NORSU History Deleted', 'The NORSU history content has been deleted.', 'content', null);
@@ -7610,18 +7780,18 @@
                 logActivity('norsu_history_deleted', 'NORSU history deleted', 'content');
 
                 // Reload history display
+                localStorage.removeItem('superAdminHistoryInfo');
                 loadHistoryInfo();
                 loadDashboardData();
 
                 // Show notification
-                showNotification('NORSU History deleted and moved to archive!', 'success');
+                showNotification('NORSU History deleted!', 'success');
             }
         }
 
         // Handle History Submit — saves to database
-        async function handleHistorySubmit(event) {
-            console.log('handleHistorySubmit called');
-            if (event) event.preventDefault();
+        async function saveHistorySimple() {
+            console.log('saveHistorySimple called - saving to database');
 
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
             const formData = new FormData();
@@ -7637,7 +7807,10 @@
                 const data = await res.json();
                 if (!res.ok || !data.success) throw new Error(data.error || 'Save failed');
 
-                loadHistoryInfo();
+                if (data.history) {
+                    localStorage.setItem('superAdminHistoryInfo', JSON.stringify(data.history));
+                }
+                await loadHistoryInfo();
                 addNotification('norsu_history', 'NORSU history updated', 'The NORSU history section has been updated.', 'content', data.history);
                 logActivity('norsu_history_updated', 'NORSU history updated', 'content');
                 closeModal('historyModal');
@@ -7646,6 +7819,14 @@
                 console.error('Error saving history:', err);
                 showNotification('Error saving history: ' + err.message, 'error');
             }
+        }
+
+        async function handleHistorySubmit(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            await saveHistorySimple();
         }
 
         // Load NORSU History card from database
@@ -7666,15 +7847,32 @@
                 }
 
                 titleEl.textContent = data.title || 'NORSU HISTORY';
+                localStorage.setItem('superAdminHistoryInfo', JSON.stringify(data));
                 previewEl.textContent = data.body ? (data.body.length > 280 ? data.body.slice(0, 277) + '…' : data.body) : 'History content has not been configured yet.';
             } catch (e) {
                 console.warn('Error loading history:', e);
             }
         }
 
+        // Refresh NORSU History (reload data)
+        function refreshNORSUHistory() {
+            try {
+                loadHistoryInfo();
+                alert('NORSU History refreshed successfully!');
+                console.log('NORSU history refreshed');
+            } catch (error) {
+                console.error('Error refreshing NORSU history:', error);
+                alert('Error refreshing NORSU History: ' + error.message);
+            }
+        }
+
         // Open history modal and prefill fields
         async function openHistoryModal() {
             try {
+                if (document.getElementById('historyModalTitle')) {
+                    document.getElementById('historyModalTitle').innerHTML =
+                        '<i class="fas fa-edit" style="margin-right:8px; color: #007fff;"></i>Edit NORSU History';
+                }
                 const res = await fetch('/api/norsu-history/');
                 const json = await res.json();
                 const data = json.success ? json.history : null;
@@ -7704,6 +7902,7 @@
                     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
                     await fetch('/api/norsu-history/', { method: 'DELETE', headers: { 'X-CSRFToken': csrfToken } });
 
+                    localStorage.removeItem('superAdminHistoryInfo');
                     loadHistoryInfo();
                     loadDashboardData();
                     showNotification('NORSU History deleted!', 'success');
@@ -12186,16 +12385,6 @@
                     if (e.target === overlay) close(false);
                 };
             });
-        }
-        // Handle Refresh Charts Button
-        function handleRefreshCharts(btn) {
-            const icon = btn.querySelector('i');
-            if(icon) {
-                icon.classList.add('fa-spin');
-            }
-            setTimeout(() => {
-                window.location.reload();
-            }, 400);
         }
     </script>
 

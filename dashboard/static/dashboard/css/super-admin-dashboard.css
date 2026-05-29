@@ -2088,6 +2088,7 @@ select.form-control {
 
 .sa-bar-track {
     width: 100%;
+    height: 150px;
     min-height: 150px;
     padding: 8px 0 0;
     border-radius: 14px 14px 6px 6px;
@@ -2725,6 +2726,7 @@ select.form-control {
     }
 
     .sa-bar-track {
+        height: 120px;
         min-height: 120px;
     }
 

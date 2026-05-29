@@ -10,6 +10,16 @@ from datetime import timedelta
 from dashboard.models import Post, Program, Faculty, Facility, AcademicCalendar, Announcement, Alumni, News, Achievement, College, MediaUpload, AlumniAbout, AlumniNews, AlumniEvent, AlumniSuccessStory, ContactMessage, InquiryReply, UniversityInfo
 
 
+def _get_college_for_dashboard(abbreviation):
+    return College.objects.filter(abbreviation__iexact=abbreviation).first()
+
+
+def _college_dashboard_context(abbreviation):
+    return {
+        'college': _get_college_for_dashboard(abbreviation),
+    }
+
+
 def _safe_int(value, default=0):
     if value is None:
         return default
@@ -131,17 +141,36 @@ def admin_logout(request):
     return redirect('/super-admin-login/')
 
 def get_system_analytics_context():
-    from django.utils import timezone
-    import datetime
     now = timezone.now()
-    
-    from dashboard.models import Post, Achievement, News, Announcement, MediaUpload, College, Alumni
-    
+
+    def add_months(value, offset):
+        month = value.month + offset
+        year = value.year + ((month - 1) // 12)
+        month = ((month - 1) % 12) + 1
+        return value.replace(year=year, month=month, day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    def count_created(model, start_date, end_date):
+        return model.objects.filter(created_at__gte=start_date, created_at__lt=end_date).count()
+
+    def bar_height(value, max_value):
+        if value <= 0 or max_value <= 0:
+            return 0
+        return max(8, round((value / max_value) * 100))
+
     posts_count = Post.objects.count()
     achievements_count = Achievement.objects.count()
     news_count = News.objects.count()
     announcements_count = Announcement.objects.count()
     media_count = MediaUpload.objects.count()
+    alumni_count = Alumni.objects.count()
+    colleges_count = College.objects.count()
+    inquiries_count = ContactMessage.objects.count()
+    programs_count = Program.objects.count()
+    faculty_count = Faculty.objects.count()
+    facilities_count = Facility.objects.count()
+    university_info_count = UniversityInfo.objects.count()
+    unread_inquiries = ContactMessage.objects.filter(is_read=False).count()
+    pending_media = MediaUpload.objects.filter(approval_status='pending').count()
     
     total_content = posts_count + achievements_count + news_count + announcements_count + media_count
     content_distribution = {
@@ -160,40 +189,61 @@ def get_system_analytics_context():
             if item['count'] > 0:
                 item['percentage'] = round((item['count'] / total_content) * 100)
                 content_distribution['items'].append(item)
-                
+
+    activity_models = [
+        ('posts', 'Posts', Post),
+        ('announcements', 'Announcements', Announcement),
+        ('news', 'News', News),
+        ('achievements', 'Achievements', Achievement),
+        ('media', 'Media uploads', MediaUpload),
+        ('alumni', 'Alumni records', Alumni),
+        ('programs', 'Programs', Program),
+        ('faculty', 'Faculty', Faculty),
+        ('facilities', 'Facilities', Facility),
+        ('colleges', 'Colleges', College),
+        ('inquiries', 'Inquiries', ContactMessage),
+        ('university_info', 'University info', UniversityInfo),
+        ('alumni_news', 'Alumni news', AlumniNews),
+        ('alumni_events', 'Alumni events', AlumniEvent),
+        ('success_stories', 'Success stories', AlumniSuccessStory),
+        ('academic_calendar', 'Academic calendar', AcademicCalendar),
+        ('inquiry_replies', 'Inquiry replies', InquiryReply),
+    ]
+
     monthly_bars = []
     total_monthly = 0
-    peak_value = -1
-    peak_label = ""
+    peak_value = 0
+    peak_label = "No activity"
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     for i in range(5, -1, -1):
-        m = now.month - i
-        y = now.year
-        while m <= 0:
-            m += 12
-            y -= 1
-        start_date = now.replace(year=y, month=m, day=1, hour=0, minute=0, second=0, microsecond=0)
-        
-        next_m = m + 1
-        next_y = y
-        if next_m > 12:
-            next_m = 1
-            next_y += 1
-        end_date = now.replace(year=next_y, month=next_m, day=1, hour=0, minute=0, second=0, microsecond=0)
-        
-        c_posts = Post.objects.filter(created_at__gte=start_date, created_at__lt=end_date).count()
-        c_achievements = Achievement.objects.filter(created_at__gte=start_date, created_at__lt=end_date).count()
-        val = c_posts + c_achievements
-        
+        start_date = add_months(month_start, -i)
+        end_date = add_months(start_date, 1)
+        segments = []
+        val = 0
+        for key, label_name, model in activity_models:
+            count = count_created(model, start_date, end_date)
+            if count:
+                segments.append({'key': key, 'label': label_name, 'count': count})
+                val += count
+
         label = start_date.strftime('%b')
-        monthly_bars.append({'label': label, 'value': val, 'height_percent': 0, 'is_peak': False, '_raw_val': val})
+        monthly_bars.append({
+            'label': label,
+            'value': val,
+            'height_percent': 0,
+            'is_peak': False,
+            'segments': segments,
+            'summary': ', '.join(f"{segment['count']} {segment['label']}" for segment in segments[:3]),
+            '_raw_val': val,
+        })
         total_monthly += val
         if val > peak_value:
             peak_value = val
             peak_label = label
-            
+
     if peak_value > 0:
         for b in monthly_bars:
-            b['height_percent'] = round((b['_raw_val']/peak_value)*100)
+            b['height_percent'] = bar_height(b['_raw_val'], peak_value)
             if b['_raw_val'] == peak_value:
                 b['is_peak'] = True
 
@@ -203,13 +253,29 @@ def get_system_analytics_context():
     for c in colleges:
         key = (c.abbreviation or '').strip().lower()
         c_posts = Post.objects.filter(college__iexact=key).count()
-        val = c_posts
+        c_alumni = Alumni.objects.filter(college__iexact=key).count()
+        c_programs = Program.objects.filter(Q(college_ref=c) | Q(college__iexact=key)).count()
+        c_faculty = Faculty.objects.filter(college__iexact=key).count()
+        c_facilities = Facility.objects.filter(college__iexact=key).count()
+        c_achievements = Achievement.objects.filter(college__iexact=key).count()
+        c_media = MediaUpload.objects.filter(Q(college__iexact=key) | Q(college__iexact=c.name)).count()
+        val = c_posts + c_alumni + c_programs + c_faculty + c_facilities + c_achievements + c_media
         total_engagement += val
         engagement_items.append({
+            'key': key,
             'label': c.abbreviation,
             'name': c.name,
             'total_records': val,
-            'color': c.theme_color or '#17cada'
+            'posts': c_posts,
+            'alumni': c_alumni,
+            'programs': c_programs,
+            'faculty': c_faculty,
+            'facilities': c_facilities,
+            'achievements': c_achievements,
+            'media': c_media,
+            'color': c.theme_color or '#17cada',
+            'percentage': 0,
+            'meta': 'No tracked records',
         })
         
     top_engagement = None
@@ -218,45 +284,80 @@ def get_system_analytics_context():
         top_engagement = engagement_items[0]
         for e in engagement_items:
             e['percentage'] = round((e['total_records']/total_engagement)*100)
-            e['meta'] = f"{e['total_records']} records"
+            e['meta'] = (
+                f"{e['posts']} posts, {e['alumni']} alumni, "
+                f"{e['programs']} programs, {e['faculty']} faculty"
+            )
             
     alumni_bars = []
     current_year = now.year
-    total_alumni = Alumni.objects.count()
     additions_in_window = 0
     max_alumni_yr = 0
-    
+    start_year = current_year - 4
+    baseline_alumni = Alumni.objects.filter(created_at__year__lt=start_year).count()
+    running_alumni_total = baseline_alumni
+
     for y in range(current_year-4, current_year+1):
-        c_alumni = Alumni.objects.filter(batch=str(y)).count()
+        c_alumni = Alumni.objects.filter(created_at__year=y).count()
         additions_in_window += c_alumni
-        if c_alumni > max_alumni_yr:
-            max_alumni_yr = c_alumni
-        alumni_bars.append({'label': str(y), 'value': c_alumni, 'height_percent': 0, 'is_latest': (y == current_year), '_raw_val': c_alumni})
+        running_alumni_total += c_alumni
+        if running_alumni_total > max_alumni_yr:
+            max_alumni_yr = running_alumni_total
+        alumni_bars.append({
+            'label': str(y),
+            'value': running_alumni_total,
+            'additions': c_alumni,
+            'height_percent': 0,
+            'is_latest': (y == current_year),
+            '_raw_val': running_alumni_total,
+        })
         
     if max_alumni_yr > 0:
         for b in alumni_bars:
-            b['height_percent'] = round((b['_raw_val']/max_alumni_yr)*100)
+            b['height_percent'] = bar_height(b['_raw_val'], max_alumni_yr)
 
     system_analytics = {
+        'generated_at_iso': now.isoformat(),
         'generated_at_display': now.strftime('%b %d, %Y %I:%M %p'),
+        'summary': {
+            'total_posts': posts_count,
+            'total_alumni': alumni_count,
+            'total_colleges': colleges_count,
+            'total_inquiries': inquiries_count,
+            'total_programs': programs_count,
+            'total_faculty': faculty_count,
+            'total_facilities': facilities_count,
+            'total_achievements': achievements_count,
+            'total_university_info': university_info_count,
+        },
+        'kpis': [
+            {'key': 'pending_media', 'label': 'Pending Media', 'value': pending_media, 'color': '#8B5CF6'},
+            {'key': 'unread_inquiries', 'label': 'Unread Inquiries', 'value': unread_inquiries, 'color': '#F59E0B'},
+            {'key': 'managed_content', 'label': 'Managed Content', 'value': total_content, 'color': '#A51C30'},
+            {'key': 'alumni_records', 'label': 'Alumni Records', 'value': alumni_count, 'color': '#0F766E'},
+        ],
         'content_distribution': content_distribution,
         'monthly_activity': {
             'bars': monthly_bars,
+            'labels': [bar['label'] for bar in monthly_bars],
+            'values': [bar['value'] for bar in monthly_bars],
             'window_label': 'Last 6 months',
             'total': total_monthly,
             'peak_label': peak_label,
             'peak_value': peak_value
         },
         'college_engagement': {
-            'metric': 'Total posts per college.',
+            'metric': 'Posts, alumni, programs, faculty, facilities, awards, and media per college.',
             'items': engagement_items,
             'top_item': top_engagement
         },
         'alumni_growth': {
             'bars': alumni_bars,
+            'labels': [bar['label'] for bar in alumni_bars],
+            'values': [bar['value'] for bar in alumni_bars],
             'window_label': f'Since {current_year-4}',
             'additions_in_window': additions_in_window,
-            'total': total_alumni
+            'total': alumni_count
         }
     }
     return system_analytics
@@ -362,29 +463,22 @@ def contacts(request):
     return render(request, 'dashboard/contacts.html')
 
 def cas_dashboard(request):
-    # Get CAS college information
-    cas_college = College.objects.filter(abbreviation='CAS').first()
-    
-    context = {
-        'college': cas_college,
-    }
-    
-    return render(request, 'dashboard/dashbordcas.html', context)
+    return render(request, 'dashboard/dashbordcas.html', _college_dashboard_context('CAS'))
 
 def cit_dashboard(request):
-    return render(request, 'dashboard/dashbordcit.html')
+    return render(request, 'dashboard/dashbordcit.html', _college_dashboard_context('CIT'))
 
 def caf_dashboard(request):
-    return render(request, 'dashboard/dashbordcaf.html')
+    return render(request, 'dashboard/dashbordcaf.html', _college_dashboard_context('CAF'))
 
 def cted_dashboard(request):
-    return render(request, 'dashboard/dashbordcted.html')
+    return render(request, 'dashboard/dashbordcted.html', _college_dashboard_context('CTED'))
 
 def ccje_dashboard(request):
-    return render(request, 'dashboard/dashbordccje.html')
+    return render(request, 'dashboard/dashbordccje.html', _college_dashboard_context('CCJE'))
 
 def cba_dashboard(request):
-    return render(request, 'dashboard/dashbordcba.html')
+    return render(request, 'dashboard/dashbordcba.html', _college_dashboard_context('CBA'))
 
 def aboutnorsu_dashboard(request):
     return render(request, 'dashboard/aboutnorsu/aboutnorsu-dashboard.html')
@@ -1619,6 +1713,7 @@ def college_list_create(request):
                 'vision': college.vision,
                 'mission': college.mission,
                 'goals': college.goals or [],
+                'theme_color': college.theme_color or '#0078d4',
                 'image': college.image.url if college.image else '',
             })
         return JsonResponse({'success': True, 'colleges': colleges_data})
@@ -1642,6 +1737,7 @@ def college_list_create(request):
             about = request.POST.get('about', '')
             vision = request.POST.get('vision', '')
             mission = request.POST.get('mission', '')
+            theme_color = (request.POST.get('theme_color') or '').strip()
             
             import json as _json
             goals_json = request.POST.get('goals')
@@ -1667,6 +1763,8 @@ def college_list_create(request):
                 college.vision = vision
                 college.mission = mission
                 college.goals = goals
+                if theme_color:
+                    college.theme_color = theme_color
                 if image:
                     college.image = image
                 college.save()
@@ -1685,6 +1783,7 @@ def college_list_create(request):
                     vision=vision,
                     mission=mission,
                     goals=goals,
+                    theme_color=theme_color or '#0078d4',
                     image=image
                 )
 
@@ -1749,6 +1848,7 @@ def college_detail(request, pk):
                 'vision': college.vision,
                 'mission': college.mission,
                 'goals': college.goals or [],
+                'theme_color': college.theme_color or '#0078d4',
                 'image': college.image.url if college.image else '',
             }
         })
@@ -2896,30 +2996,57 @@ def api_president_profile(request):
 
 
 @csrf_exempt
-@login_required(login_url='/super-admin-login/')
 def api_norsu_history(request):
     """Get or update NORSU history."""
     history = NorsuHistory.objects.first()
-    if request.method == 'GET':
-        if not history:
-            return JsonResponse({'success': True, 'data': {}})
-        data = {
-            'id': history.id,
-            'content': getattr(history, 'content', ''),
-            'image': history.image.url if hasattr(history, 'image') and history.image else '',
+
+    def serialize_history(history_obj):
+        if not history_obj:
+            return None
+        return {
+            'id': history_obj.id,
+            'title': history_obj.title or '',
+            'body': history_obj.body or '',
+            'content': history_obj.body or '',
+            'updatedAt': history_obj.updated_at.isoformat() if history_obj.updated_at else '',
+            'updated_at': history_obj.updated_at.isoformat() if history_obj.updated_at else '',
         }
-        return JsonResponse({'success': True, 'data': data})
+
+    if request.method == 'GET':
+        serialized = serialize_history(history)
+        return JsonResponse({
+            'success': True,
+            'history': serialized,
+            'data': serialized or {},
+        })
     elif request.method == 'POST':
+        guard = _superadmin_json_guard(request)
+        if guard:
+            return guard
+
         try:
             if not history:
                 history = NorsuHistory()
-            history.content = request.POST.get('content', getattr(history, 'content', ''))
-            if 'image' in request.FILES:
-                history.image = request.FILES['image']
+            history.title = (request.POST.get('title') or 'NORSU HISTORY').strip()
+            history.body = (request.POST.get('body') or request.POST.get('content') or '').strip()
             history.save()
-            return JsonResponse({'success': True})
+            serialized = serialize_history(history)
+            return JsonResponse({
+                'success': True,
+                'message': 'NORSU history saved successfully',
+                'history': serialized,
+                'data': serialized,
+            })
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    elif request.method == 'DELETE':
+        guard = _superadmin_json_guard(request)
+        if guard:
+            return guard
+
+        if history:
+            history.delete()
+        return JsonResponse({'success': True})
     return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
 
 
@@ -3093,41 +3220,9 @@ def api_system_analytics(request):
     if guard:
         return guard
 
-    total_posts = Post.objects.count()
-    total_alumni = Alumni.objects.count()
-    total_colleges = College.objects.count()
-    total_inquiries = ContactMessage.objects.count()
-    total_programs = Program.objects.count()
-    total_faculty = Faculty.objects.count()
-    total_facilities = Facility.objects.count()
-    total_achievements = Achievement.objects.count()
-
-    # Per-college breakdown
-    college_stats = []
-    for college in College.objects.all():
-        key = _normalize_college_key(college.abbreviation)
-        college_stats.append({
-            'abbreviation': college.abbreviation,
-            'name': college.name,
-            'posts': Post.objects.filter(college__iexact=key).count(),
-            'alumni': Alumni.objects.filter(college__iexact=key).count(),
-            'programs': Program.objects.filter(college__iexact=key).count(),
-            'faculty': Faculty.objects.filter(college__iexact=key).count(),
-            'facilities': Facility.objects.filter(college__iexact=key).count(),
-            'achievements': Achievement.objects.filter(college__iexact=key).count(),
-        })
-
+    analytics = get_system_analytics_context()
     return JsonResponse({
         'success': True,
-        'analytics': {
-            'total_posts': total_posts,
-            'total_alumni': total_alumni,
-            'total_colleges': total_colleges,
-            'total_inquiries': total_inquiries,
-            'total_programs': total_programs,
-            'total_faculty': total_faculty,
-            'total_facilities': total_facilities,
-            'total_achievements': total_achievements,
-            'college_stats': college_stats,
-        }
+        **analytics,
+        'analytics': analytics,
     })

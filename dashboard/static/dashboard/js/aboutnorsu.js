@@ -480,15 +480,27 @@ class NORSUAboutPage {
     }
 
     /**
-     * Apply NORSU History text from localStorage to the About page section
+     * Apply NORSU History text from the database.
      */
-    applyHistorySection() {
+    async applyHistorySection() {
         const section = document.getElementById('norsu-history');
         if (!section) return;
 
         const titleEl = section.querySelector('.history-title');
         const bodyEl = section.querySelector('#norsu-history-content');
-        const data = this.readStorageData(this.historyStorageKey);
+        let data = null;
+
+        try {
+            const response = await fetch('/api/norsu-history/', {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const payload = await response.json();
+            if (response.ok && payload.success && payload.history) {
+                data = payload.history;
+            }
+        } catch (error) {
+            console.warn('Unable to load NORSU history from database:', error);
+        }
 
         const title = this.hasMeaningfulContent(data?.title) && data.title !== 'NORSU HISTORY'
             ? data.title

@@ -143,6 +143,7 @@ class SuperAdminSystemAnalyticsAPITest(TestCase):
 
         self.assertEqual(payload['content_distribution']['total'], 5)
         self.assertEqual(len(payload['content_distribution']['items']), 5)
+        self.assertEqual(payload['analytics']['summary']['total_posts'], 1)
 
         kpis = {item['key']: item['value'] for item in payload['kpis']}
         self.assertEqual(kpis['pending_media'], 1)
@@ -152,6 +153,7 @@ class SuperAdminSystemAnalyticsAPITest(TestCase):
 
         self.assertEqual(len(payload['monthly_activity']['labels']), 6)
         self.assertEqual(len(payload['monthly_activity']['values']), 6)
+        self.assertGreaterEqual(payload['monthly_activity']['values'][-1], 13)
         self.assertEqual(payload['alumni_growth']['values'][-1], 1)
 
         top_engagement = payload['college_engagement']['items'][0]
@@ -167,9 +169,10 @@ class SuperAdminSystemAnalyticsAPITest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['system_analytics']['summary']['total_posts'], 1)
-        self.assertContains(response, 'Live database metrics updated')
+        self.assertContains(response, 'Connected to live system records')
         self.assertContains(response, 'Managed Content')
         self.assertContains(response, 'Monthly Activity')
+        self.assertContains(response, 'actual system entry dates')
         self.assertNotContains(response, 'systemAnalyticsBootstrap')
         self.assertNotContains(response, 'data-analytics-url=')
 

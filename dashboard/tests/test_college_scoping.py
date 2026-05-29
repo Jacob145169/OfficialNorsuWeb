@@ -42,16 +42,71 @@ class CollegeScopingTests(TestCase):
             'programs': '0',
             'instructors': '0',
             'status': 'active',
+            'theme_color': '#123456',
         })
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()['success'])
         self.assertTrue(College.objects.filter(abbreviation__iexact='coe').exists())
+        self.assertEqual(College.objects.get(abbreviation__iexact='coe').theme_color, '#123456')
 
         profile = AdminProfile.objects.select_related('user').get(college='coe')
         self.assertTrue(profile.user.is_staff)
         self.assertFalse(profile.user.is_superuser)
         self.assertFalse(profile.user.has_usable_password())
+
+    def test_college_api_returns_and_updates_theme_color(self):
+        self.client.force_login(self.superadmin)
+
+        response = self.client.post('/api/colleges/', {
+            'id': self.cit.id,
+            'name': self.cit.name,
+            'abbreviation': self.cit.abbreviation,
+            'dean': self.cit.dean,
+            'students': '0',
+            'programs': '0',
+            'instructors': '0',
+            'status': 'active',
+            'theme_color': '#abcdef',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.cit.refresh_from_db()
+        self.assertEqual(self.cit.theme_color, '#abcdef')
+
+        detail_response = self.client.get(f'/api/colleges/{self.cit.id}/')
+        self.assertEqual(detail_response.json()['college']['theme_color'], '#abcdef')
+
+        list_response = self.client.get('/api/colleges/')
+        cit_payload = next(
+            college for college in list_response.json()['colleges']
+            if college['abbreviation'] == 'CIT'
+        )
+        self.assertEqual(cit_payload['theme_color'], '#abcdef')
+
+    def test_named_college_dashboards_receive_theme_context(self):
+        cted = College.objects.create(name='College of Teacher Education', abbreviation='CTED', dean='CTED Dean')
+        ccje = College.objects.create(name='College of Criminal Justice Education', abbreviation='CCJE', dean='CCJE Dean')
+        cba = College.objects.create(name='College of Business Administration', abbreviation='CBA', dean='CBA Dean')
+        caf = College.objects.create(name='College of Agriculture and Forestry', abbreviation='CAF', dean='CAF Dean')
+        route_data = [
+            ('/cas/', self.cas, '#111111'),
+            ('/cit/', self.cit, '#222222'),
+            ('/cted/', cted, '#333333'),
+            ('/ccje/', ccje, '#444444'),
+            ('/cba/', cba, '#555555'),
+            ('/caf/', caf, '#666666'),
+        ]
+        for route, college, color in route_data:
+            college.theme_color = color
+            college.save(update_fields=['theme_color'])
+
+            with self.subTest(route=route):
+                response = self.client.get(route)
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.context['college'].pk, college.pk)
+                self.assertContains(response, color)
 
     def test_college_admin_post_list_is_forced_to_own_college(self):
         Post.objects.create(title='CAS Post', content='Own', college='cas', status='published')
